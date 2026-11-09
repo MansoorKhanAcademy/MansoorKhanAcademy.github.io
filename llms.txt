@@ -1,0 +1,16 @@
+# Mansoor Khan Academy
+
+> Mansoor Khan Academy is an independent developer brand from Pakistan, run by Mansoor Khan, that builds free Android apps and tools for content creators.
+
+Contact: mansoorkhan8185@gmail.com
+
+## Apps
+
+- [Prompt Book: AI Video Prompts](https://promptbookapp.github.io/): Free Android app with ready-to-use prompts for AI video and image generators. Pick a niche, copy a prompt, paste it into your AI tool. Package: com.mkhanacademy.promptbookapp. Currently in Google Play early access: join https://groups.google.com/g/mansoor-app-testers then open https://play.google.com/store/apps/details?id=com.mkhanacademy.promptbookapp
+- [YouTube channel](https://www.youtube.com/@PromptBookOfficial): Short videos made from Prompt Book prompts.
+
+## Other
+
+- [Privacy Policy](https://mansoorkhan8185.github.io/Prompt-BooK-Privacy-Policy/)
+
+Prompt Book is not affiliated with YouTube, Google, TikTok, Meta, Facebook or Instagram.
