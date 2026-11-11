@@ -3,6 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dough Dai - Dargai Bazar | Official Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e11d48;--black:#0a0a0a;--gold:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+body{background:#fafafa;color:#111}
+.header{background:#0a0a0a;color:#fff;padding:22px 16px 26px;text-align:center;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070') center/cover;opacity:0.18}
+.header-content{position:relative;z-index:2;max-width:900px;margin:0 auto}
+.logo-wrap{width:92px;height:92px;margin:0 auto 12px;background:#fff;border-radius:50%;padding:4px;border:3px solid var(--gold);box-shadow:0 8px 25px rgba(0,0,0,.4)}
+.logo-wrap img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.brand{font-weight:900;font-size:34px;letter-spacing:-0.5px}
+.brand span{color:var(--gold)}
+.sub{margin-top:6px;font-size:13px;opacity:.8}
+.badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:6px 12px;border-radius:100px;font-size:11.5px;font-weight:600}
+.container{max-width:720px;margin:0 auto;padding:0 12px 110px}
+.section{margin:28px 0 0}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sec-line{width:4px;height:22px;background:var(--red);border-radius:4px}
+.sec-title{font-weight:800;font-size:18px}
+.grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:600px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:#fff;border-radius:16px;padding:14px;border:1px solid #eee;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.card-top{display:flex;justify-content:space-between;gap:10px}
+.card-name{font-weight:700;font-size:14.5px}
+.card-desc{font-size:11.5px;color:#777;margin-top:3px}
+.card-price{color:var(--red);font-weight:800;font-size:14.5px}
+.card-foot{display:flex;align-items:center;gap:8px;margin-top:12px}
+.qty{display:flex;align-items:center;background:#f5f5f5;border-radius:10px;border:1px solid #e5e5e5;overflow:hidden;height:38px}
+.qty button{width:36px;height:100%;border:none;background:transparent;font-size:18px;font-weight:700;cursor:pointer}
+.qty input{width:38px;height:100%;border:none;background:#fff;text-align:center;font-weight:800;font-size:14px;outline:none}
+.btn-wa{flex:1;height:38px;background:#111;color:#fff;border:none;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer}
+.btn-wa.single{background:#25D366}
+.pizza-card{background:#fff;border-radius:16px;border:1px solid #eee;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.pizza-head{padding:14px 14px 10px;display:flex;justify-content:space-between;border-bottom:1px solid #f0f0f0}
+.pizza-body{padding:10px 14px 14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.size-box{background:#f9f9f9;border:1px solid #eee;border-radius:12px;padding:8px;text-align:center}
+.size-label{font-size:11px;font-weight:700;color:#666}
+.size-price{font-weight:800;color:var(--red);font-size:13px;margin:4px 0}
+.size-box .qty{margin-top:6px;height:32px}
+.size-order{margin-top:6px;width:100%;height:30px;background:#111;color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer}
+.sticky{position:fixed;bottom:12px;left:12px;right:12px;background:#111;color:#fff;border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:50;max-width:720px;margin:0 auto}
+.sticky-info{flex:1;min-width:0}
+.sticky-count{font-weight:800;font-size:14px}
+.sticky-total{font-size:11px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn-all{background:var(--gold);color:#111;border:none;padding:12px 18px;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer}
+.btn-all:disabled{background:#333;color:#777}
+.empty{opacity:.6}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="header-content">
+<div class="logo-wrap"><img src="logo.png" alt="Dough Dai" onerror="this.parentElement.innerHTML='🍕'"></div>
+<div class="brand">Dough <span>Dai</span></div>
+<div class="sub">📍 Tariq Market, Adjacent PTCL Exchange, Dargai Bazar</div>
+<div class="badges"><div class="badge">PTCL 0932-332665</div><div class="badge">Cell 0302-1591111</div><div class="badge">Free Delivery</div></div>
+</div>
+</div>
+<div class="container" id="app"></div>
+<div class="sticky">
+<div class="sticky-info"><div class="sticky-count" id="scount">No items</div><div class="sticky-total" id="stotal">Select items to order</div></div>
+<button class="btn-all" id="orderAll" onclick="orderAll()" disabled>Order on WhatsApp</button>
+</div>
+<script>
+const WA="923021591111";
+const pizzas=[["Dough Dai Special",650,1200,1800],["Chicken Tikka",550,1050,1500],["Chicken Fajita",550,1050,1500],["Creamy Melt",600,1100,1600],["Beef Pepperoni",600,1150,1650],["Margherita",450,850,1350],["Stuffed Crust",null,1200,1650],["Kebab Crust",null,1250,1700],["Crown Crust",null,1350,1750],["Calzone",null,1200,null]];
+const menus={"STARTERS":[["Wings (6 Pcs)","Crispy / Nashville / BBQ / Garlic Mayo / Special",450],["Bihari Roll","",350],["Loaded Fries","",450],["Fries","BBQ +50 / Garlic +50 / Special +70",150],["Soup Special","",350],["Chicken Corn Soup","",250]],"BURGERS":[["Grill Burger","",420],["Crunch Classic","",450],["Crunch Nashville","",490],["Smash Burger","",600],["The Big Boss","",650]],"WRAPS & SANDWICHES":[["Grilled Wrap","",420],["Crispy Wrap","",450],["Sandwich Crispy","",500],["Sandwich Jalapeño","",500]],"CLASSICS":[["Alfredo Pasta","",600],["Marinara Pasta","",600],["Mac & Cheese with Tenders","",650],["Fish & Chips","",850]],"KIDS MENU":[["Kids Burger","",350],["Dough Dai Poppers","",350],["Wings 4 pcs","",350]],"CHICKEN":[["Crispy Chicken 2 pcs","Classic / Nashville",450],["Crispy Chicken 4 pcs","",950],["Crispy Chicken 6 pcs","",1200],["Crispy Chicken 8 pcs","",1600],["Chicken Tenders 3 pcs","",450],["Chicken Tenders 6 pcs","",850]],"ADD-ONS":[["Pizza Topping 7\"","",150],["Pizza Topping 10\"","",200],["Pizza Topping 13\"","",300],["Smash Patty","",250],["Cheese","",60],["Mushrooms","",60],["BBQ / Garlic Mayo","",50],["Special Sauce","",70]]};
+function qtyHTML(price,name){return `<div class="qty"><button onclick="chg(this,-1)">−</button><input type="number" value="0" min="0" data-name="${name}" data-price="${price}" readonly><button onclick="chg(this,1)">+</button></div>`;}
+function cardHTML(name,desc,price){return `<div class="card"><div class="card-top"><div><div class="card-name">${name}</div>${desc?`<div class="card-desc">${desc}</div>`:''}</div><div class="card-price">Rs ${price}</div></div><div class="card-foot">${qtyHTML(price,name)}<button class="btn-wa single" onclick="orderSingle('${name.replace(/'/g,"\\'")}',${price},this)">WhatsApp</button></div></div>`;}
+const app=document.getElementById('app');
+let pizzaSec=document.createElement('div');pizzaSec.className='section';pizzaSec.innerHTML=`<div class="sec-head"><div class="sec-line"></div><div class="sec-title">PIZZA</div></div>`;let pGrid=document.createElement('div');pGrid.className='grid';pGrid.style.gridTemplateColumns='1fr';
+pizzas.forEach(p=>{const card=document.createElement('div');card.className='pizza-card';let body='';[['7"',p[1]],['10"',p[2]],['13"',p[3]]].forEach(s=>{if(!s[1]) body+=`<div class="size-box empty"><div class="size-label">${s[0]}</div><div style="font-size:11px;color:#aaa;margin-top:8px">N/A</div></div>`;else body+=`<div class="size-box"><div class="size-label">${s[0]}</div><div class="size-price">Rs ${s[1]}</div>${qtyHTML(s[1],p[0]+' '+s[0])}<button class="size-order" onclick="orderSingle('${(p[0]+' '+s[0]).replace(/'/g,"\\'")}',${s[1]},this)">Order</button></div>`;});card.innerHTML=`<div class="pizza-head"><div class="card-name">${p[0]}</div></div><div class="pizza-body">${body}</div>`;pGrid.appendChild(card);});pizzaSec.appendChild(pGrid);app.appendChild(pizzaSec);
+for(let k in menus){let sec=document.createElement('div');sec.className='section';sec.innerHTML=`<div class="sec-head"><div class="sec-line"></div><div class="sec-title">${k}</div></div>`;let grid=document.createElement('div');grid.className='grid';menus[k].forEach(m=>{let d=document.createElement('div');d.innerHTML=cardHTML(m[0],m[1],m[2]);grid.appendChild(d.firstChild);});sec.appendChild(grid);app.appendChild(sec);}
+function chg(btn,d){const input=btn.parentElement.querySelector('input');let v=parseInt(input.value)||0;v+=d;if(v<0)v=0;if(v>20)v=20;input.value=v;updateCart();}
+function updateCart(){let cart=[];document.querySelectorAll('.qty input').forEach(i=>{let q=parseInt(i.value)||0;if(q>0)cart.push({n:i.dataset.name,p:parseInt(i.dataset.price),q});});window._cart=cart;const count=cart.reduce((a,b)=>a+b.q,0);const total=cart.reduce((a,b)=>a+b.p*b.q,0);document.getElementById('scount').innerText=count===0?'No items':count+' items • Rs '+total;document.getElementById('stotal').innerText=count===0?'Select items to order':cart.slice(0,3).map(c=>c.n+' x'+c.q).join(', ')+(cart.length>3?' +'+(cart.length-3)+' more':'');document.getElementById('orderAll').disabled=count===0;}
+function orderSingle(name,price,btn){const qty=parseInt(btn.closest('.card, .size-box')?.querySelector('input')?.value||1)||1;if(qty===0){alert('Please select quantity first');return;}const total=price*qty;const msg=`Assalam-o-Alaikum Dough Dai!\n\nOrder: ${name} x ${qty} = Rs ${total}\n\nName:\nPhone:\nAddress:`;window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');}
+function orderAll(){const cart=window._cart||[];if(!cart.length)return;let total=0;let lines=cart.map(c=>{total+=c.p*c.q;return `• ${c.n} x ${c.q} = Rs ${c.p*c.q}`;}).join('\n');const msg=`Assalam-o-Alaikum Dough Dai!\n\nMy Order:\n${lines}\n\nTotal: Rs ${total}\n\nName:\nPhone:\nAddress: Tariq Market, Dargai Bazar`;window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');}
+updateCart();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dough Dai - Online Menu | Dargai Bazar</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Jost:wght@700;800&display=swap" rel="stylesheet">
 <style>
