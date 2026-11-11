@@ -1,4 +1,81 @@
 <!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dough Dai - Official Menu</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e11d48;--black:#0a0a0a;--gold:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+body{background:#f7f7f8;color:#111}
+.header{background:#0a0a0a;color:#fff;padding:28px 16px 30px;text-align:center;position:relative}
+.header::before{content:'';position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=2070') center/cover;opacity:0.15}
+.hc{position:relative;z-index:2}
+.logo{width:96px;height:96px;margin:0 auto 12px;background:#fff;border-radius:50%;padding:4px;border:3px solid var(--gold);object-fit:cover;display:block}
+.brand{font-weight:900;font-size:36px} .brand span{color:var(--gold)}
+.sub{margin-top:6px;font-size:13px;opacity:.75}
+.badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:7px 13px;border-radius:100px;font-size:11.5px;font-weight:600}
+.container{max-width:740px;margin:0 auto;padding:0 12px 120px}
+.sec{margin:26px 0 0}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.line{width:4px;height:20px;background:var(--red);border-radius:4px}
+.sec-title{font-weight:800;font-size:17px}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:640px){.grid{grid-template-columns:1fr 1fr}}
+.card{background:#fff;border-radius:18px;padding:14px;border:1px solid #ececec;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+.ctop{display:flex;justify-content:space-between;gap:12px}
+.cname{font-weight:700;font-size:14.5px}
+.cdesc{font-size:11.5px;color:#777;margin-top:4px}
+.cprice{color:var(--red);font-weight:800;font-size:14px;background:#fff1f3;padding:4px 8px;border-radius:8px;white-space:nowrap}
+.cfoot{display:flex;gap:10px;margin-top:14px}
+.qty{display:flex;align-items:center;background:#f3f3f5;border-radius:12px;border:1px solid #e5e5e7;height:42px;overflow:hidden}
+.qty button{width:40px;height:100%;border:none;background:transparent;font-size:20px;font-weight:700;cursor:pointer}
+.qty input{width:36px;height:100%;border:none;background:#fff;text-align:center;font-weight:800;outline:none}
+.btn-wa{flex:1;height:42px;background:#0a0a0a;color:#fff;border:none;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer}
+.btn-wa.green{background:#25D366}
+.pcard{background:#fff;border-radius:18px;border:1px solid #ececec;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+.phead{padding:14px}
+.pname{font-weight:800;font-size:15px}
+.pbody{padding:0 12px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:480px){.pbody{grid-template-columns:1fr}}
+.sbox{background:#f8f8f9;border:1px solid #eee;border-radius:14px;padding:10px;text-align:center}
+.slabel{font-size:11px;font-weight:800;color:#666}
+.sprice{font-weight:900;color:var(--red);font-size:14px;margin:6px 0}
+.sbox .qty{height:36px;margin:8px auto 0;max-width:120px}
+.sorder{margin-top:8px;width:100%;height:36px;background:#0a0a0a;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer}
+.na{background:#fafafa;color:#aaa;font-size:11px;padding:18px 0;border-radius:14px;text-align:center;border:1px dashed #ddd}
+.sticky{position:fixed;bottom:14px;left:12px;right:12px;background:#0a0a0a;color:#fff;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 12px 32px rgba(0,0,0,.35);z-index:50;max-width:740px;margin:0 auto}
+.si{flex:1;min-width:0} .sc{font-weight:800;font-size:15px} .st{font-size:11.5px;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.ball{background:var(--gold);color:#111;border:none;padding:13px 20px;border-radius:12px;font-weight:900;font-size:13.5px;cursor:pointer} .ball:disabled{background:#2a2a2a;color:#666}
+</style></head>
+<body>
+<div class="header"><div class="hc">
+<img class="logo" src="logo.png?v=2" alt="🍕" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3132/3132693.png'">
+<div class="brand">Dough <span>Dai</span></div>
+<div class="sub">📍 Tariq Market, Adjacent PTCL Exchange, Dargai Bazar</div>
+<div class="badges"><div class="badge">PTCL 0932-332665</div><div class="badge">Cell 0302-1591111</div><div class="badge">🚚 Free Delivery</div></div>
+</div></div>
+<div class="container" id="app"></div>
+<div class="sticky"><div class="si"><div class="sc" id="scount">No items selected</div><div class="st" id="stotal">Tap + to add items</div></div><button class="ball" id="ball" onclick="orderAll()" disabled>WhatsApp Order</button></div>
+<script>
+const WA="923021591111";
+const pizzas=[["Dough Dai Special",650,1200,1800],["Chicken Tikka",550,1050,1500],["Chicken Fajita",550,1050,1500],["Creamy Melt",600,1100,1600],["Beef Pepperoni",600,1150,1650],["Margherita",450,850,1350],["Stuffed Crust",null,1200,1650],["Kebab Crust",null,1250,1700],["Crown Crust",null,1350,1750],["Calzone",null,1200,null]];
+const menus={"STARTERS":[["Wings (6 Pcs)","Crispy / Nashville / BBQ / Garlic / Special",450],["Bihari Roll","",350],["Loaded Fries","",450],["Fries","",150],["Soup Special","",350],["Chicken Corn Soup","",250]],"BURGERS":[["Grill Burger","",420],["Crunch Classic","",450],["Crunch Nashville","",490],["Smash Burger","",600],["The Big Boss","",650]],"WRAPS":[["Grilled Wrap","",420],["Crispy Wrap","",450],["Crispy Sandwich","",500],["Jalapeño Sandwich","",500]],"CLASSICS":[["Alfredo Pasta","",600],["Marinara Pasta","",600],["Mac & Cheese with Tenders","",650],["Fish & Chips","",850]],"KIDS":[["Kids Burger","",350],["Poppers","",350],["Wings 4 pcs","",350]],"CHICKEN":[["Crispy Chicken 2 pcs","",450],["Crispy Chicken 4 pcs","",950],["Crispy Chicken 6 pcs","",1200],["Crispy Chicken 8 pcs","",1600],["Tenders 3 pcs","",450],["Tenders 6 pcs","",850]],"ADD-ONS":[["Extra Cheese","",60],["Mushrooms","",60],["BBQ / Garlic Sauce","",50],["Special Sauce","",70],["Smash Patty","",250]]};
+function qtyHTML(p,n){return `<div class="qty"><button onclick="chg(this,-1)">−</button><input type="text" value="0" data-name="${n}" data-price="${p}" readonly><button onclick="chg(this,1)">+</button></div>`;}
+function cardHTML(n,d,p){return `<div class="card"><div class="ctop"><div><div class="cname">${n}</div>${d?`<div class="cdesc">${d}</div>`:''}</div><div class="cprice">Rs ${p}</div></div><div class="cfoot">${qtyHTML(p,n)}<button class="btn-wa green" onclick="orderSingle('${n}',${p},this)">Order</button></div></div>`;}
+const app=document.getElementById('app');
+let pSec=document.createElement('div');pSec.className='sec';pSec.innerHTML=`<div class="sec-head"><div class="line"></div><div class="sec-title">PIZZA MENU</div></div>`;
+let pGrid=document.createElement('div');pGrid.className='grid';pGrid.style.gridTemplateColumns='1fr';
+pizzas.forEach(p=>{let c=document.createElement('div');c.className='pcard';let b='';[['7"',p[1]],['10"',p[2]],['13"',p[3]]].forEach(s=>{if(!s[1]) b+=`<div class="na"><div class="slabel">${s[0]}</div>Not Available</div>`;else b+=`<div class="sbox"><div class="slabel">${s[0]} INCH</div><div class="sprice">Rs ${s[1]}</div>${qtyHTML(s[1],p[0]+' '+s[0])}<button class="sorder" onclick="orderSingle('${p[0]+' '+s[0]}',${s[1]},this)">Order ${s[0]}</button></div>`;});c.innerHTML=`<div class="phead"><div class="pname">${p[0]}</div></div><div class="pbody">${b}</div>`;pGrid.appendChild(c);});
+pSec.appendChild(pGrid);app.appendChild(pSec);
+for(let k in menus){let sec=document.createElement('div');sec.className='sec';sec.innerHTML=`<div class="sec-head"><div class="line"></div><div class="sec-title">${k}</div></div>`;let g=document.createElement('div');g.className='grid';menus[k].forEach(m=>{let d=document.createElement('div');d.innerHTML=cardHTML(m[0],m[1],m[2]);g.appendChild(d.firstChild);});sec.appendChild(g);app.appendChild(sec);}
+function chg(btn,d){let i=btn.parentElement.querySelector('input');let v=parseInt(i.value)||0;v+=d;if(v<0)v=0;if(v>20)v=20;i.value=v;update();}
+function update(){let cart=[];document.querySelectorAll('.qty input').forEach(i=>{let q=parseInt(i.value)||0;if(q>0)cart.push({n:i.dataset.name,p:parseInt(i.dataset.price),q});});window._cart=cart;let c=cart.reduce((a,b)=>a+b.q,0);let t=cart.reduce((a,b)=>a+b.p*b.q,0);document.getElementById('scount').innerText=c===0?'No items selected':c+' items • Rs '+t;document.getElementById('stotal').innerText=c===0?'Tap + to add items':cart.slice(0,2).map(x=>x.n+' x'+x.q).join(', ')+(cart.length>2?' +'+(cart.length-2)+' more':'');document.getElementById('ball').disabled=c===0;}
+function orderSingle(name,price,btn){let inp=btn.closest('.card, .sbox').querySelector('input');let q=parseInt(inp.value)||0;if(q===0){inp.value=1;q=1;update();}let msg=`Assalam-o-Alaikum Dough Dai!\n\nOrder: ${name} x ${q} = Rs ${price*q}\n\nName:\nPhone:\nAddress:`;window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');}
+function orderAll(){let cart=window._cart||[];if(!cart.length)return;let total=0;let lines=cart.map(c=>{total+=c.p*c.q;return `• ${c.n} x ${c.q} = Rs ${c.p*c.q}`;}).join('\n');let msg=`Assalam-o-Alaikum Dough Dai!\n\n${lines}\n\nTotal: Rs ${total}\n\nName:\nPhone:\nAddress:`;window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,'_blank');}
+update();
+</script>
+</body>
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
