@@ -28,8 +28,18 @@ a{color:inherit}
 
 /* Category nav */
 .nav{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
-.nav-in{max-width:760px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:10px 12px;scrollbar-width:none}
-.nav-in::-webkit-scrollbar{display:none}
+.nav-in{max-width:760px;margin:0 auto;display:flex;gap:8px;align-items:center;padding:10px 12px}
+#nav{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+#nav::-webkit-scrollbar{display:none}
+.allbtn{flex:none;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:99px;background:var(--red);color:#fff;font-weight:800;font-size:14px}
+.allbtn[aria-expanded="true"]{background:var(--ink)}
+.cats{position:absolute;left:0;right:0;top:100%;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 18px 30px rgba(0,0,0,.18);max-height:calc(100vh - 120px);overflow-y:auto}
+.cats[hidden]{display:none}
+.cats-in{max-width:760px;margin:0 auto;padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat{display:flex;align-items:center;gap:10px;padding:14px;border-radius:14px;background:#fff;border:1px solid var(--line);text-align:left;font-weight:700;font-size:15px}
+.cat .e{font-size:24px}
+.cat small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.cat:active{background:var(--bg)}
 .chip{flex:none;padding:8px 16px;border-radius:99px;background:#fff;border:1px solid var(--line);font-weight:700;font-size:14px;text-decoration:none;white-space:nowrap}
 .chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
 
@@ -112,7 +122,7 @@ input:focus,textarea:focus{border-color:var(--red);outline:none}
   </div>
 </header>
 
-<nav class="nav" aria-label="Menu categories"><div class="nav-in" id="nav"></div></nav>
+<nav class="nav" aria-label="Menu categories"><div class="nav-in"><button class="allbtn" id="allbtn" type="button" aria-expanded="false" aria-controls="cats">☰ All menu</button><div id="nav"></div></div><div class="cats" id="cats" hidden><div class="cats-in" id="catsIn"></div></div></nav>
 <main id="menu"></main>
 
 <footer>
@@ -190,6 +200,16 @@ menu.forEach(([title,list])=>{
 $('menu').innerHTML=html;
 $('nav').innerHTML=[['Pizza','pizza'],...menu.map(m=>[m[0],slug(m[0])])].map(([t,s])=>`<a class="chip" href="#${s}" data-s="${s}">${esc(t)}</a>`).join('');
 
+// "All menu" list: every category on one screen
+const EMO={pizza:'🍕',starters:'🍟',burgers:'🍔','wraps-sandwiches':'🌯',classics:'🍝','kids-menu':'🧒',chicken:'🍗','add-ons':'➕'};
+const catList=[['Pizza','pizza',pizzas.length],...menu.map(m=>[m[0],slug(m[0]),m[1].length])];
+$('catsIn').innerHTML=catList.map(([t,s,c])=>`<button class="cat" type="button" data-go="${s}"><span class="e">${EMO[s]||'🍽️'}</span><span>${esc(t)}<small>${c} items</small></span></button>`).join('');
+function toggleCats(open){const o=open===undefined?$('cats').hidden:open;$('cats').hidden=!o;$('allbtn').setAttribute('aria-expanded',o);$('allbtn').textContent=o?'✕ Close':'☰ All menu'}
+$('allbtn').onclick=()=>toggleCats();
+$('catsIn').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(!b)return;toggleCats(false);document.getElementById(b.dataset.go).scrollIntoView({behavior:'smooth'})});
+document.addEventListener('click',e=>{if(!e.target.closest('.nav'))toggleCats(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')toggleCats(false)});
+
 // Cart logic
 function setQty(id,q){q=Math.max(0,Math.min(MAXQ,q));if(q)cart[id]=q;else delete cart[id];render();}
 document.addEventListener('click',e=>{
@@ -241,7 +261,7 @@ $('send').onclick=()=>{
 const chips=[...document.querySelectorAll('.chip')];
 const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){
   chips.forEach(ch=>ch.classList.toggle('on',ch.dataset.s===en.target.id));
-  const on=document.querySelector('.chip.on');if(on)on.scrollIntoView({inline:'center',block:'nearest'});
+  const on=document.querySelector('.chip.on'),nv=$('nav');if(on){const r=on.getBoundingClientRect(),nr=nv.getBoundingClientRect();nv.scrollTo({left:nv.scrollLeft+(r.left-nr.left)-(nr.width-r.width)/2,behavior:'smooth'})}
 }})},{rootMargin:'-80px 0px -65% 0px'});
 document.querySelectorAll('main section').forEach(s=>io.observe(s));
 
