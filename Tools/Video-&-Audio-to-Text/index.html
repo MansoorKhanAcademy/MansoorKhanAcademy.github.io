@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video &amp; Audio to Text</title>
+<style>
+:root{--bg:#f4f5fb;--bg2:#e6e8f7;--card:#ffffffcc;--text:#16182a;--mute:#6b6f8a;--line:#d9dcf0;--acc:#6c5ce7;--acc2:#00b8d9;--ok:#12a36b;--err:#d6336c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0d1a;--bg2:#171a35;--card:#14172bcc;--text:#eef0ff;--mute:#9a9fc4;--line:#2a2e52;--acc:#8b7bff;--acc2:#2fd4f2;--ok:#3ddc97;--err:#ff6b9a}}
+:root[data-theme="dark"]{--bg:#0b0d1a;--bg2:#171a35;--card:#14172bcc;--text:#eef0ff;--mute:#9a9fc4;--line:#2a2e52;--acc:#8b7bff;--acc2:#2fd4f2;--ok:#3ddc97;--err:#ff6b9a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);background:radial-gradient(900px 500px at 10% -10%,var(--bg2),transparent),radial-gradient(800px 500px at 100% 110%,var(--bg2),transparent),var(--bg);padding:24px 16px;display:flex;justify-content:center}
+.wrap{width:100%;max-width:760px}
+header{text-align:center;margin-bottom:20px}
+.logo{width:56px;height:56px;border-radius:18px;margin:0 auto 12px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 10px 30px -8px var(--acc)}
+h1{margin:0;font-size:1.7rem;letter-spacing:-.02em}
+header p{margin:6px 0 0;color:var(--mute);font-size:.95rem}
+.card{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 20px 50px -25px #0006;margin-bottom:16px}
+.drop{border:2px dashed var(--line);border-radius:16px;padding:30px 16px;text-align:center;cursor:pointer;transition:.2s}
+.drop:hover,.drop.over{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.drop b{display:block;margin-top:6px}.drop span{color:var(--mute);font-size:.85rem}.drop .ic{font-size:32px}
+.file{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-radius:14px}
+.file .n{flex:1;min-width:0}.file .n div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.file small{color:var(--mute)}
+.x{border:0;background:none;color:var(--mute);font-size:20px;cursor:pointer}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:14px}
+label.l{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:0 0 6px}
+select{width:100%;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:.92rem}
+.chk{display:flex;gap:8px;align-items:center;font-size:.88rem;color:var(--mute);margin-top:12px}
+.btns{display:flex;gap:10px;margin-top:16px}
+button.b{flex:1;padding:14px;border:0;border-radius:14px;font:inherit;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 12px 28px -12px var(--acc);transition:.15s}
+button.b:hover{transform:translateY(-1px)}button.b:disabled{opacity:.45;cursor:not-allowed;transform:none}
+button.g{background:none;border:1px solid var(--line);color:var(--text);box-shadow:none}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:16px 0 6px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s}
+.st{display:flex;justify-content:space-between;color:var(--mute);font-size:.82rem}
+.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--err);margin-right:6px;animation:p 1s infinite}
+@keyframes p{50%{opacity:.25}}
+#out{min-height:220px;max-height:55vh;overflow:auto;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg);line-height:1.9;font-size:1.05rem;outline:none}
+#out p{margin:0 0 8px}#out .t{font-size:.72rem;color:var(--acc);font-variant-numeric:tabular-nums;margin-inline-end:8px;direction:ltr;display:inline-block}
+#out .i{color:var(--mute)}
+.empty{color:var(--mute);text-align:center;padding:50px 0;font-size:.92rem}
+.msg{font-size:.85rem;margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);color:var(--mute)}
+.msg.err{color:var(--err);border-color:var(--err)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.row button{flex:1;min-width:100px;padding:10px;font-size:.88rem}
+video,audio{display:none}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="logo">📝</div><h1>Video &amp; Audio to Text</h1><p>Transcribe in 30+ languages, including Urdu (اردو) and Pashto (پښتو).</p></header>
+
+<div class="card">
+<div id="pick"><div class="drop" id="drop"><div class="ic">🎬</div><b>Drop a video or audio file, or click to browse</b><span>MP4, MP3, WAV, M4A, WebM, MKV · processed on your device</span></div></div>
+<input type="file" id="inp" accept="video/*,audio/*,.mkv,.m4a,.mp3,.wav,.ogg" hidden>
+<div id="ctl" hidden>
+<div class="file"><div style="font-size:26px">🎞️</div><div class="n"><div id="fn"></div><small id="fm"></small></div><button class="x" id="rm" title="Remove">✕</button></div>
+<div class="grid">
+<div><label class="l">Spoken language</label><select id="lang"></select></div>
+<div><label class="l">Speed</label><select id="spd"><option value="1">1× (best accuracy)</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2× (fastest)</option></select></div>
+</div>
+<label class="chk"><input type="checkbox" id="local"> Use on-device recognition when available (private, works offline)</label>
+<div class="btns"><button class="b" id="go">▶ Start transcribing</button><button class="b g" id="stop" disabled>■ Stop</button></div>
+<div class="bar"><i id="fill"></i></div>
+<div class="st"><span id="stat">Ready</span><span id="time">0:00 / 0:00</span></div>
+</div>
+<div class="msg err" id="err" hidden></div>
+<div class="msg" id="note" hidden></div>
+</div>
+
+<div class="card">
+<div id="out" contenteditable="true" spellcheck="false"><div class="empty">Your transcript will appear here. You can edit it directly.</div></div>
+<div class="row"><button class="b g" id="copy">Copy</button><button class="b g" id="txt">Download .txt</button><button class="b g" id="srt">Download .srt</button><button class="b g" id="clr">Clear</button></div>
+</div>
+<div class="st" style="justify-content:center;text-align:center">Recognition runs in your browser’s speech engine. Chrome or Edge (desktop or Android) give the best results.</div>
+</div>
+<video id="media" playsinline preload="auto"></video>
+
+<script>
+const $=s=>document.querySelector(s);
+const LANGS=[["ur-PK","Urdu · اردو"],["ps-AF","Pashto · پښتو"],["en-US","English (US)"],["en-GB","English (UK)"],["en-IN","English (India)"],["hi-IN","Hindi · हिन्दी"],["ar-SA","Arabic · العربية"],["fa-IR","Persian · فارسی"],["bn-BD","Bengali · বাংলা"],["pa-Guru-IN","Punjabi · ਪੰਜਾਬੀ"],["ta-IN","Tamil · தமிழ்"],["tr-TR","Turkish"],["es-ES","Spanish"],["es-MX","Spanish (Mexico)"],["fr-FR","French"],["de-DE","German"],["it-IT","Italian"],["pt-BR","Portuguese (Brazil)"],["pt-PT","Portuguese (Portugal)"],["ru-RU","Russian"],["uk-UA","Ukrainian"],["pl-PL","Polish"],["nl-NL","Dutch"],["sv-SE","Swedish"],["he-IL","Hebrew"],["id-ID","Indonesian"],["ms-MY","Malay"],["vi-VN","Vietnamese"],["th-TH","Thai"],["zh-CN","Chinese (Mandarin)"],["yue-Hant-HK","Cantonese"],["ja-JP","Japanese"],["ko-KR","Korean"],["sw-KE","Swahili"]];
+$('#lang').innerHTML=LANGS.map(([c,n])=>`<option value="${c}">${n}</option>`).join('');
+const RTL=['ur','ps','ar','fa','he'];
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const media=$('#media');
+let file,url,rec,ac,src,dest,segs=[],running=false,segStart=0,micMode=false;
+const fmt=s=>{s=Math.max(0,Math.floor(s||0));const h=s/3600|0,m=s%3600/60|0,x=s%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0')};
+const size=b=>b>1e9?(b/1e9).toFixed(2)+' GB':b>1e6?(b/1e6).toFixed(1)+' MB':(b/1e3|0)+' KB';
+const err=m=>{$('#err').textContent=m;$('#err').hidden=!m};
+const note=m=>{$('#note').textContent=m;$('#note').hidden=!m};
+if(!SR)err('This browser has no speech recognition engine. Please open this page in Chrome or Edge.');
+
+function setFile(f){
+  if(!f)return; file=f; if(url)URL.revokeObjectURL(url); url=URL.createObjectURL(f);
+  media.src=url; $('#fn').textContent=f.name; $('#fm').textContent=size(f.size);
+  $('#pick').hidden=true; $('#ctl').hidden=false; $('#stat').textContent='Loading…';
+  media.onloadedmetadata=()=>{$('#fm').textContent=size(f.size)+' · '+fmt(media.duration);$('#time').textContent='0:00 / '+fmt(media.duration);$('#stat').textContent='Ready'};
+  media.onerror=()=>err('This browser cannot play that file format. Try MP4, MP3, M4A, WAV or WebM.');
+}
+const drop=$('#drop'),inp=$('#inp');
+drop.onclick=()=>inp.click();inp.onchange=()=>setFile(inp.files[0]);
+['dragover','dragenter'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]));
+$('#rm').onclick=()=>{stop();file=null;inp.value='';media.removeAttribute('src');$('#pick').hidden=false;$('#ctl').hidden=true;err('');note('')};
+
+/* ---- transcript rendering ---- */
+const dirOf=()=>RTL.includes($('#lang').value.split('-')[0])?'rtl':'ltr';
+function render(interim=''){
+  const o=$('#out');
+  if(!segs.length&&!interim){o.innerHTML='<div class="empty">Your transcript will appear here. You can edit it directly.</div>';return}
+  o.dir=dirOf();
+  const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  o.innerHTML=segs.map(s=>`<p><span class="t">${fmt(s.t)}</span>${esc(s.text)}</p>`).join('')+(interim?`<p class="i">${esc(interim)}</p>`:'');
+  o.scrollTop=o.scrollHeight;
+}
+
+/* ---- recognition ---- */
+async function makeTrack(){
+  ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+  if(ac.state==='suspended')await ac.resume();
+  if(!src){src=ac.createMediaElementSource(media);dest=ac.createMediaStreamDestination()}
+  src.disconnect(); src.connect(dest); // silent: audio goes only to the recognizer
+  return dest.stream.getAudioTracks()[0];
+}
+function startRec(track){
+  rec=new SR(); rec.lang=$('#lang').value; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
+  if($('#local').checked&&'processLocally' in rec)rec.processLocally=true;
+  rec.onresult=e=>{
+    let interim='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const r=e.results[i],tx=r[0].transcript.trim();
+      if(r.isFinal){if(tx){segs.push({t:segStart,text:tx});segStart=media.currentTime}}
+      else interim+=tx+' ';
+    }
+    render(interim.trim());
+  };
+  rec.onerror=e=>{
+    if(e.error==='no-speech'||e.error==='aborted')return;
+    const m={'language-not-supported':'This language isn’t available in your browser’s speech engine. Try another browser or language.','not-allowed':'Speech recognition was blocked. Allow access or open the page directly in Chrome/Edge.','network':'The speech engine needs an internet connection (or tick on-device recognition and install the language).','service-not-allowed':'Speech service is not allowed in this context.'};
+    err(m[e.error]||('Recognition error: '+e.error)); stop();
+  };
+  rec.onend=()=>{ if(running&&!media.ended){ try{ micMode?rec.start():rec.start(track) }catch(_){ setTimeout(()=>{try{micMode?rec.start():rec.start(track)}catch(_){}},300) } } };
+  try{ rec.start(track) }
+  catch(_){ // browser can't take a media track: fall back to microphone capture
+    micMode=true; src.disconnect(); src.connect(ac.destination);
+    note('Your browser can’t transcribe files directly, so audio plays aloud and the microphone listens. Use speakers, turn the speed to 1×, and keep the room quiet.');
+    $('#spd').value='1'; media.playbackRate=1; rec.start();
+  }
+}
+async function go(){
+  err('');note('');
+  if(!SR||!file)return;
+  micMode=false; media.playbackRate=+$('#spd').value; media.muted=false;
+  const track=await makeTrack();
+  if($('#local').checked&&SR.install&&SR.available){
+    try{const lang=$('#lang').value,a=await SR.available({langs:[lang],processLocally:true});
+      if(a==='downloadable'){$('#stat').textContent='Installing language pack…';await SR.install({langs:[lang],processLocally:true})}
+      else if(a==='unavailable'){note('On-device recognition isn’t available for this language, so the online engine will be used.');$('#local').checked=false}}catch(_){}
+  }
+  running=true; segStart=media.currentTime;
+  startRec(track);
+  await media.play().catch(()=>{err('Could not play the file.');stop()});
+  $('#go').disabled=true;$('#stop').disabled=false;$('#lang').disabled=true;$('#spd').disabled=true;
+  $('#stat').innerHTML='<span class="live"></span>Transcribing…';
+}
+function stop(){
+  running=false; try{rec&&rec.stop()}catch(_){} media.pause();
+  $('#go').disabled=false;$('#stop').disabled=true;$('#lang').disabled=false;$('#spd').disabled=false;
+  $('#go').textContent=media.currentTime>1&&!media.ended?'▶ Resume':'▶ Start transcribing';
+  $('#stat').textContent=media.ended?'Finished':'Paused'; render();
+}
+$('#go').onclick=go;$('#stop').onclick=stop;
+media.ontimeupdate=()=>{const d=media.duration||1;$('#fill').style.width=(media.currentTime/d*100)+'%';$('#time').textContent=fmt(media.currentTime)+' / '+fmt(d)};
+media.onended=()=>{setTimeout(()=>{running=false;try{rec.stop()}catch(_){}stop();$('#stat').textContent='Finished ✓';$('#go').textContent='▶ Start again';media.currentTime=0},1500)};
+$('#lang').onchange=()=>{$('#out').dir=dirOf()};
+
+/* ---- export ---- */
+const text=()=>$('#out').querySelector('.empty')?'':[...$('#out').querySelectorAll('p')].map(p=>p.lastChild.textContent).join('\n');
+const save=(name,txt,type)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+txt],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove()};
+const base=()=>(file?file.name.replace(/\.[^.]+$/,''):'transcript');
+$('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(text());$('#copy').textContent='Copied ✓'}catch(_){const r=document.createRange();r.selectNodeContents($('#out'));getSelection().removeAllRanges();getSelection().addRange(r);document.execCommand('copy');$('#copy').textContent='Copied ✓'}setTimeout(()=>$('#copy').textContent='Copy',1500)};
+$('#txt').onclick=()=>text()&&save(base()+'.txt',text(),'text/plain;charset=utf-8');
+$('#srt').onclick=()=>{
+  if(!segs.length)return;
+  const ts=s=>{const h=s/3600|0,m=s%3600/60|0,x=Math.floor(s%60),ms=Math.round((s%1)*1000);return [h,m,x].map(v=>String(v).padStart(2,'0')).join(':')+','+String(ms).padStart(3,'0')};
+  save(base()+'.srt',segs.map((s,i)=>{const e=segs[i+1]?segs[i+1].t:s.t+3;return `${i+1}\n${ts(s.t)} --> ${ts(Math.max(e,s.t+1))}\n${s.text}\n`}).join('\n'),'application/x-subrip;charset=utf-8');
+};
+$('#clr').onclick=()=>{segs=[];render()};
+</script>
+</body>
+</html>
