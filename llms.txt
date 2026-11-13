@@ -9,6 +9,13 @@ Contact: mansoorkhan8185@gmail.com
 - [Prompt Book: AI Video Prompts](https://promptbookapp.github.io/): Free Android app with ready-to-use prompts for AI video and image generators. Pick a niche, copy a prompt, paste it into your AI tool. Package: com.mkhanacademy.promptbookapp. Currently in Google Play early access: join https://groups.google.com/g/mansoor-app-testers then open https://play.google.com/store/apps/details?id=com.mkhanacademy.promptbookapp
 - [YouTube channel](https://www.youtube.com/@PromptBookOfficial): Short videos made from Prompt Book prompts.
 
+## Tools
+
+- [Mansoor Khan Academy Tools](https://mansoorkhanacademy.github.io/Tools/): Free online tools that run in the browser, no sign-up.
+- [Video to Audio Converter](https://mansoorkhanacademy.github.io/Tools/Video-to-Audio-Converter/): Extract audio from video as AAC, MP3 or WAV on your device.
+- [Video & Audio to Text](https://mansoorkhanacademy.github.io/Tools/Video-%26-Audio-to-Text/): Transcribe speech to text in 30+ languages including Urdu and Pashto.
+- Also on the Tools page: AI video prompt builder, word counter, text case converter, password generator, JSON formatter, Base64 encoder, percentage and age calculators, unit and color converters, hashtag generator, image compressor.
+
 ## Other
 
 - [Privacy Policy](https://mansoorkhan8185.github.io/Prompt-BooK-Privacy-Policy/)
