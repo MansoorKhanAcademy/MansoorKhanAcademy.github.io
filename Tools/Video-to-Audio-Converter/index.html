@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video to Audio Converter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mp4box/0.5.2/mp4box.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js"></script>
+<style>
+:root{--bg:#f4f5fb;--bg2:#e6e8f7;--card:#ffffffcc;--text:#16182a;--mute:#6b6f8a;--line:#d9dcf0;--acc:#6c5ce7;--acc2:#00b8d9;--ok:#12a36b;--err:#d6336c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0d1a;--bg2:#171a35;--card:#14172bcc;--text:#eef0ff;--mute:#9a9fc4;--line:#2a2e52;--acc:#8b7bff;--acc2:#2fd4f2;--ok:#3ddc97;--err:#ff6b9a}}
+:root[data-theme="dark"]{--bg:#0b0d1a;--bg2:#171a35;--card:#14172bcc;--text:#eef0ff;--mute:#9a9fc4;--line:#2a2e52;--acc:#8b7bff;--acc2:#2fd4f2;--ok:#3ddc97;--err:#ff6b9a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);background:radial-gradient(900px 500px at 10% -10%,var(--bg2),transparent),radial-gradient(800px 500px at 100% 110%,var(--bg2),transparent),var(--bg);display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.wrap{width:100%;max-width:560px}
+header{text-align:center;margin-bottom:22px}
+.logo{width:56px;height:56px;border-radius:18px;margin:0 auto 14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 10px 30px -8px var(--acc)}
+h1{margin:0;font-size:1.7rem;letter-spacing:-.02em}
+header p{margin:6px 0 0;color:var(--mute);font-size:.95rem}
+.card{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 20px 50px -25px #0006}
+.drop{border:2px dashed var(--line);border-radius:16px;padding:34px 16px;text-align:center;cursor:pointer;transition:.2s}
+.drop:hover,.drop.over{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,transparent);transform:translateY(-1px)}
+.drop b{display:block;font-size:1.05rem;margin-top:8px}
+.drop span{color:var(--mute);font-size:.85rem}
+.drop .ic{font-size:34px}
+.file{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
+.file .n{flex:1;min-width:0}
+.file .n div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.file .n small{color:var(--mute)}
+.x{border:0;background:none;color:var(--mute);font-size:20px;cursor:pointer}
+label.l{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:14px 0 8px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg button{padding:11px 6px;border:1px solid var(--line);border-radius:12px;background:transparent;color:var(--text);cursor:pointer;font:inherit;font-size:.9rem;font-weight:600;transition:.15s}
+.seg button small{display:block;font-weight:400;color:var(--mute);font-size:.72rem;margin-top:2px}
+.seg button.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+select{width:100%;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit;font-size:.9rem}
+.go{width:100%;margin-top:20px;padding:15px;border:0;border-radius:14px;font:inherit;font-weight:700;font-size:1rem;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 12px 28px -10px var(--acc);transition:.15s}
+.go:hover{transform:translateY(-1px)}
+.go:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.bar{height:10px;border-radius:99px;background:var(--line);overflow:hidden;margin:16px 0 8px}
+.bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .15s}
+.bar.ind i{width:40%;animation:ind 1.1s ease-in-out infinite}
+@keyframes ind{0%{margin-left:-40%}100%{margin-left:100%}}
+.st{display:flex;justify-content:space-between;color:var(--mute);font-size:.85rem}
+.res{text-align:center}
+.res .ok{font-size:34px}
+.res h2{margin:6px 0 2px;font-size:1.2rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.stats div{border:1px solid var(--line);border-radius:12px;padding:10px 4px}
+.stats b{display:block;font-size:1rem}
+.stats small{color:var(--mute);font-size:.72rem}
+audio{width:100%;margin-bottom:12px}
+a.dl{display:block;text-decoration:none;text-align:center}
+.ghost{background:none;border:1px solid var(--line);color:var(--text);box-shadow:none;margin-top:10px}
+.err{color:var(--err);font-size:.9rem;margin-top:12px;text-align:center}
+.foot{text-align:center;color:var(--mute);font-size:.78rem;margin-top:16px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="logo">🎧</div>
+<h1>Video to Audio</h1>
+<p>Fast, private, and built for long videos. Nothing leaves your device.</p>
+</header>
+
+<div class="card">
+<!-- Step 1 -->
+<div id="s1">
+<div class="drop" id="drop"><div class="ic">📂</div><b>Drop a video here or click to browse</b><span>MP4, MOV, M4V, WebM, MKV and more · hours-long files supported</span></div>
+<input type="file" id="inp" accept="video/*,audio/*,.mkv,.mov,.m4v" hidden>
+</div>
+
+<!-- Step 2 -->
+<div id="s2" hidden>
+<div class="file"><div style="font-size:26px">🎬</div><div class="n"><div id="fn"></div><small id="fs"></small></div><button class="x" id="rm" title="Remove">✕</button></div>
+
+<label class="l">Output format</label>
+<div class="seg" id="fmt">
+<button data-f="fast" class="on">Original<small>AAC · instant</small></button>
+<button data-f="mp3">MP3<small>Universal</small></button>
+<button data-f="wav">WAV<small>Lossless</small></button>
+</div>
+
+<div id="opts" hidden>
+<div class="row">
+<div><label class="l">Bitrate</label><select id="br"><option>128</option><option selected>192</option><option>320</option></select></div>
+<div><label class="l">Sample rate</label><select id="sr"><option value="22050">22 kHz</option><option value="44100" selected>44.1 kHz</option><option value="48000">48 kHz</option></select></div>
+<div><label class="l">Channels</label><select id="ch"><option value="2" selected>Stereo</option><option value="1">Mono</option></select></div>
+</div>
+</div>
+<p id="hint" class="st" style="margin-top:12px;display:block"></p>
+<button class="go" id="go">Extract audio</button>
+</div>
+
+<!-- Step 3 -->
+<div id="s3" hidden>
+<div style="font-weight:600" id="stage">Working…</div>
+<div class="bar" id="bar"><i id="fill"></i></div>
+<div class="st"><span id="pct">0%</span><span id="spd"></span></div>
+</div>
+
+<!-- Step 4 -->
+<div id="s4" class="res" hidden>
+<div class="ok">✅</div><h2>Your audio is ready</h2>
+<small style="color:var(--mute)" id="rn"></small>
+<div class="stats"><div><b id="r1">–</b><small>Size</small></div><div><b id="r2">–</b><small>Duration</small></div><div><b id="r3">–</b><small>Time taken</small></div></div>
+<audio id="aud" controls></audio>
+<a class="go dl" id="dl">⬇ Download audio</a>
+<button class="go ghost" id="again">Convert another video</button>
+</div>
+
+<div class="err" id="err" hidden></div>
+</div>
+<div class="foot">Tip: MP4/MOV files with AAC audio use “Original” mode, which skips re-encoding, so even multi-hour videos finish in seconds.</div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s), show=(id,v=true)=>$(id).hidden=!v;
+let file=null, fmt='fast';
+const fmtSize=b=>b>1e9?(b/1e9).toFixed(2)+' GB':b>1e6?(b/1e6).toFixed(1)+' MB':(b/1e3|0)+' KB';
+const fmtDur=s=>{s=Math.round(s);const h=s/3600|0,m=s%3600/60|0,x=s%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0')};
+const tick=()=>new Promise(r=>setTimeout(r));
+
+function step(n){['#s1','#s2','#s3','#s4'].forEach((s,i)=>show(s,i===n-1));show('#err',false)}
+function setFile(f){
+  if(!f)return; file=f; $('#fn').textContent=f.name; $('#fs').textContent=fmtSize(f.size);
+  const mp4=/\.(mp4|m4v|mov|m4a|3gp)$/i.test(f.name);
+  $('#hint').textContent=mp4?'✓ Container supports instant extraction.':'ℹ This format will be decoded and re-encoded (Original mode works with MP4/MOV only).';
+  setFmt(mp4?'fast':'mp3'); step(2);
+}
+function setFmt(f){fmt=f;document.querySelectorAll('#fmt button').forEach(b=>b.classList.toggle('on',b.dataset.f===f));show('#opts',f!=='fast');
+  $('#br').parentElement.hidden=f!=='mp3'}
+$('#fmt').onclick=e=>{const b=e.target.closest('button');if(b)setFmt(b.dataset.f)};
+
+const drop=$('#drop'),inp=$('#inp');
+drop.onclick=()=>inp.click(); inp.onchange=()=>setFile(inp.files[0]);
+['dragover','dragenter'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]));
+$('#rm').onclick=$('#again').onclick=()=>{file=null;inp.value='';if($('#aud').src)URL.revokeObjectURL($('#aud').src);step(1)};
+
+function progress(p,t0,label){
+  $('#bar').classList.toggle('ind',p==null);
+  if(p!=null){$('#fill').style.width=(p*100)+'%';$('#pct').textContent=Math.round(p*100)+'%'}else $('#pct').textContent='';
+  if(label)$('#stage').textContent=label;
+}
+
+/* ---------- Fast path: copy AAC frames straight out of MP4 (no decoding) ---------- */
+function fastExtract(f,onP){
+  return new Promise((resolve,reject)=>{
+    const mp4=MP4Box.createFile(), parts=[]; let total=1,count=0,cfg=null,rate=44100,done=false;
+    const FREQ=[96000,88200,64000,48000,44100,32000,24000,22050,16000,12000,11025,8000,7350];
+    mp4.onError=()=>reject(new Error('Could not read this MP4 file.'));
+    mp4.onReady=info=>{
+      const a=info.audioTracks[0];
+      if(!a)return reject(new Error('This video has no audio track.'));
+      if(!a.codec.startsWith('mp4a.40'))return reject(new Error('NOT_AAC'));
+      try{
+        const d=mp4.getTrackById(a.id).mdia.minf.stbl.stsd.entries[0].esds.esd.descs[0].descs[0].data;
+        cfg={obj:d[0]>>3,idx:((d[0]&7)<<1)|(d[1]>>7),ch:(d[1]>>3)&15};
+        rate=FREQ[cfg.idx]||a.audio.sample_rate;
+      }catch(e){return reject(new Error('NOT_AAC'))}
+      total=a.nb_samples;
+      mp4.setExtractionOptions(a.id,null,{nbSamples:2000}); mp4.start();
+    };
+    mp4.onSamples=(id,u,samples)=>{
+      for(const s of samples){
+        const L=s.data.length+7,h=new Uint8Array(7);
+        h[0]=0xFF;h[1]=0xF1;h[2]=((cfg.obj-1)<<6)|(cfg.idx<<2)|(cfg.ch>>2);
+        h[3]=((cfg.ch&3)<<6)|(L>>11);h[4]=(L>>3)&255;h[5]=((L&7)<<5)|0x1F;h[6]=0xFC;
+        parts.push(h,s.data);
+      }
+      count+=samples.length; mp4.releaseUsedSamples(id,samples[samples.length-1].number);
+      onP(Math.min(count/total,1));
+      if(count>=total&&!done){done=true;resolve({blob:new Blob(parts,{type:'audio/aac'}),ext:'aac',dur:count*1024/rate})}
+    };
+    (async()=>{
+      const CH=16*1024*1024; let off=0;
+      while(off<f.size&&!done){
+        const b=await f.slice(off,off+CH).arrayBuffer(); b.fileStart=off;
+        const n=mp4.appendBuffer(b); off=(typeof n==='number'&&n>off)?n:off+b.byteLength;
+        await tick();
+      }
+      mp4.flush(); await tick();
+      if(!done){done=true; count?resolve({blob:new Blob(parts,{type:'audio/aac'}),ext:'aac',dur:count*1024/rate}):reject(new Error('NOT_AAC'))}
+    })().catch(reject);
+  });
+}
+
+/* ---------- Decode + encode path (any format the browser can play) ---------- */
+async function decodeEncode(f,onP,setStage){
+  const rate=+$('#sr').value, mono=$('#ch').value==='1';
+  setStage('Reading file…',null);
+  let ab; try{ab=await f.arrayBuffer()}catch(e){throw new Error('File is too large to decode in memory. Try an MP4/MOV file with “Original” mode.')}
+  setStage('Decoding audio…',null);
+  let buf; try{buf=await new OfflineAudioContext(2,1,rate).decodeAudioData(ab)}
+  catch(e){throw new Error('This browser could not decode the audio. If it is a very long video, try MP4 with “Original” mode.')}
+  ab=null; setStage('Encoding…',0);
+  const n=buf.length, L=buf.getChannelData(0), R=buf.numberOfChannels>1?buf.getChannelData(1):L;
+  const outCh=mono?1:2, BLK=1152*100, parts=[];
+  const i16=(a,b,s,e,m)=>{const o=new Int16Array(e-s);for(let i=s;i<e;i++){let v=m?(a[i]+b[i])/2:a[i];v=v<-1?-1:v>1?1:v;o[i-s]=v<0?v*32768:v*32767}return o};
+  let enc=null;
+  if(fmt==='mp3')enc=new lamejs.Mp3Encoder(outCh,rate,+$('#br').value);
+  else{
+    const bytes=n*outCh*2,h=new DataView(new ArrayBuffer(44)),w=(o,s)=>[...s].forEach((c,i)=>h.setUint8(o+i,c.charCodeAt(0)));
+    w(0,'RIFF');h.setUint32(4,36+bytes,true);w(8,'WAVEfmt ');h.setUint32(16,16,true);h.setUint16(20,1,true);h.setUint16(22,outCh,true);
+    h.setUint32(24,rate,true);h.setUint32(28,rate*outCh*2,true);h.setUint16(32,outCh*2,true);h.setUint16(34,16,true);w(36,'data');h.setUint32(40,bytes,true);
+    parts.push(h.buffer);
+  }
+  for(let s=0;s<n;s+=BLK){
+    const e=Math.min(s+BLK,n);
+    if(enc){
+      const out=mono?enc.encodeBuffer(i16(L,R,s,e,true)):enc.encodeBuffer(i16(L,R,s,e,false),i16(R,R,s,e,false));
+      if(out.length)parts.push(new Uint8Array(out));
+    }else{
+      const l=i16(L,R,s,e,mono);
+      if(mono)parts.push(l);
+      else{const r=i16(R,R,s,e,false),o=new Int16Array(l.length*2);for(let i=0;i<l.length;i++){o[2*i]=l[i];o[2*i+1]=r[i]}parts.push(o)}
+    }
+    onP(e/n); await tick();
+  }
+  if(enc){const t=enc.flush();if(t.length)parts.push(new Uint8Array(t))}
+  return{blob:new Blob(parts,{type:fmt==='mp3'?'audio/mpeg':'audio/wav'}),ext:fmt,dur:n/rate};
+}
+
+$('#go').onclick=async()=>{
+  step(3); const t0=performance.now(); let dur=0;
+  const onP=p=>{progress(p,t0,'Extracting audio…');const el=(performance.now()-t0)/1000;$('#spd').textContent=el>1?'Elapsed '+fmtDur(el):''};
+  const setStage=(l,p)=>progress(p,t0,l);
+  try{
+    let r;
+    if(fmt==='fast'){
+      progress(0,t0,'Copying audio stream…');
+      try{r=await fastExtract(file,onP)}
+      catch(e){
+        if(e.message!=='NOT_AAC')throw e;
+        setFmt('mp3'); r=await decodeEncode(file,onP,setStage);
+      }
+    }else r=await decodeEncode(file,onP,setStage);
+    const el=(performance.now()-t0)/1000, url=URL.createObjectURL(r.blob);
+    const name=file.name.replace(/\.[^.]+$/,'')+'.'+r.ext;
+    $('#aud').src=url; $('#dl').href=url; $('#dl').download=name; $('#rn').textContent=name;
+    $('#r1').textContent=fmtSize(r.blob.size); $('#r2').textContent=fmtDur(r.dur);
+    $('#r3').textContent=el<60?el.toFixed(1)+'s':fmtDur(el);
+    step(4);
+  }catch(e){
+    step(2); const m=$('#err'); m.textContent=e.message==='NOT_AAC'?'Could not extract audio from this file.':e.message; m.hidden=false;
+  }
+};
+</script>
+</body>
+</html>
