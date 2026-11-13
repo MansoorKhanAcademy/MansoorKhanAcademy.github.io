@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Video &amp; Audio to Text (Whisper)</title>
+<style>
+:root{--bg:#f4f5fb;--bg2:#e6e8f7;--card:#ffffffcc;--text:#16182a;--mute:#6b6f8a;--line:#d9dcf0;--acc:#6c5ce7;--acc2:#00b8d9;--err:#d6336c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0d1a;--bg2:#171a35;--card:#14172bcc;--text:#eef0ff;--mute:#9a9fc4;--line:#2a2e52;--acc:#8b7bff;--acc2:#2fd4f2;--err:#ff6b9a}}
+:root[data-theme="dark"]{--bg:#0b0d1a;--bg2:#171a35;--card:#14172bcc;--text:#eef0ff;--mute:#9a9fc4;--line:#2a2e52;--acc:#8b7bff;--acc2:#2fd4f2;--err:#ff6b9a}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--text);background:radial-gradient(900px 500px at 10% -10%,var(--bg2),transparent),var(--bg);padding:24px 16px;display:flex;justify-content:center}
+.wrap{width:100%;max-width:760px}
+header{text-align:center;margin-bottom:20px}
+.logo{width:56px;height:56px;border-radius:18px;margin:0 auto 12px;display:grid;place-items:center;font-size:26px;background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 10px 30px -8px var(--acc)}
+h1{margin:0;font-size:1.6rem}header p{margin:6px 0 0;color:var(--mute);font-size:.92rem}
+.card{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px}
+.drop{border:2px dashed var(--line);border-radius:16px;padding:30px 16px;text-align:center;cursor:pointer}
+.drop.over,.drop:hover{border-color:var(--acc)}.drop b{display:block;margin-top:6px}.drop span{color:var(--mute);font-size:.85rem}
+.file{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid var(--line);border-radius:14px}
+.file .n{flex:1;min-width:0}.file .n div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}.file small{color:var(--mute)}
+.x{border:0;background:none;color:var(--mute);font-size:20px;cursor:pointer}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+label.l{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin-bottom:6px}
+select{width:100%;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+.btns{display:flex;gap:10px;margin-top:16px}
+button.b{flex:1;padding:14px;border:0;border-radius:14px;font:inherit;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(135deg,var(--acc),var(--acc2))}
+button.b:disabled{opacity:.45;cursor:not-allowed}button.g{background:none;border:1px solid var(--line);color:var(--text)}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:16px 0 6px}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .3s}
+.st{display:flex;justify-content:space-between;color:var(--mute);font-size:.82rem;gap:8px}
+#out{min-height:220px;max-height:55vh;overflow:auto;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg);line-height:1.9;font-size:1.05rem;outline:none}
+#out p{margin:0 0 8px}#out .t{font-size:.72rem;color:var(--acc);margin-inline-end:8px;direction:ltr;display:inline-block}
+.empty{color:var(--mute);text-align:center;padding:50px 0;font-size:.92rem}
+.msg{font-size:.85rem;margin-top:12px;padding:10px 12px;border-radius:12px;border:1px solid var(--err);color:var(--err)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.row button{flex:1;min-width:90px;padding:10px;font-size:.88rem}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="logo">📝</div><h1>Video &amp; Audio to Text</h1><p>Whisper AI in your browser · Urdu, Pashto and 90+ languages · private</p></header>
+<div class="card">
+<div id="pick"><div class="drop" id="drop"><div style="font-size:32px">🎬</div><b>Drop a video or audio file, or tap to browse</b><span>MP4, MP3, WAV, M4A, WebM, MKV</span></div></div>
+<input type="file" id="inp" accept="video/*,audio/*,.mkv,.m4a" hidden>
+<div id="ctl" hidden>
+<div class="file"><div style="font-size:26px">🎞️</div><div class="n"><div id="fn"></div><small id="fm"></small></div><button class="x" id="rm">✕</button></div>
+<div class="grid">
+<div><label class="l">Spoken language</label><select id="lang"></select></div>
+<div><label class="l">Model (quality / speed)</label><select id="model">
+<option value="onnx-community/whisper-base">Base · ~80 MB · fastest</option>
+<option value="onnx-community/whisper-small" selected>Small · ~250 MB · balanced</option>
+<option value="onnx-community/whisper-large-v3-turbo">Large v3 Turbo · ~800 MB · best (WebGPU)</option></select></div></div>
+<div class="btns"><button class="b" id="go">▶ Transcribe</button><button class="b g" id="stop" disabled>■ Stop</button></div>
+<div class="bar"><i id="fill"></i></div>
+<div class="st"><span id="stat">Ready</span><span id="eta"></span></div>
+</div>
+<div class="msg" id="err" hidden></div>
+</div>
+<div class="card">
+<div id="out" contenteditable="true" spellcheck="false"><div class="empty">Your transcript will appear here. You can edit it.</div></div>
+<div class="row"><button class="b g" id="copy">Copy</button><button class="b g" id="txt">.txt</button><button class="b g" id="srt">.srt</button><button class="b g" id="clr">Clear</button></div>
+</div>
+<div class="st" style="justify-content:center;text-align:center">The model downloads once, is cached by your browser, and your files never leave your device.</div>
+</div>
+
+<script type="module">
+import {pipeline,env} from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.7.0/+esm';
+env.allowLocalModels=false;
+const $=s=>document.querySelector(s);
+const LANGS=[["urdu","Urdu · اردو"],["pashto","Pashto · پښتو"],["auto","Auto-detect"],["english","English"],["hindi","Hindi"],["arabic","Arabic"],["persian","Persian"],["bengali","Bengali"],["punjabi","Punjabi"],["tamil","Tamil"],["turkish","Turkish"],["spanish","Spanish"],["french","French"],["german","German"],["italian","Italian"],["portuguese","Portuguese"],["russian","Russian"],["indonesian","Indonesian"],["chinese","Chinese"],["japanese","Japanese"],["korean","Korean"],["swahili","Swahili"]];
+$('#lang').innerHTML=LANGS.map(([c,n])=>`<option value="${c}">${n}</option>`).join('');
+const RTL=['urdu','pashto','arabic','persian'];
+let file,audio,segs=[],stopFlag=false,pipe=null,pipeKey='';
+const fmt=s=>{s=Math.max(0,Math.floor(s));const h=s/3600|0,m=s%3600/60|0,x=s%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0')};
+const err=m=>{$('#err').textContent=m;$('#err').hidden=!m};
+const tick=()=>new Promise(r=>setTimeout(r));
+
+function setFile(f){if(!f)return;file=f;audio=null;$('#fn').textContent=f.name;$('#fm').textContent=(f.size/1e6).toFixed(1)+' MB';$('#pick').hidden=true;$('#ctl').hidden=false;err('')}
+const drop=$('#drop'),inp=$('#inp');
+drop.onclick=()=>inp.click();inp.onchange=()=>setFile(inp.files[0]);
+['dragover','dragenter'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>setFile(e.dataTransfer.files[0]));
+$('#rm').onclick=()=>{stopFlag=true;file=audio=null;inp.value='';$('#pick').hidden=false;$('#ctl').hidden=true};
+
+function render(){
+  const o=$('#out');
+  if(!segs.length){o.innerHTML='<div class="empty">Your transcript will appear here. You can edit it.</div>';return}
+  o.dir=RTL.includes($('#lang').value)?'rtl':'ltr';
+  const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  o.innerHTML=segs.map(s=>`<p><span class="t">${fmt(s.t)}</span>${esc(s.text)}</p>`).join('');o.scrollTop=o.scrollHeight;
+}
+
+async function loadModel(){
+  const gpu=!!navigator.gpu, id=$('#model').value, key=id+gpu;
+  if(pipe&&pipeKey===key)return pipe;
+  const opts=gpu?{device:'webgpu',dtype:{encoder_model:'fp32',decoder_model_merged:'q4'}}:{device:'wasm',dtype:'q8'};
+  const files={};
+  pipe=await pipeline('automatic-speech-recognition',id,{...opts,progress_callback:p=>{
+    if(p.status==='progress'){files[p.file]=[p.loaded,p.total];let l=0,t=0;for(const k in files){l+=files[k][0];t+=files[k][1]}
+      $('#stat').textContent=`Downloading model… ${(l/1e6)|0} / ${(t/1e6)|0} MB`;$('#fill').style.width=(l/t*100)+'%'}}});
+  pipeKey=key;return pipe;
+}
+async function decode(){
+  $('#stat').textContent='Reading audio…';$('#fill').style.width='0%';await tick();
+  const ab=await file.arrayBuffer();
+  const buf=await new OfflineAudioContext(1,1,16000).decodeAudioData(ab);
+  return buf.getChannelData(0);
+}
+
+async function run(){
+  err('');stopFlag=false;segs=[];render();
+  $('#go').disabled=true;$('#stop').disabled=false;$('#lang').disabled=$('#model').disabled=true;
+  try{
+    const p=await loadModel();
+    if(!audio)audio=await decode();
+    const W=30*16000,total=audio.length,lang=$('#lang').value,t0=performance.now();
+    for(let s=0;s<total&&!stopFlag;s+=W){
+      const slice=audio.subarray(s,Math.min(s+W,total)),off=s/16000;
+      $('#stat').textContent='Transcribing…';
+      const o={task:'transcribe',return_timestamps:true};if(lang!=='auto')o.language=lang;
+      const r=await p(slice,o);
+      for(const c of (r.chunks||[{timestamp:[0],text:r.text}])){const tx=c.text.trim();if(tx)segs.push({t:off+(c.timestamp[0]||0),end:off+(c.timestamp[1]||c.timestamp[0]+3),text:tx})}
+      render();
+      const done=Math.min(s+W,total)/total,el=(performance.now()-t0)/1000;
+      $('#fill').style.width=done*100+'%';$('#eta').textContent=`${Math.round(done*100)}% · ~${fmt(el/done-el)} left`;
+    }
+    $('#stat').textContent=stopFlag?'Stopped':'Finished ✓';
+  }catch(e){err('Error: '+(e.message||e)+' — try a smaller model, or a shorter file.')}
+  $('#go').disabled=false;$('#stop').disabled=true;$('#lang').disabled=$('#model').disabled=false;
+}
+$('#go').onclick=run;$('#stop').onclick=()=>stopFlag=true;
+
+const text=()=>segs.map(s=>s.text).join('\n');
+const save=(n,t,ty)=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+t],{type:ty}));a.download=n;document.body.appendChild(a);a.click();a.remove()};
+const base=()=>file?file.name.replace(/\.[^.]+$/,''):'transcript';
+$('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(text())}catch(_){}$('#copy').textContent='Copied ✓';setTimeout(()=>$('#copy').textContent='Copy',1500)};
+$('#txt').onclick=()=>segs.length&&save(base()+'.txt',text(),'text/plain;charset=utf-8');
+$('#srt').onclick=()=>{const ts=s=>{const h=s/3600|0,m=s%3600/60|0,x=Math.floor(s%60),ms=Math.round((s%1)*1000);return [h,m,x].map(v=>String(v).padStart(2,'0')).join(':')+','+String(ms).padStart(3,'0')};
+  segs.length&&save(base()+'.srt',segs.map((s,i)=>`${i+1}\n${ts(s.t)} --> ${ts(Math.max(s.end,s.t+1))}\n${s.text}\n`).join('\n'),'application/x-subrip;charset=utf-8')};
+$('#clr').onclick=()=>{segs=[];render()};
+</script>
+</body>
+</html>
