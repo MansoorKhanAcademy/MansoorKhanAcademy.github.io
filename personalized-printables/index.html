@@ -97,7 +97,7 @@ function star(c,x,y,R,col){c.fillStyle=col;c.beginPath();for(let i=0;i<10;i++){c
 function cover(c,img,x,y,w,h){const s=Math.max(w/img.width,h/img.height),iw=w/s,ih=h/s;c.drawImage(img,(img.width-iw)/2,(img.height-ih)/2,iw,ih,x,y,w,h);}
 function photo(c,img,x,y,r,th){c.save();c.beginPath();c.arc(x,y,r,0,7);c.clip();if(img)cover(c,img,x-r,y-r,2*r,2*r);else{c.fillStyle=th[1];c.fillRect(x-r,y-r,2*r,2*r);txt(c,'Add photo',x,y,44,'Poppins',th[2],2*r-40);}c.restore();c.beginPath();c.arc(x,y,r,0,7);c.strokeStyle=th[2];c.lineWidth=12;c.stroke();}
 function moon(c,x,y,r,col){const k=c.getTransform().a,o=document.createElement('canvas');o.width=o.height=Math.ceil(2.4*r*k);const g=o.getContext('2d');g.scale(k,k);g.fillStyle=col;g.beginPath();g.arc(1.2*r,1.2*r,r,0,7);g.fill();g.globalCompositeOperation='destination-out';g.beginPath();g.arc(1.2*r+r*.4,1.2*r-r*.15,r*.85,0,7);g.fill();c.drawImage(o,x-1.2*r,y-1.2*r,2.4*r,2.4*r);}
-function wmark(c,w,h){c.save();c.globalAlpha=.2;c.fillStyle='#000';c.textAlign='center';c.direction='ltr';c.font='600 54px Poppins,sans-serif';c.rotate(-.5);for(let y=-w;y<h*1.4;y+=220)for(let x=-w;x<w*1.6;x+=560)c.fillText('PREVIEW  '+CONFIG.brand,x+(y/220%2?280:0),y+300);c.restore();}
+function wmark(c,w,h){c.save();c.globalAlpha=.18;c.fillStyle='#000';c.textAlign='center';c.direction='ltr';c.font='600 46px Poppins,sans-serif';const m='PREVIEW - '+CONFIG.brand,tw=c.measureText(m).width+200;c.translate(w/2,h/2);c.rotate(-.5);for(let y=-1400,r=0;y<1400;y+=260,r++)for(let x=-1800+(r%2?tw/2:0);x<1800;x+=tw)c.fillText(m,x,y);c.restore();}
 
 /* ---- templates ---- */
 const T=[
@@ -133,8 +133,8 @@ const T=[
 ];
 
 /* ---- rendering ---- */
-function render(cv,i,k,wm){const t=T[i];cv.width=Math.round(t.w*k);cv.height=Math.round(t.h*k);const c=cv.getContext('2d');c.scale(k,k);c.textAlign='center';c.textBaseline='middle';t.draw(c,t.w,t.h,S,THEMES[theme]);if(wm)wmark(c,t.w,t.h);}
-let raf;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{render($('view'),cur,.6,!unlocked);document.querySelectorAll('.tpl canvas').forEach((cv,i)=>render(cv,i,.12,false));});}
+function render(cv,i,k,wm){try{const t=T[i];cv.width=Math.round(t.w*k);cv.height=Math.round(t.h*k);const c=cv.getContext('2d');c.scale(k,k);c.textAlign='center';c.textBaseline='middle';t.draw(c,t.w,t.h,S,THEMES[theme]);if(wm)wmark(c,t.w,t.h);}catch(e){msg('Preview error: '+e.message,1);}}
+let raf,tmr;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>render($('view'),cur,.6,!unlocked));clearTimeout(tmr);tmr=setTimeout(()=>document.querySelectorAll('.tpl canvas').forEach((cv,i)=>render(cv,i,.12,false)),250);}
 
 /* ---- UI ---- */
 function build(){const box=$('tpls');T.forEach((t,i)=>{const b=document.createElement('button');b.className='tpl';b.innerHTML='<canvas></canvas><span>'+t.n+'</span>';b.onclick=()=>pick(i);box.appendChild(b);});
@@ -144,8 +144,8 @@ function pick(i){cur=i;const t=T[i];['f1','f2','f3'].forEach((f,j)=>{$('l'+(j+1)
  $('phbox').style.display=t.ph?'block':'none';document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));draw();}
 ['f1','f2','f3'].forEach(f=>$(f).addEventListener('input',e=>{S[f]=e.target.value;draw();}));
 $('theme').onchange=e=>{theme=e.target.value;draw();};
-$('font').onchange=e=>{S.font=e.target.value;draw();};
-$('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{S.img=im;draw();};im.src=URL.createObjectURL(f);};
+$('font').onchange=e=>{S.font=e.target.value;draw();document.fonts.load('40px "'+S.font+'"','Aa \u0627').then(draw);};
+$('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),o=document.createElement('canvas');o.width=Math.round(im.width*k);o.height=Math.round(im.height*k);o.getContext('2d').drawImage(im,0,0,o.width,o.height);S.img=o;draw();URL.revokeObjectURL(im.src);};im.onerror=()=>msg('Could not read this photo. Try a JPG or PNG.',1);im.src=URL.createObjectURL(f);};
 function msg(t,bad){const m=$('msg');m.textContent=t;m.className=bad?'bad':'ok';}
 
 /* ---- Gumroad license check ---- */
@@ -166,6 +166,7 @@ async function dl(type){if(!await check(true))return;const t=T[cur],cv=document.
 $('png').onclick=()=>dl('png');$('pdf').onclick=()=>dl('pdf');
 
 build();
+if(document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',draw);
 Promise.all(FONTS.map(f=>document.fonts.load(`40px "${f}"`,'Aa \u0627'))).then(draw);
 try{const k=localStorage.getItem('lk');if(k){$('key').value=k;check(false);}}catch(e){}
 </script>
