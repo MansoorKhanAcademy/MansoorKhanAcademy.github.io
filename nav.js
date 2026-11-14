@@ -4,6 +4,8 @@
 (function () {
   if (window.__mkaNav || document.getElementById('mka-nav')) return;
   window.__mkaNav = 1;
+  var self = document.currentScript;
+  var hideHeader = !!(self && self.hasAttribute('data-hide-header'));
   var path = decodeURIComponent(location.pathname).toLowerCase().replace(/index\.html$/, '');
   var FALLBACK = {
     extraLinks: [['Prompt Book', 'https://promptbookapp.github.io/'], ['Contact', 'mailto:mansoorkhan8185@gmail.com']],
@@ -48,6 +50,7 @@
     var tools = pages.filter(function (p) { return p.group === 'tools'; }).sort(function (x, y) { return x.label.localeCompare(y.label); });
     var other = pages.filter(function (p) { return p.group !== 'tools'; }).sort(function (x, y) { return x.label.localeCompare(y.label); });
     var toolsOn = path.indexOf('/tools/') === 0;
+    var secs = hideHeader ? [].slice.call(document.querySelectorAll('body section[id]')).map(function (s) { var h = s.querySelector('h2'); return h ? [h.textContent.trim(), '#' + s.id] : null; }).filter(Boolean) : [];
     root.innerHTML = CSS +
       '<div class="bar" id="bar"><div class="in">' +
       '<a class="logo" href="/"><img src="/logo-mansoor.png" alt="" width="30" height="30"><span>Mansoor Khan Academy</span></a>' +
@@ -55,21 +58,37 @@
       '<nav aria-label="Site menu">' + a('Home', '/') +
       '<div class="dd" id="dd"><button type="button" id="ddb" class="' + (toolsOn ? 'on' : '') + '" aria-haspopup="true" aria-expanded="false">Tools</button><div class="menu">' +
       a('All tools', '/Tools/') + tools.map(function (p) { return a(p.label, p.url); }).join('') + '</div></div>' +
+      (secs.length ? '<div class="dd" id="dd2"><button type="button" id="ddb2" aria-haspopup="true" aria-expanded="false">On this page</button><div class="menu">' + secs.map(function (s) { return '<a href="' + esc(s[1]) + '">' + esc(s[0]) + '</a>'; }).join('') + '</div></div>' : '') +
       other.map(function (p) { return a(p.label, p.url); }).join('') +
       (data.extraLinks || []).map(function (l) { return a(l[0], l[1]); }).join('') + '</nav></div></div>';
     var q = function (id) { return root.querySelector('#' + id); };
     var bar = q('bar'), dd = q('dd');
     q('bg').addEventListener('click', function () { var o = bar.classList.toggle('open'); this.setAttribute('aria-expanded', o); });
-    q('ddb').addEventListener('click', function (e) { e.stopPropagation(); var o = dd.classList.toggle('open'); this.setAttribute('aria-expanded', o); });
+    q('ddb').addEventListener('click', function (e) { e.stopPropagation(); var d2 = q('dd2'); if (d2) d2.classList.remove('open'); var o = dd.classList.toggle('open'); this.setAttribute('aria-expanded', o); });
+    if (q('ddb2')) q('ddb2').addEventListener('click', function (e) { e.stopPropagation(); dd.classList.remove('open'); var o = q('dd2').classList.toggle('open'); this.setAttribute('aria-expanded', o); });
   }
-  document.addEventListener('click', function () { var d = root.querySelector('#dd'); if (d) d.classList.remove('open'); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { var d = root.querySelector('#dd'), b = root.querySelector('#bar'); if (d) d.classList.remove('open'); if (b) b.classList.remove('open'); } });
+  document.addEventListener('click', function () { ['#dd', '#dd2'].forEach(function (s) { var d = root.querySelector(s); if (d) d.classList.remove('open'); }); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { ['#dd', '#dd2'].forEach(function (s) { var d = root.querySelector(s); if (d) d.classList.remove('open'); }); var b = root.querySelector('#bar'); if (b) b.classList.remove('open'); } });
 
   function mount() {
     document.body.insertBefore(host, document.body.firstChild);
     var cs = getComputedStyle(document.body);
     document.body.style.boxSizing = 'border-box';
     document.body.style.paddingTop = (parseFloat(cs.paddingTop) || 0) + 52 + 'px';
+    if (hideHeader) { var st = document.createElement('style'); st.textContent = 'body>header{display:none!important}'; document.head.appendChild(st); }
+    shift(); setTimeout(shift, 1200);
+  }
+  /* Pages with their own sticky/fixed top bar: move it below the menu so nothing is hidden */
+  function shift() {
+    var all = document.body.querySelectorAll('*'), vh = window.innerHeight;
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i]; if (el === host) continue;
+      var c = getComputedStyle(el);
+      if ((c.position === 'sticky' || c.position === 'fixed') && c.top === '0px' && c.display !== 'none') {
+        if (c.position === 'fixed' && el.getBoundingClientRect().height > vh * 0.4) continue;
+        el.style.top = '52px';
+      }
+    }
   }
   render(FALLBACK);
   if (document.body) mount(); else document.addEventListener('DOMContentLoaded', mount);

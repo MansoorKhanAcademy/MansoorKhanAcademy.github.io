@@ -58,18 +58,27 @@ for (const file of pages) {
   list.push({ rel, dirRel, url, title, label, desc, group: isTools ? "tools" : "page", lastmod: lastmod(file),
     inMenu: dirRel !== "" && dirRel !== "Tools/" && !starts(dirRel, cfg.hideFromMenu),
     inSitemap: !starts(dirRel, cfg.excludeFromSitemap),
-    nav: !starts(rel, cfg.noNav) });
+    nav: true });
 }
 list.sort((a, b) => a.url.localeCompare(b.url));
 
-// ---- 1. menu script on every page that wants it ----
+// ---- 1. menu script on EVERY html page (except the Google verification file and pages in "noNav") ----
+const allHtml = [];
+(function collect(dir) {
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) collect(p);
+    else if (/\.html?$/i.test(e.name) && !/^google[0-9a-f]+\.html$/i.test(e.name)) allHtml.push(p);
+  }
+})(OUT);
 let injected = 0;
-for (const p of list) {
-  if (!p.nav) continue;
-  const f = path.join(OUT, p.rel);
+for (const f of allHtml) {
+  const rel = path.relative(OUT, f).split(path.sep).join("/");
+  if (starts(rel, cfg.noNav)) continue;
   let h = fs.readFileSync(f, "utf8");
   if (h.includes("/nav.js")) continue;
-  const tag = '<script src="/nav.js" defer></script>\n';
+  const attr = starts(rel, cfg.hideOwnHeader) ? " data-hide-header" : "";
+  const tag = `<script src="/nav.js" defer${attr}></script>\n`;
   const i = h.toLowerCase().lastIndexOf("</body>");
   h = i >= 0 ? h.slice(0, i) + tag + h.slice(i) : h + "\n" + tag;
   fs.writeFileSync(f, h);
@@ -98,4 +107,4 @@ if (fs.existsSync(lf)) {
 }
 
 console.log(`Pages found: ${list.length}. Menu added to ${injected} page(s). Sitemap has ${list.filter((p) => p.inSitemap).length} URL(s).`);
-list.forEach((p) => console.log(" -", p.url, "|", p.label, p.nav ? "" : "(own header)", p.inMenu ? "" : "(not in menu)"));
+list.forEach((p) => console.log(" -", p.url, "|", p.label, "", p.inMenu ? "" : "(not in menu)"));

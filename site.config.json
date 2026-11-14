@@ -1,15 +1,27 @@
 {
   "siteUrl": "https://mansoorkhanacademy.github.io",
-  "_help": "Pages are found automatically: every folder with an index.html. Edit this file only to change the defaults.",
-  "noNav": ["index.html", "Tools/index.html", "QR-Service-Provider/"],
-  "hideFromMenu": ["QR-Service-Provider/"],
+  "_help": "Every .html page gets the shared menu automatically. 'noNav' lists pages that should NOT have it. 'hideOwnHeader' lists pages whose own top header is replaced by the shared menu.",
+  "noNav": [],
+  "hideFromMenu": [
+    "QR-Service-Provider/"
+  ],
   "excludeFromSitemap": [],
   "labels": {
     "Tools/video-editor/": "AI Video Editor",
     "personalized-printables/": "Printables"
   },
   "extraLinks": [
-    ["Prompt Book", "https://promptbookapp.github.io/"],
-    ["Contact", "mailto:mansoorkhan8185@gmail.com"]
+    [
+      "Prompt Book",
+      "https://promptbookapp.github.io/"
+    ],
+    [
+      "Contact",
+      "mailto:mansoorkhan8185@gmail.com"
+    ]
+  ],
+  "hideOwnHeader": [
+    "index.html",
+    "Tools/index.html"
   ]
 }
