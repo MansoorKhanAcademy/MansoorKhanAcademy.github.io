@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Website Template Editor: Edit and Download | Mansoor Khan Academy</title>
+<meta name="description" content="Edit a website template live in your browser. Change the text, photos, colors and WhatsApp number, then download your own website file. Works on phones.">
+<link rel="canonical" href="https://mansoorkhanacademy.github.io/Websites/editor/">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0b1020">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Website Template Editor","url":"https://mansoorkhanacademy.github.io/Websites/editor/","applicationCategory":"DesignApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Mansoor Khan Academy","url":"https://mansoorkhanacademy.github.io/"}}</script>
+<style>
+:root{--bg:#070b18;--card:#12172b;--line:rgba(255,255,255,.14);--ink:#f4f6ff;--muted:#a9b3cf;--v:#8b5cf6;--p:#ec4899}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+.bar{position:sticky;top:0;z-index:20;background:#0d1226;border-bottom:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.bar h1{font-size:1rem;margin:0 auto 0 0;white-space:nowrap}
+select,input[type=text],input[type=tel],input[type=url]{background:#0b1020;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font:inherit;min-width:0}
+button,.btn{border:0;border-radius:10px;padding:9px 14px;font:inherit;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--v),var(--p));cursor:pointer;text-decoration:none;display:inline-block}
+button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
+#panel{display:none;background:var(--card);border-bottom:1px solid var(--line);padding:14px 12px}
+#panel.open{display:block}.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));max-width:1000px;margin:0 auto}
+.grid section{background:#0d1226;border:1px solid var(--line);border-radius:14px;padding:12px}.grid h2{font-size:.95rem;margin:0 0 8px}
+.grid label{display:block;font-size:.8rem;color:var(--muted);margin:6px 0 3px}.grid input[type=text],.grid input[type=tel],.grid input[type=url]{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.sw{display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}.sw input{width:42px;height:34px;padding:0;border:1px solid var(--line);border-radius:8px;background:none}
+.hint{font-size:.8rem;color:var(--muted);margin:8px 0 0}
+#msg{max-width:1000px;margin:8px auto 0;font-size:.85rem;color:#86efac}#msg.err{color:#fca5a5}
+.tip{background:#1a1440;border-bottom:1px solid var(--line);padding:8px 12px;font-size:.85rem;color:#d6d3ff;text-align:center}
+#frame{display:block;width:100%;height:calc(100vh - 150px);min-height:520px;border:0;background:#fff}
+#selbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:30;background:#0d1226;border:1px solid var(--v);border-radius:14px;padding:8px;gap:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:96vw;flex-wrap:wrap;justify-content:center}
+#selbar.on{display:flex}#selbar button{padding:8px 10px;font-size:.85rem}
+</style></head><body>
+<div class="bar">
+  <h1>Template editor</h1>
+  <select id="tpl" aria-label="Template"></select>
+  <button class="alt" id="bset">Settings</button>
+  <button id="bdl">Download my website</button>
+</div>
+<div id="panel"><div class="grid">
+  <section><h2>Basics</h2>
+    <label for="ptitle">Page title (shown in the browser tab and Google)</label><input type="text" id="ptitle" value="My Website">
+    <label for="wa">WhatsApp number (country code, digits only)</label><input type="tel" id="wa" placeholder="923001234567" inputmode="numeric">
+    <p class="hint">WhatsApp, Book, Enroll and RSVP buttons will open this number.</p>
+  </section>
+  <section><h2>Colors</h2><div class="row" id="colors"></div><p class="hint">Change the main colors of the design.</p></section>
+  <section><h2>Selected item</h2>
+    <label for="lnk">Link of the selected button</label><input type="url" id="lnk" placeholder="https://..." disabled>
+    <p class="hint">Tap a button first. Use https://wa.me/number, an Instagram link, or any web address.</p>
+  </section>
+  <section id="licsec"><h2>Remove the small credit line</h2>
+    <label for="lic">Gumroad license key</label><input type="text" id="lic" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX">
+    <div class="row"><button class="alt" id="blic">Check key</button></div>
+    <p class="hint">Without a key, your downloaded website has a small "Made with Mansoor Khan Academy" line at the bottom. With a key from your purchase, the line is removed.</p>
+  </section>
+</div><div id="msg"></div></div>
+<div class="tip">Tap any text to edit it. Tap a card or picture, then use the buttons at the bottom to add a photo, copy or remove it.</div>
+<iframe id="frame" title="Template preview"></iframe>
+<div id="selbar"><button id="bphoto">📷 Photo</button><button class="alt" id="bdup">Copy</button><button class="alt" id="bdel">Remove</button><button class="alt" id="bclr">✕</button></div>
+<input type="file" id="file" accept="image/*" hidden>
+<script>
+(function(){
+var NAMES={"online-shop":"Online shop","business":"Business website","portfolio":"Personal portfolio","academy":"School or academy","wedding-invitation":"Wedding invitation","salon-booking":"Salon or clinic booking","link-in-bio":"Link in bio"};
+var $=function(i){return document.getElementById(i)},frame=$("frame"),slug="online-shop",doc=null,sel=null,photoMode=null,meta={},licensed=false,dirty=false;
+function say(t,e){var m=$("msg");m.textContent=t;m.className=e?"err":""}
+var sp=new URLSearchParams(location.search);if(NAMES[sp.get("t")])slug=sp.get("t");
+var s=$("tpl");Object.keys(NAMES).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=NAMES[k];if(k===slug)o.selected=true;s.appendChild(o)});
+$("bset").onclick=function(){$("panel").classList.toggle("open")};
+s.onchange=function(){if(dirty&&!confirm("Switching template will discard your changes. Continue?")){s.value=slug;return}slug=s.value;history.replaceState(null,"","?t="+slug);load()};
+fetch("/Websites/templates.json").then(function(r){return r.json()}).then(function(d){meta=d;check()}).catch(function(){check()});
+function check(){var t=meta[slug];$("licsec").style.display=(t&&t.id)?"":"none"}
+function load(){
+  dirty=false;sel=null;$("selbar").classList.remove("on");check();
+  fetch("/Websites/"+slug+"/index.html").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(h){
+    frame.onload=setup;frame.srcdoc=h;
+  }).catch(function(){say("Could not load the template. Please refresh.",1)});
+}
+var CSSID="ed-style";
+function setup(){
+  doc=frame.contentDocument;if(!doc)return;
+  doc.querySelectorAll(".rb,script,.tplbtn").forEach(function(n){n.remove()});
+  var st=doc.createElement("style");st.id=CSSID;st.textContent="[data-ed]{cursor:text}[data-ed]:hover{outline:1px dashed rgba(139,92,246,.7);outline-offset:2px}.ed-sel{outline:2px solid #8b5cf6!important;outline-offset:2px}[data-ed]:focus{outline:2px solid #ec4899;outline-offset:2px}";
+  doc.head.appendChild(st);
+  doc.querySelectorAll("body *").forEach(function(el){
+    if(/^(SCRIPT|STYLE|BR|IMG)$/.test(el.tagName))return;
+    var own=false;el.childNodes.forEach(function(n){if(n.nodeType===3&&n.textContent.trim())own=true});
+    if(own){el.setAttribute("contenteditable","true");el.setAttribute("data-ed","1")}
+  });
+  doc.addEventListener("click",function(e){
+    var a=e.target.closest("a");if(a)e.preventDefault();
+    pick(e.target);
+  },true);
+  doc.addEventListener("input",function(){dirty=true});
+  var t=doc.title.replace(/\s*\|.*$/,"");$("ptitle").value=t||"My Website";
+  buildColors();
+}
+function pick(el){
+  if(sel)sel.classList.remove("ed-sel");
+  sel=repeated(el);sel.classList.add("ed-sel");$("selbar").classList.add("on");
+  var a=el.closest("a");var l=$("lnk");
+  if(a){l.disabled=false;l.value=a.getAttribute("href")||"";l._a=a}else{l.disabled=true;l.value="";l._a=null}
+}
+function repeated(el){
+  var b=doc.body,x=el;
+  while(x&&x!==b&&x.parentElement){
+    var p=x.parentElement,same=0;
+    for(var i=0;i<p.children.length;i++){var c=p.children[i];if(c.tagName===x.tagName&&c.className.replace("ed-sel","").trim()===x.className.replace("ed-sel","").trim())same++}
+    if(same>1)return x;x=p;
+  }
+  return el;
+}
+$("lnk").oninput=function(){if(this._a){this._a.setAttribute("href",this.value);dirty=true}};
+$("bclr").onclick=function(){if(sel)sel.classList.remove("ed-sel");sel=null;$("selbar").classList.remove("on")};
+$("bdel").onclick=function(){if(!sel)return;if(confirm("Remove this item?")){sel.remove();sel=null;$("selbar").classList.remove("on");dirty=true}};
+$("bdup").onclick=function(){if(!sel)return;sel.classList.remove("ed-sel");var c=sel.cloneNode(true);sel.after(c);sel.classList.add("ed-sel");dirty=true;say("Copied. Edit the new item.")};
+$("bphoto").onclick=function(){if(!sel)return;$("file").value="";$("file").click()};
+$("file").onchange=function(){
+  var f=this.files[0];if(!f||!sel)return;
+  var img=new Image(),u=URL.createObjectURL(f);
+  img.onload=function(){
+    var M=1000,w=img.width,h=img.height,k=Math.min(1,M/Math.max(w,h));
+    var c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);
+    var url=c.toDataURL("image/jpeg",.82);
+    var cls=" "+sel.className+" ",isBox=/ (im|av|w) /.test(cls)||!sel.querySelector("h1,h2,h3,p");
+    if(sel.tagName==="IMG"){sel.src=url}
+    else if(isBox||/ (im|av) /.test(cls)){
+      if(/ (im|av) /.test(cls))sel.textContent="";
+      sel.style.backgroundImage="url("+url+")";sel.style.backgroundSize="cover";sel.style.backgroundPosition="center";
+      if(/ av /.test(cls)){sel.style.overflow="hidden"}
+    } else {
+      var im=doc.createElement("img");im.src=url;im.alt="";im.style.cssText="display:block;max-width:100%;height:auto;margin:10px auto;border-radius:14px";sel.prepend(im);
+    }
+    dirty=true;say("Photo added.");
+  };
+  img.onerror=function(){say("That file could not be read as a picture.",1)};img.src=u;
+};
+function accentColors(){
+  var st=doc.querySelectorAll("style:not(#"+CSSID+")"),txt="";st.forEach(function(x){txt+=x.textContent});
+  var m=txt.match(/#[0-9a-fA-F]{6}\b/g)||[],cnt={};m.forEach(function(c){c=c.toLowerCase();cnt[c]=(cnt[c]||0)+1});
+  function sat(c){var r=parseInt(c.substr(1,2),16),g=parseInt(c.substr(3,2),16),b=parseInt(c.substr(5,2),16),mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn}
+  return Object.keys(cnt).filter(function(c){return sat(c)>60}).sort(function(a,b){return cnt[b]-cnt[a]}).slice(0,3);
+}
+function buildColors(){
+  var box=$("colors");box.innerHTML="";
+  accentColors().forEach(function(c,i){
+    var w=document.createElement("label");w.className="sw";var inp=document.createElement("input");inp.type="color";inp.value=c;inp._cur=c;
+    inp.oninput=function(){
+      var n=inp.value.toLowerCase(),o=inp._cur;
+      doc.querySelectorAll("style:not(#"+CSSID+")").forEach(function(x){x.textContent=x.textContent.split(o).join(n).split(o.toUpperCase()).join(n)});
+      doc.querySelectorAll("[style]").forEach(function(x){var v=x.getAttribute("style");if(v&&v.toLowerCase().indexOf(o)>-1)x.setAttribute("style",v.split(o).join(n))});
+      inp._cur=n;dirty=true;
+    };
+    w.appendChild(inp);w.appendChild(document.createTextNode(" Color "+(i+1)));box.appendChild(w);
+  });
+  if(!box.children.length)box.textContent="This design has no colors to change.";
+}
+$("wa").oninput=function(){
+  var n=this.value.replace(/\D/g,"");if(!doc)return;
+  doc.querySelectorAll("a").forEach(function(a){if(/whatsapp|rsvp|book|enroll/i.test(a.textContent)){a.setAttribute("href",n?"https://wa.me/"+n:"#")}});
+  dirty=true;
+};
+$("blic").onclick=function(){
+  var t=meta[slug],key=$("lic").value.trim();if(!t||!t.id||!key){say("Enter your license key.",1);return}
+  say("Checking...");
+  fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({product_id:t.id,license_key:key,increment_uses_count:"false"})})
+  .then(function(r){return r.json()}).then(function(j){
+    if(j&&j.success&&j.purchase&&!j.purchase.refunded&&!j.purchase.chargebacked){licensed=true;say("Key accepted. The credit line will be removed.")}
+    else{licensed=false;say("This key was not accepted for this template.",1)}
+  }).catch(function(){say("Could not check the key right now. Try again, or email mansoorkhan8185@gmail.com.",1)});
+};
+$("bdl").onclick=function(){
+  if(!doc)return;
+  var c=doc.documentElement.cloneNode(true);
+  c.querySelectorAll("#"+CSSID+",script").forEach(function(n){n.remove()});
+  c.querySelectorAll("[contenteditable]").forEach(function(n){n.removeAttribute("contenteditable");n.removeAttribute("data-ed")});
+  c.querySelectorAll(".ed-sel").forEach(function(n){n.classList.remove("ed-sel");if(!n.className)n.removeAttribute("class")});
+  var ti=c.querySelector("title");if(ti)ti.textContent=$("ptitle").value||"My Website";
+  var cn=c.querySelector('link[rel="canonical"]');if(cn)cn.remove();
+  var rb=c.querySelector('meta[name="robots"]');if(rb)rb.setAttribute("content","index,follow");
+  if(!licensed){var d=doc.createElement("div");d.setAttribute("style","text-align:center;font:12px system-ui,sans-serif;padding:14px;color:#888");d.innerHTML='Made with <a href="https://mansoorkhanacademy.github.io/Websites/" style="color:inherit">Mansoor Khan Academy</a>';c.querySelector("body").appendChild(d)}
+  var html="<!doctype html>\n"+c.outerHTML;
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([html],{type:"text/html"}));a.download="my-website.html";document.body.appendChild(a);a.click();a.remove();
+  dirty=false;say("Downloaded my-website.html. Open it on your phone or computer, or upload it to a free host like GitHub Pages or Netlify.");
+  $("panel").classList.add("open");
+};
+window.addEventListener("beforeunload",function(e){if(dirty){e.preventDefault();e.returnValue=""}});
+load();
+})();
+</script>
+</body></html>
