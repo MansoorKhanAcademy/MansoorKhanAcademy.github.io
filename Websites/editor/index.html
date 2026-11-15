@@ -30,7 +30,7 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
   <h1>Template editor</h1>
   <select id="tpl" aria-label="Template"></select>
   <button class="alt" id="bset">Settings</button>
-  <button id="bdl">Download my website</button>
+  <button id="bdl">Download my website</button><a class="btn alt" id="buy" target="_blank" rel="noopener" style="display:none;background:rgba(255,255,255,.1);border:1px solid var(--line)">Buy full template</a>
 </div>
 <div id="panel"><div class="grid">
   <section><h2>Basics</h2>
@@ -43,13 +43,13 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
     <label for="lnk">Link of the selected button</label><input type="url" id="lnk" placeholder="https://..." disabled>
     <p class="hint">Tap a button first. Use https://wa.me/number, an Instagram link, or any web address.</p>
   </section>
-  <section id="licsec"><h2>Remove the small credit line</h2>
+  <section id="licsec"><h2>Bought the template? Remove the credit line</h2>
     <label for="lic">Gumroad license key</label><input type="text" id="lic" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX">
     <div class="row"><button class="alt" id="blic">Check key</button></div>
     <p class="hint">Without a key, your downloaded website has a small "Made with Mansoor Khan Academy" line at the bottom. With a key from your purchase, the line is removed.</p>
   </section>
 </div><div id="msg"></div></div>
-<div class="tip">Tap any text to edit it. Tap a card or picture, then use the buttons at the bottom to add a photo, copy or remove it.</div>
+<div class="tip"><b>How to use:</b> 1) Tap any text and type your own. 2) Tap a card or picture, then use 📷 Photo, Copy or Remove at the bottom. 3) Open <b>Settings</b> for your WhatsApp number and colors. 4) Press <b>Download my website</b>.</div>
 <iframe id="frame" title="Template preview"></iframe>
 <div id="selbar"><button id="bphoto">📷 Photo</button><button class="alt" id="bdup">Copy</button><button class="alt" id="bdel">Remove</button><button class="alt" id="bclr">✕</button></div>
 <input type="file" id="file" accept="image/*" hidden>
@@ -63,17 +63,17 @@ var s=$("tpl");Object.keys(NAMES).forEach(function(k){var o=document.createEleme
 $("bset").onclick=function(){$("panel").classList.toggle("open")};
 s.onchange=function(){if(dirty&&!confirm("Switching template will discard your changes. Continue?")){s.value=slug;return}slug=s.value;history.replaceState(null,"","?t="+slug);load()};
 fetch("/Websites/templates.json").then(function(r){return r.json()}).then(function(d){meta=d;check()}).catch(function(){check()});
-function check(){var t=meta[slug];$("licsec").style.display=(t&&t.id)?"":"none"}
+function check(){var t=meta[slug];var bu=$("buy");if(t&&t.url){bu.href=t.url;bu.style.display="inline-block"}else bu.style.display="none";$("licsec").style.display=(t&&t.id)?"":"none"}
 function load(){
   dirty=false;sel=null;$("selbar").classList.remove("on");check();
   fetch("/Websites/"+slug+"/index.html").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(h){
-    frame.onload=setup;frame.srcdoc=h;
+    h=h.replace(/<script[\s\S]*?<\/script>/gi,"");frame.onload=setup;frame.srcdoc=h;
   }).catch(function(){say("Could not load the template. Please refresh.",1)});
 }
 var CSSID="ed-style";
 function setup(){
   doc=frame.contentDocument;if(!doc)return;
-  doc.querySelectorAll(".rb,script,.tplbtn").forEach(function(n){n.remove()});
+  doc.querySelectorAll(".rb,script,.tplbtn,#mka-nav").forEach(function(n){n.remove()});
   var st=doc.createElement("style");st.id=CSSID;st.textContent="[data-ed]{cursor:text}[data-ed]:hover{outline:1px dashed rgba(139,92,246,.7);outline-offset:2px}.ed-sel{outline:2px solid #8b5cf6!important;outline-offset:2px}[data-ed]:focus{outline:2px solid #ec4899;outline-offset:2px}";
   doc.head.appendChild(st);
   doc.querySelectorAll("body *").forEach(function(el){
@@ -167,7 +167,7 @@ $("blic").onclick=function(){
 $("bdl").onclick=function(){
   if(!doc)return;
   var c=doc.documentElement.cloneNode(true);
-  c.querySelectorAll("#"+CSSID+",script").forEach(function(n){n.remove()});
+  c.querySelectorAll("#"+CSSID+",script,#mka-nav").forEach(function(n){n.remove()});
   c.querySelectorAll("[contenteditable]").forEach(function(n){n.removeAttribute("contenteditable");n.removeAttribute("data-ed")});
   c.querySelectorAll(".ed-sel").forEach(function(n){n.classList.remove("ed-sel");if(!n.className)n.removeAttribute("class")});
   var ti=c.querySelector("title");if(ti)ti.textContent=$("ptitle").value||"My Website";
