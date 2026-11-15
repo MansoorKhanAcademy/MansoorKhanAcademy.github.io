@@ -56,7 +56,7 @@ for (const file of pages) {
   const label = (cfg.labels && cfg.labels[dirRel]) || title.split(/\s[|–—-]\s|:\s/)[0].trim();
   const isTools = dirRel.startsWith("Tools/") && dirRel !== "Tools/";
   list.push({ rel, dirRel, url, title, label, desc, group: isTools ? "tools" : "page", lastmod: lastmod(file),
-    inMenu: dirRel !== "" && dirRel !== "Tools/" && !starts(dirRel, cfg.hideFromMenu),
+    inMenu: dirRel !== "" && dirRel !== "Tools/" && !starts(dirRel, cfg.hideFromMenu) && !((cfg.hideChildren || []).some((x) => dirRel.startsWith(x) && dirRel !== x)),
     inSitemap: !starts(dirRel, cfg.excludeFromSitemap),
     nav: true });
 }

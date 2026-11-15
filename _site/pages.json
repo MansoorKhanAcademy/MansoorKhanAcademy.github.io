@@ -1,0 +1,22 @@
+{
+ "extraLinks": [
+  [
+   "Prompt Book",
+   "https://promptbookapp.github.io/"
+  ],
+  [
+   "Contact",
+   "mailto:mansoorkhan8185@gmail.com"
+  ]
+ ],
+ "pages": [
+  {
+   "url": "/Websites/",
+   "label": "Websites",
+   "title": "Website Examples: What Websites Can I Get Built? | Mansoor Khan Academy",
+   "desc": "See the websites Mansoor Khan Academy builds: restaurant menus, online shops with WhatsApp orders, business sites, portfolios, academy sites, invitations, booking pages and more. View live examples.",
+   "group": "page",
+   "menu": true
+  }
+ ]
+}
