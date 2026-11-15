@@ -202,17 +202,17 @@ $("wa").oninput=function(){
   touch();
 };
 /* ---------- buy + license ---------- */
-var bought=false;
+var bought=false,lastMsg="";
 $("buy").onclick=function(){save();$("ov").classList.add("on")};
 $("nobuy").onclick=function(){$("ov").classList.remove("on")};
 $("gobuy").onclick=function(){$("ov").classList.remove("on");bought=true;window.open(T().url,"_blank","noopener")};
 window.addEventListener("focus",function(){if(bought&&!licensed){bought=false;$("panel").classList.add("open");say("Welcome back. Paste your Gumroad license key below and press Check key.");setTimeout(function(){$("lic").focus()},100)}});
-function gum(body){return fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(body)}).then(function(r){return r.json()})}
+function gum(body){return fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(body)}).then(function(r){return r.json()}).then(function(j){if(j&&j.message)lastMsg=j.message;return j})}
 function okRes(j){return j&&j.success&&j.purchase&&!j.purchase.refunded&&!j.purchase.chargebacked&&!j.purchase.disputed}
 function verify(k){
   var t=T();
   if(meta._verify){
-    return fetch(meta._verify,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:t.id,key:k})}).then(function(r){return r.json()}).then(function(j){return j.success===true});
+    return fetch(meta._verify,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:t.id,key:k})}).then(function(r){return r.json()}).then(function(j){if(j&&j.message)lastMsg=j.message;return j.success===true});
   }
   return gum({product_id:t.id,license_key:k,increment_uses_count:"false"}).then(function(j){if(okRes(j))return true;return gum({product_permalink:t.id,license_key:k,increment_uses_count:"false"}).then(okRes)});
 }
@@ -220,10 +220,10 @@ function autoVerify(){var k=ls(function(){return localStorage.getItem("mka:lic:"
 $("blic").onclick=function(){
   var k=$("lic").value.trim();$("fallback").classList.remove("on");
   if(!T().id||!k){say("Paste your license key first.",1);return}
-  say("Checking your key...");
+  lastMsg="";say("Checking your key...");
   verify(k).then(function(ok){
     if(ok){licensed=true;ls(function(){localStorage.setItem("mka:lic:"+slug,k)});setVer();say("Key accepted. Your downloaded website will have no credit line.")}
-    else{licensed=false;setVer();say("This key was not accepted for this template. Check that you copied it fully and that it belongs to the "+NAMES[slug]+" template.",1)}
+    else{licensed=false;setVer();say("This key was not accepted for this template. Check that you copied it fully and that it belongs to the "+NAMES[slug]+" template."+(lastMsg?" Gumroad said: "+lastMsg:""),1)}
   }).catch(function(){
     say("We could not reach the license service.",1);$("fallback").classList.add("on");
     $("bmail").href="mailto:mansoorkhan8185@gmail.com?subject="+encodeURIComponent("My license key: "+NAMES[slug]+" template")+"&body="+encodeURIComponent("Hello, I bought the "+NAMES[slug]+" template. My license key is: "+k+"\n\nMy saved project file is attached.");
