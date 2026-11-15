@@ -1,0 +1,30 @@
+{
+ "online-shop": {
+  "url": "",
+  "price": ""
+ },
+ "business": {
+  "url": "",
+  "price": ""
+ },
+ "portfolio": {
+  "url": "",
+  "price": ""
+ },
+ "academy": {
+  "url": "",
+  "price": ""
+ },
+ "wedding-invitation": {
+  "url": "",
+  "price": ""
+ },
+ "salon-booking": {
+  "url": "",
+  "price": ""
+ },
+ "link-in-bio": {
+  "url": "",
+  "price": ""
+ }
+}
