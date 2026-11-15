@@ -109,6 +109,23 @@ for (const f of allHtml) {
   fs.writeFileSync(f, h);
 }
 
+// ---- 1b. Google Tag Manager on EVERY html page (set "gtmId" in site.config.json; leave empty to turn off) ----
+if (cfg.gtmId && /^GTM-[A-Z0-9]+$/.test(cfg.gtmId)) {
+  const id = cfg.gtmId;
+  const head = `<!-- Google Tag Manager -->\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${id}');</script>\n<!-- End Google Tag Manager -->\n`;
+  const body = `<!-- Google Tag Manager (noscript) -->\n<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${id}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n<!-- End Google Tag Manager (noscript) -->\n`;
+  let n = 0;
+  for (const f of allHtml) {
+    let h = fs.readFileSync(f, "utf8");
+    if (h.includes("googletagmanager.com/gtm.js")) continue;
+    h = /<head[^>]*>/i.test(h) ? h.replace(/<head[^>]*>/i, (m) => m + "\n" + head) : head + h;
+    h = /<body[^>]*>/i.test(h) ? h.replace(/<body[^>]*>/i, (m) => m + "\n" + body) : h;
+    fs.writeFileSync(f, h);
+    n++;
+  }
+  console.log("GTM added to " + n + " pages");
+}
+
 // ---- 2. sitemap.xml ----
 const pr = (u) => (u === "/" ? "1.0" : u === "/Tools/" ? "0.9" : "0.8");
 const sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']

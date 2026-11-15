@@ -89,11 +89,11 @@ function key(k){return "mka:"+slug+":"+k}
 function load(){
   sel=null;$("selbar").classList.remove("on");dirty=false;
   fetch("/Websites/"+slug+"/index.html").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(h){
-    h=h.replace(/<script[\s\S]*?<\/script>/gi,"");frame.onload=setup;frame.srcdoc=h;
+    h=h.replace(/<script[\s\S]*?<\/script>/gi,"").replace(/<noscript[\s\S]*?<\/noscript>/gi,"");frame.onload=setup;frame.srcdoc=h;
   }).catch(function(){say("Could not load the template. Please refresh the page.",1)});
 }
 function clean(root){
-  root.querySelectorAll("#"+CSSID+",script,#mka-nav,.rb,.tplbtn").forEach(function(n){n.remove()});
+  root.querySelectorAll("#"+CSSID+",script,noscript,#mka-nav,.rb,.tplbtn").forEach(function(n){n.remove()});
   root.querySelectorAll("[contenteditable]").forEach(function(n){n.removeAttribute("contenteditable");n.removeAttribute("data-ed")});
   root.querySelectorAll(".ed-sel").forEach(function(n){n.classList.remove("ed-sel");if(!n.getAttribute("class"))n.removeAttribute("class")});
   return root;
