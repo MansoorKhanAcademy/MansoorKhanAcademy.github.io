@@ -22,6 +22,7 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
 .hint{font-size:.8rem;color:var(--muted);margin:8px 0 0}
 #msg{max-width:1000px;margin:8px auto 0;font-size:.85rem;color:#86efac}#msg.err{color:#fca5a5}
 .tip{background:#1a1440;border-bottom:1px solid var(--line);padding:8px 12px;font-size:.85rem;color:#d6d3ff;text-align:center}
+.cmpd{background:#0d1226;border-bottom:1px solid var(--line);padding:8px 12px;font-size:.85rem}.cmpd summary{cursor:pointer;font-weight:700;color:#c4b5fd}.cmpd table{border-collapse:collapse;margin:8px 0;width:100%;max-width:520px}.cmpd td,.cmpd th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}.cmpd td+td,.cmpd th+th{text-align:center}.cmpd p{color:var(--muted);margin:4px 0}
 #frame{display:block;width:100%;height:calc(100vh - 150px);min-height:520px;border:0;background:#fff}
 #selbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:30;background:#0d1226;border:1px solid var(--v);border-radius:14px;padding:8px;gap:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:96vw;flex-wrap:wrap;justify-content:center}
 #selbar.on{display:flex}#selbar button{padding:8px 10px;font-size:.85rem}
@@ -50,6 +51,14 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
   </section>
 </div><div id="msg"></div></div>
 <div class="tip"><b>How to use:</b> 1) Tap any text and type your own. 2) Tap a card or picture, then use 📷 Photo, Copy or Remove at the bottom. 3) Open <b>Settings</b> for your WhatsApp number and colors. 4) Press <b>Download my website</b>.</div>
+<details class="cmpd"><summary>Free vs paid: what is the difference?</summary>
+<table><tr><th></th><th>Free</th><th>Paid</th></tr>
+<tr><td>Edit and download your website</td><td>✅</td><td>✅</td></tr>
+<tr><td>Credit line at the bottom</td><td>Included</td><td>Removed</td></tr>
+<tr><td>Template pack + guide (README)</td><td>❌</td><td>✅</td></tr>
+<tr><td>Use for client websites</td><td>❌</td><td>✅</td></tr>
+<tr><td>Email questions</td><td>❌</td><td>✅</td></tr></table>
+<p>Free use: keep the small credit line. Paid: buy the template on Gumroad and enter your license key under Settings.</p></details>
 <iframe id="frame" title="Template preview"></iframe>
 <div id="selbar"><button id="bphoto">📷 Photo</button><button class="alt" id="bdup">Copy</button><button class="alt" id="bdel">Remove</button><button class="alt" id="bclr">✕</button></div>
 <input type="file" id="file" accept="image/*" hidden>

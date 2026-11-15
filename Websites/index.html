@@ -27,7 +27,7 @@ section.blk{padding:54px 0 0}h2{font-size:clamp(1.5rem,4vw,2.1rem);letter-spacin
 .inc{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin-top:16px}.inc div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}.inc b{display:block;margin-bottom:4px}.inc span{color:var(--muted);font-size:.92rem}
 .steps{list-style:none;counter-reset:s;padding:0;margin:16px 0 0;display:grid;gap:12px}.steps li{counter-increment:s;display:flex;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 18px}.steps li::before{content:counter(s);flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:linear-gradient(135deg,var(--v),var(--p))}
 details{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 18px;margin-bottom:10px}summary{cursor:pointer;font-weight:700}details p{color:var(--muted);margin:10px 0 0}
-.cta{margin:54px 0 0;padding:34px 20px;text-align:center;border-radius:22px;border:1px solid rgba(139,92,246,.5);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(236,72,153,.1))}
+.cmp{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--card)}.cmp table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:.82rem}.cmp th,.cmp td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.cmp tr:last-child td{border-bottom:0}.cmp th{font-size:.85rem;color:var(--muted)}.cmp th.pd{color:#f9a8d4}.cmp td:not(:first-child),.cmp th:not(:first-child){text-align:center}.cmp th:first-child{width:38%}.cta{margin:54px 0 0;padding:34px 20px;text-align:center;border-radius:22px;border:1px solid rgba(139,92,246,.5);background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(236,72,153,.1))}
 footer{margin-top:54px;border-top:1px solid var(--line);padding:26px 0;color:var(--muted);font-size:.88rem;text-align:center}footer a{margin:0 8px;color:var(--muted)}
 </style></head><body>
 <div class="glow"></div>
@@ -71,11 +71,21 @@ footer{margin-top:54px;border-top:1px solid var(--line);padding:26px 0;color:var
       <li><span><b>Download.</b> Press "Download my website" to get your website file. It is free and includes a small "Made with Mansoor Khan Academy" line at the bottom.</span></li>
       <li><span><b>Buy the template (optional).</b> Get the clean template pack to use without that line, with a step-by-step guide.</span></li>
     </ol>
-    <div class="inc" style="margin-top:18px">
-      <div><b>Free editor</b><span>Edit and download your site. Includes a small credit line at the bottom.</span></div>
-      <div><b>Paid template</b><span>The full template files with an easy guide (README), no credit line, and permission to use it for your own business or your clients' websites. Your Gumroad license key removes the credit line in the editor too.</span></div>
-      <div><b>Need something custom?</b><span>Email me and I will build it for you. The templates are single-page websites without a back end.</span></div>
-    </div>
+    <h3 style="margin:26px 0 10px">Free vs paid: what is the difference?</h3>
+    <div class="cmp"><table>
+      <thead><tr><th></th><th>Free editor</th><th class="pd">Paid template</th></tr></thead>
+      <tbody>
+      <tr><td>Edit text, photos, colors and WhatsApp number</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Download your website file</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Price</td><td>Free</td><td>One-time payment on Gumroad</td></tr>
+      <tr><td>"Made with Mansoor Khan Academy" line at the bottom</td><td>Included</td><td>Removed with your license key</td></tr>
+      <tr><td>Template pack with step-by-step guide (README)</td><td>❌</td><td>✅</td></tr>
+      <tr><td>Use for your own business</td><td>✅ keep the credit line</td><td>✅</td></tr>
+      <tr><td>Use for your clients' websites</td><td>❌</td><td>✅</td></tr>
+      <tr><td>Resell or share the template files</td><td>❌</td><td>❌</td></tr>
+      <tr><td>Questions by email</td><td>❌</td><td>✅</td></tr>
+      </tbody></table></div>
+    <p style="color:var(--muted);font-size:.9rem;margin:10px 0 0">Not sure? Start with the free editor. You can buy the template later if you want a clean site without the credit line. Need extra features like a contact form or online payments? <a href="mailto:mansoorkhan8185@gmail.com?subject=Custom%20website">Email me</a> and I will build it for you.</p>
     <p style="margin:14px 0 0"><a class="b" href="/Websites/editor/">Open the free editor</a></p>
   </section>
 
