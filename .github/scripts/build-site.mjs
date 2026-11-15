@@ -62,6 +62,28 @@ for (const file of pages) {
 }
 list.sort((a, b) => a.url.localeCompare(b.url));
 
+
+// Real icon files (Google ignores icons that are built into the page) and the site name for search results.
+function headFixes(h, isHome) {
+  if (fs.existsSync(path.join(OUT, "favicon.ico"))) {
+    h = h.replace(/<link[^>]+rel=["'](?:shortcut )?icon["'][^>]*>\s*/gi, "").replace(/<link[^>]+rel=["']apple-touch-icon["'][^>]*>\s*/gi, "");
+    const icons = '<link rel="icon" href="/favicon.ico" sizes="any">\n<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">\n<link rel="apple-touch-icon" href="/apple-touch-icon.png">\n';
+    h = /<\/head>/i.test(h) ? h.replace(/<\/head>/i, icons + "</head>") : icons + h;
+  }
+  if (isHome) {
+    if (!/name=["']application-name["']/i.test(h)) h = h.replace(/<\/head>/i, '<meta name="application-name" content="Mansoor Khan Academy">\n</head>');
+    if (!/property=["']og:site_name["']/i.test(h)) h = h.replace(/<\/head>/i, '<meta property="og:site_name" content="Mansoor Khan Academy">\n</head>');
+    h = h.replace(/(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/gi, (m, s, body, e) => {
+      try {
+        const d = JSON.parse(body); const arr = Array.isArray(d) ? d : [d]; let ch = false;
+        arr.forEach((x) => { if (x && x["@type"] === "WebSite") { x.name = "Mansoor Khan Academy"; x.alternateName = ["Mansoor Khan Academy Tools", "Mansoor Tools", "MKA"]; ch = true; } });
+        return ch ? s + JSON.stringify(d) + e : m;
+      } catch (err) { return m; }
+    });
+  }
+  return h;
+}
+
 // ---- 1. menu script on EVERY html page (except the Google verification file and pages in "noNav") ----
 const allHtml = [];
 (function collect(dir) {
@@ -76,13 +98,15 @@ for (const f of allHtml) {
   const rel = path.relative(OUT, f).split(path.sep).join("/");
   if (starts(rel, cfg.noNav)) continue;
   let h = fs.readFileSync(f, "utf8");
-  if (h.includes("/nav.js")) continue;
-  const attr = starts(rel, cfg.hideOwnHeader) ? " data-hide-header" : "";
-  const tag = `<script src="/nav.js" defer${attr}></script>\n`;
-  const i = h.toLowerCase().lastIndexOf("</body>");
-  h = i >= 0 ? h.slice(0, i) + tag + h.slice(i) : h + "\n" + tag;
+  h = headFixes(h, rel === "index.html");
+  if (!h.includes("/nav.js")) {
+    const attr = starts(rel, cfg.hideOwnHeader) ? " data-hide-header" : "";
+    const tag = `<script src="/nav.js" defer${attr}></script>\n`;
+    const i = h.toLowerCase().lastIndexOf("</body>");
+    h = i >= 0 ? h.slice(0, i) + tag + h.slice(i) : h + "\n" + tag;
+    injected++;
+  }
   fs.writeFileSync(f, h);
-  injected++;
 }
 
 // ---- 2. sitemap.xml ----
