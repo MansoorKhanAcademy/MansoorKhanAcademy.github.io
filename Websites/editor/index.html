@@ -24,6 +24,10 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
 .tip{background:#1a1440;border-bottom:1px solid var(--line);padding:8px 12px;font-size:.85rem;color:#d6d3ff;text-align:center}
 .cmpd{background:#0d1226;border-bottom:1px solid var(--line);padding:8px 12px;font-size:.85rem}.cmpd summary{cursor:pointer;font-weight:700;color:#c4b5fd}.cmpd table{border-collapse:collapse;margin:8px 0;width:100%;max-width:520px}.cmpd td,.cmpd th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}.cmpd td+td,.cmpd th+th{text-align:center}.cmpd p{color:var(--muted);margin:4px 0}
 #frame{display:block;width:100%;height:calc(100vh - 150px);min-height:520px;border:0;background:#fff}
+.chips{display:flex;gap:6px;flex-wrap:wrap;width:100%}.chip{font-size:.75rem;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--muted)}.chip.ok{color:#86efac;border-color:rgba(134,239,172,.4)}.chip.pro{color:#f9a8d4;border-color:rgba(249,168,212,.5)}
+#ov{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:16px}#ov.on{display:flex}
+#dlg{background:#12172b;border:1px solid var(--line);border-radius:18px;max-width:460px;width:100%;padding:20px}#dlg h2{margin:0 0 8px;font-size:1.15rem}#dlg ol{padding-left:20px;color:#d6d9ee;margin:8px 0 14px}#dlg li{margin-bottom:6px}
+#fallback{display:none;margin-top:10px;padding:10px;border:1px dashed var(--line);border-radius:12px;font-size:.85rem;color:var(--muted)}#fallback.on{display:block}
 #selbar{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:30;background:#0d1226;border:1px solid var(--v);border-radius:14px;padding:8px;gap:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:96vw;flex-wrap:wrap;justify-content:center}
 #selbar.on{display:flex}#selbar button{padding:8px 10px;font-size:.85rem}
 </style></head><body>
@@ -31,7 +35,7 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
   <h1>Template editor</h1>
   <select id="tpl" aria-label="Template"></select>
   <button class="alt" id="bset">Settings</button>
-  <button id="bdl">Download my website</button><a class="btn alt" id="buy" target="_blank" rel="noopener" style="display:none;background:rgba(255,255,255,.1);border:1px solid var(--line)">Buy full template</a>
+  <button id="bdl">Download my website</button><button class="alt" id="buy" style="display:none">Buy full template</button><div class="chips"><span class="chip" id="chSave">Autosave on</span><span class="chip" id="chVer">Free version</span><button class="alt" id="bnew" style="padding:3px 10px;font-size:.75rem;font-weight:600">Start over</button></div>
 </div>
 <div id="panel"><div class="grid">
   <section><h2>Basics</h2>
@@ -46,7 +50,7 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
   </section>
   <section id="licsec"><h2>Bought the template? Remove the credit line</h2>
     <label for="lic">Gumroad license key</label><input type="text" id="lic" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX">
-    <div class="row"><button class="alt" id="blic">Check key</button></div>
+    <div class="row"><button class="alt" id="blic">Check key</button></div><div id="fallback"><b>Cannot check the key right now.</b> You can still get your clean website: save your work, then email it to me with your key. I will send it back without the credit line.<div class="row"><button class="alt" id="bproj">Save my project file</button><a class="btn alt" id="bmail" style="background:rgba(255,255,255,.1);border:1px solid var(--line)">Email my key</a></div></div>
     <p class="hint">Without a key, your downloaded website has a small "Made with Mansoor Khan Academy" line at the bottom. With a key from your purchase, the line is removed.</p>
   </section>
 </div><div id="msg"></div></div>
@@ -61,28 +65,48 @@ button.alt{background:rgba(255,255,255,.1);border:1px solid var(--line)}
 <p>Free use: keep the small credit line. Paid: buy the template on Gumroad and enter your license key under Settings.</p></details>
 <iframe id="frame" title="Template preview"></iframe>
 <div id="selbar"><button id="bphoto">📷 Photo</button><button class="alt" id="bdup">Copy</button><button class="alt" id="bdel">Remove</button><button class="alt" id="bclr">✕</button></div>
+<div id="ov"><div id="dlg" role="dialog" aria-modal="true"><h2>Buy the full template</h2>
+<p style="margin:0;color:var(--muted)">Your edits are saved on this device, so nothing is lost.</p>
+<ol><li>Pay on Gumroad. It opens in a new tab.</li><li>Gumroad shows and emails you a <b>license key</b>.</li><li>Come back to this page. Open <b>Settings</b>, paste the key and press <b>Check key</b>.</li><li>Press <b>Download my website</b> for your clean file.</li></ol>
+<div class="row"><button id="gobuy">Continue to Gumroad</button><button class="alt" id="nobuy">Cancel</button></div></div></div>
 <input type="file" id="file" accept="image/*" hidden>
 <script>
 (function(){
 var NAMES={"online-shop":"Online shop","business":"Business website","portfolio":"Personal portfolio","academy":"School or academy","wedding-invitation":"Wedding invitation","salon-booking":"Salon or clinic booking","link-in-bio":"Link in bio"};
-var $=function(i){return document.getElementById(i)},frame=$("frame"),slug="online-shop",doc=null,sel=null,photoMode=null,meta={},licensed=false,dirty=false;
+var $=function(i){return document.getElementById(i)},frame=$("frame"),slug="online-shop",doc=null,sel=null,meta={},licensed=false,dirty=false,saveT=null,CSSID="ed-style";
 function say(t,e){var m=$("msg");m.textContent=t;m.className=e?"err":""}
+function ls(f){try{return f()}catch(x){return null}}
 var sp=new URLSearchParams(location.search);if(NAMES[sp.get("t")])slug=sp.get("t");
 var s=$("tpl");Object.keys(NAMES).forEach(function(k){var o=document.createElement("option");o.value=k;o.textContent=NAMES[k];if(k===slug)o.selected=true;s.appendChild(o)});
 $("bset").onclick=function(){$("panel").classList.toggle("open")};
-s.onchange=function(){if(dirty&&!confirm("Switching template will discard your changes. Continue?")){s.value=slug;return}slug=s.value;history.replaceState(null,"","?t="+slug);load()};
-fetch("/Websites/templates.json").then(function(r){return r.json()}).then(function(d){meta=d;check()}).catch(function(){check()});
-function check(){var t=meta[slug];var bu=$("buy");if(t&&t.url){bu.href=t.url;bu.style.display="inline-block"}else bu.style.display="none";$("licsec").style.display=(t&&t.id)?"":"none"}
+s.onchange=function(){slug=s.value;history.replaceState(null,"","?t="+slug);load()};
+fetch("/Websites/templates.json").then(function(r){return r.json()}).then(function(d){meta=d;check();autoVerify()}).catch(function(){check()});
+function T(){return meta[slug]||{}}
+function check(){var t=T(),bu=$("buy");bu.style.display=(t.url&&!licensed)?"inline-block":"none";$("licsec").style.display=(t.url)?"":"none"}
+function setVer(){var c=$("chVer");if(licensed){c.textContent="Licensed ✓ no credit line";c.className="chip pro"}else{c.textContent="Free version";c.className="chip"}check()}
+/* ---------- load + autosave ---------- */
+function key(k){return "mka:"+slug+":"+k}
 function load(){
-  dirty=false;sel=null;$("selbar").classList.remove("on");check();
+  sel=null;$("selbar").classList.remove("on");dirty=false;
   fetch("/Websites/"+slug+"/index.html").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(h){
     h=h.replace(/<script[\s\S]*?<\/script>/gi,"");frame.onload=setup;frame.srcdoc=h;
-  }).catch(function(){say("Could not load the template. Please refresh.",1)});
+  }).catch(function(){say("Could not load the template. Please refresh the page.",1)});
 }
-var CSSID="ed-style";
-function setup(){
-  doc=frame.contentDocument;if(!doc)return;
-  doc.querySelectorAll(".rb,script,.tplbtn,#mka-nav").forEach(function(n){n.remove()});
+function clean(root){
+  root.querySelectorAll("#"+CSSID+",script,#mka-nav,.rb,.tplbtn").forEach(function(n){n.remove()});
+  root.querySelectorAll("[contenteditable]").forEach(function(n){n.removeAttribute("contenteditable");n.removeAttribute("data-ed")});
+  root.querySelectorAll(".ed-sel").forEach(function(n){n.classList.remove("ed-sel");if(!n.getAttribute("class"))n.removeAttribute("class")});
+  return root;
+}
+function snapshot(){return clean(doc.documentElement.cloneNode(true)).innerHTML}
+function save(){
+  if(!doc)return;
+  var ok=ls(function(){localStorage.setItem(key("html"),snapshot());localStorage.setItem(key("meta"),JSON.stringify({title:$("ptitle").value,wa:$("wa").value}));return 1});
+  var c=$("chSave");
+  if(ok){c.textContent="Saved on this device ✓";c.className="chip ok"}else{c.textContent="Autosave full: download to keep your work";c.className="chip"}
+}
+function touch(){dirty=true;clearTimeout(saveT);saveT=setTimeout(save,700)}
+function instrument(){
   var st=doc.createElement("style");st.id=CSSID;st.textContent="[data-ed]{cursor:text}[data-ed]:hover{outline:1px dashed rgba(139,92,246,.7);outline-offset:2px}.ed-sel{outline:2px solid #8b5cf6!important;outline-offset:2px}[data-ed]:focus{outline:2px solid #ec4899;outline-offset:2px}";
   doc.head.appendChild(st);
   doc.querySelectorAll("body *").forEach(function(el){
@@ -90,18 +114,31 @@ function setup(){
     var own=false;el.childNodes.forEach(function(n){if(n.nodeType===3&&n.textContent.trim())own=true});
     if(own){el.setAttribute("contenteditable","true");el.setAttribute("data-ed","1")}
   });
-  doc.addEventListener("click",function(e){
-    var a=e.target.closest("a");if(a)e.preventDefault();
-    pick(e.target);
-  },true);
-  doc.addEventListener("input",function(){dirty=true});
-  var t=doc.title.replace(/\s*\|.*$/,"");$("ptitle").value=t||"My Website";
-  buildColors();
 }
+function setup(){
+  doc=frame.contentDocument;if(!doc)return;
+  clean(doc.documentElement);
+  var saved=ls(function(){return localStorage.getItem(key("html"))}),restored=false;
+  if(saved){try{doc.documentElement.innerHTML=saved;restored=true}catch(x){}}
+  instrument();
+  if(!doc._wired){doc._wired=1;
+    doc.addEventListener("click",function(e){var a=e.target.closest("a");if(a)e.preventDefault();pick(e.target)},true);
+    doc.addEventListener("input",touch);
+  }
+  var m=ls(function(){return JSON.parse(localStorage.getItem(key("meta"))||"null")});
+  var t=doc.title.replace(/\s*\|.*$/,"");
+  $("ptitle").value=(m&&m.title)||t||"My Website";$("wa").value=(m&&m.wa)||"";
+  buildColors();
+  if(restored){say("Welcome back. Your saved work was restored. Use Start over to begin again.");}
+  var c=$("chSave");c.textContent=restored?"Restored ✓":"Autosave on";c.className="chip"+(restored?" ok":"");
+}
+$("bnew").onclick=function(){if(!confirm("Delete your saved changes for this design and start over?"))return;ls(function(){localStorage.removeItem(key("html"));localStorage.removeItem(key("meta"))});say("");load()};
+$("ptitle").oninput=touch;
+/* ---------- editing tools ---------- */
 function pick(el){
   if(sel)sel.classList.remove("ed-sel");
   sel=repeated(el);sel.classList.add("ed-sel");$("selbar").classList.add("on");
-  var a=el.closest("a");var l=$("lnk");
+  var a=el.closest("a"),l=$("lnk");
   if(a){l.disabled=false;l.value=a.getAttribute("href")||"";l._a=a}else{l.disabled=true;l.value="";l._a=null}
 }
 function repeated(el){
@@ -113,36 +150,36 @@ function repeated(el){
   }
   return el;
 }
-$("lnk").oninput=function(){if(this._a){this._a.setAttribute("href",this.value);dirty=true}};
+$("lnk").oninput=function(){if(this._a){this._a.setAttribute("href",this.value);touch()}};
 $("bclr").onclick=function(){if(sel)sel.classList.remove("ed-sel");sel=null;$("selbar").classList.remove("on")};
-$("bdel").onclick=function(){if(!sel)return;if(confirm("Remove this item?")){sel.remove();sel=null;$("selbar").classList.remove("on");dirty=true}};
-$("bdup").onclick=function(){if(!sel)return;sel.classList.remove("ed-sel");var c=sel.cloneNode(true);sel.after(c);sel.classList.add("ed-sel");dirty=true;say("Copied. Edit the new item.")};
+$("bdel").onclick=function(){if(!sel)return;if(confirm("Remove this item?")){sel.remove();sel=null;$("selbar").classList.remove("on");touch()}};
+$("bdup").onclick=function(){if(!sel)return;sel.classList.remove("ed-sel");var c=sel.cloneNode(true);sel.after(c);sel.classList.add("ed-sel");touch();say("Copied. Edit the new item.")};
 $("bphoto").onclick=function(){if(!sel)return;$("file").value="";$("file").click()};
 $("file").onchange=function(){
   var f=this.files[0];if(!f||!sel)return;
   var img=new Image(),u=URL.createObjectURL(f);
   img.onload=function(){
-    var M=1000,w=img.width,h=img.height,k=Math.min(1,M/Math.max(w,h));
+    var M=900,w=img.width,h=img.height,k=Math.min(1,M/Math.max(w,h));
     var c=document.createElement("canvas");c.width=Math.round(w*k);c.height=Math.round(h*k);
     c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);
-    var url=c.toDataURL("image/jpeg",.82);
-    var cls=" "+sel.className+" ",isBox=/ (im|av|w) /.test(cls)||!sel.querySelector("h1,h2,h3,p");
+    var url=c.toDataURL("image/jpeg",.8);
+    var cls=" "+sel.className+" ",box=/ (im|av|w) /.test(cls)||!sel.querySelector("h1,h2,h3,p");
     if(sel.tagName==="IMG"){sel.src=url}
-    else if(isBox||/ (im|av) /.test(cls)){
+    else if(box){
       if(/ (im|av) /.test(cls))sel.textContent="";
       sel.style.backgroundImage="url("+url+")";sel.style.backgroundSize="cover";sel.style.backgroundPosition="center";
-      if(/ av /.test(cls)){sel.style.overflow="hidden"}
+      if(/ av /.test(cls))sel.style.overflow="hidden";
     } else {
       var im=doc.createElement("img");im.src=url;im.alt="";im.style.cssText="display:block;max-width:100%;height:auto;margin:10px auto;border-radius:14px";sel.prepend(im);
     }
-    dirty=true;say("Photo added.");
+    touch();say("Photo added.");
   };
   img.onerror=function(){say("That file could not be read as a picture.",1)};img.src=u;
 };
 function accentColors(){
-  var st=doc.querySelectorAll("style:not(#"+CSSID+")"),txt="";st.forEach(function(x){txt+=x.textContent});
+  var txt="";doc.querySelectorAll("style:not(#"+CSSID+")").forEach(function(x){txt+=x.textContent});
   var m=txt.match(/#[0-9a-fA-F]{6}\b/g)||[],cnt={};m.forEach(function(c){c=c.toLowerCase();cnt[c]=(cnt[c]||0)+1});
-  function sat(c){var r=parseInt(c.substr(1,2),16),g=parseInt(c.substr(3,2),16),b=parseInt(c.substr(5,2),16),mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn}
+  function sat(c){var r=parseInt(c.substr(1,2),16),g=parseInt(c.substr(3,2),16),b=parseInt(c.substr(5,2),16);return Math.max(r,g,b)-Math.min(r,g,b)}
   return Object.keys(cnt).filter(function(c){return sat(c)>60}).sort(function(a,b){return cnt[b]-cnt[a]}).slice(0,3);
 }
 function buildColors(){
@@ -153,7 +190,7 @@ function buildColors(){
       var n=inp.value.toLowerCase(),o=inp._cur;
       doc.querySelectorAll("style:not(#"+CSSID+")").forEach(function(x){x.textContent=x.textContent.split(o).join(n).split(o.toUpperCase()).join(n)});
       doc.querySelectorAll("[style]").forEach(function(x){var v=x.getAttribute("style");if(v&&v.toLowerCase().indexOf(o)>-1)x.setAttribute("style",v.split(o).join(n))});
-      inp._cur=n;dirty=true;
+      inp._cur=n;touch();
     };
     w.appendChild(inp);w.appendChild(document.createTextNode(" Color "+(i+1)));box.appendChild(w);
   });
@@ -162,34 +199,53 @@ function buildColors(){
 $("wa").oninput=function(){
   var n=this.value.replace(/\D/g,"");if(!doc)return;
   doc.querySelectorAll("a").forEach(function(a){if(/whatsapp|rsvp|book|enroll/i.test(a.textContent)){a.setAttribute("href",n?"https://wa.me/"+n:"#")}});
-  dirty=true;
+  touch();
 };
+/* ---------- buy + license ---------- */
+var bought=false;
+$("buy").onclick=function(){save();$("ov").classList.add("on")};
+$("nobuy").onclick=function(){$("ov").classList.remove("on")};
+$("gobuy").onclick=function(){$("ov").classList.remove("on");bought=true;window.open(T().url,"_blank","noopener")};
+window.addEventListener("focus",function(){if(bought&&!licensed){bought=false;$("panel").classList.add("open");say("Welcome back. Paste your Gumroad license key below and press Check key.");setTimeout(function(){$("lic").focus()},100)}});
+function gum(body){return fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams(body)}).then(function(r){return r.json()})}
+function okRes(j){return j&&j.success&&j.purchase&&!j.purchase.refunded&&!j.purchase.chargebacked&&!j.purchase.disputed}
+function verify(k){
+  var t=T();
+  if(meta._verify){
+    return fetch(meta._verify,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:t.id,key:k})}).then(function(r){return r.json()}).then(function(j){return j.success===true});
+  }
+  return gum({product_id:t.id,license_key:k,increment_uses_count:"false"}).then(function(j){if(okRes(j))return true;return gum({product_permalink:t.id,license_key:k,increment_uses_count:"false"}).then(okRes)});
+}
+function autoVerify(){var k=ls(function(){return localStorage.getItem("mka:lic:"+slug)});if(k){$("lic").value=k;verify(k).then(function(ok){licensed=ok;setVer()}).catch(function(){})}}
 $("blic").onclick=function(){
-  var t=meta[slug],key=$("lic").value.trim();if(!t||!t.id||!key){say("Enter your license key.",1);return}
-  say("Checking...");
-  fetch("https://api.gumroad.com/v2/licenses/verify",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:new URLSearchParams({product_id:t.id,license_key:key,increment_uses_count:"false"})})
-  .then(function(r){return r.json()}).then(function(j){
-    if(j&&j.success&&j.purchase&&!j.purchase.refunded&&!j.purchase.chargebacked){licensed=true;say("Key accepted. The credit line will be removed.")}
-    else{licensed=false;say("This key was not accepted for this template.",1)}
-  }).catch(function(){say("Could not check the key right now. Try again, or email mansoorkhan8185@gmail.com.",1)});
+  var k=$("lic").value.trim();$("fallback").classList.remove("on");
+  if(!T().id||!k){say("Paste your license key first.",1);return}
+  say("Checking your key...");
+  verify(k).then(function(ok){
+    if(ok){licensed=true;ls(function(){localStorage.setItem("mka:lic:"+slug,k)});setVer();say("Key accepted. Your downloaded website will have no credit line.")}
+    else{licensed=false;setVer();say("This key was not accepted for this template. Check that you copied it fully and that it belongs to the "+NAMES[slug]+" template.",1)}
+  }).catch(function(){
+    say("We could not reach the license service.",1);$("fallback").classList.add("on");
+    $("bmail").href="mailto:mansoorkhan8185@gmail.com?subject="+encodeURIComponent("My license key: "+NAMES[slug]+" template")+"&body="+encodeURIComponent("Hello, I bought the "+NAMES[slug]+" template. My license key is: "+k+"\n\nMy saved project file is attached.");
+  });
 };
-$("bdl").onclick=function(){
-  if(!doc)return;
-  var c=doc.documentElement.cloneNode(true);
-  c.querySelectorAll("#"+CSSID+",script,#mka-nav").forEach(function(n){n.remove()});
-  c.querySelectorAll("[contenteditable]").forEach(function(n){n.removeAttribute("contenteditable");n.removeAttribute("data-ed")});
-  c.querySelectorAll(".ed-sel").forEach(function(n){n.classList.remove("ed-sel");if(!n.className)n.removeAttribute("class")});
+/* ---------- download ---------- */
+function build(withCredit){
+  var c=clean(doc.documentElement.cloneNode(true));
   var ti=c.querySelector("title");if(ti)ti.textContent=$("ptitle").value||"My Website";
   var cn=c.querySelector('link[rel="canonical"]');if(cn)cn.remove();
   var rb=c.querySelector('meta[name="robots"]');if(rb)rb.setAttribute("content","index,follow");
-  if(!licensed){var d=doc.createElement("div");d.setAttribute("style","text-align:center;font:12px system-ui,sans-serif;padding:14px;color:#888");d.innerHTML='Made with <a href="https://mansoorkhanacademy.github.io/Websites/" style="color:inherit">Mansoor Khan Academy</a>';c.querySelector("body").appendChild(d)}
-  var html="<!doctype html>\n"+c.outerHTML;
-  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([html],{type:"text/html"}));a.download="my-website.html";document.body.appendChild(a);a.click();a.remove();
-  dirty=false;say("Downloaded my-website.html. Open it on your phone or computer, or upload it to a free host like GitHub Pages or Netlify.");
-  $("panel").classList.add("open");
+  if(withCredit){var d=doc.createElement("div");d.setAttribute("style","text-align:center;font:12px system-ui,sans-serif;padding:14px;color:#888");d.innerHTML='Made with <a href="https://mansoorkhanacademy.github.io/Websites/" style="color:inherit">Mansoor Khan Academy</a>';c.querySelector("body").appendChild(d)}
+  return "<!doctype html>\n"+c.outerHTML;
+}
+function dl(html,name){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([html],{type:"text/html"}));a.download=name;document.body.appendChild(a);a.click();a.remove()}
+$("bdl").onclick=function(){
+  if(!doc)return;save();dl(build(!licensed),"my-website.html");dirty=false;
+  say(licensed?"Downloaded my-website.html. Upload it to a free host such as GitHub Pages or Netlify, or open it on your phone.":"Downloaded my-website.html with a small credit line. Buy the template to remove it.");
 };
-window.addEventListener("beforeunload",function(e){if(dirty){e.preventDefault();e.returnValue=""}});
-load();
+$("bproj").onclick=function(){if(doc)dl(build(true),"my-project.html")};
+window.addEventListener("beforeunload",function(e){if(dirty&&!ls(function(){return localStorage.getItem(key("html"))})){e.preventDefault();e.returnValue=""}});
+setVer();load();
 })();
 </script>
 </body></html>
