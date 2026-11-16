@@ -147,6 +147,23 @@ function table(c,x,y,w,hdrH,rowH,cols,rows,th,firstW,hdrSize){
  c.beginPath();for(let j=0;j<=rows.length;j++){const yy=y+hdrH+j*rowH;c.moveTo(x,yy);c.lineTo(x+w,yy);}
  for(let i=0;i<=n;i++){const xx=i==0?x:(i==1?x+firstW:x+firstW+(i-1)*cw);c.moveTo(xx,y+hdrH);c.lineTo(xx,y+hdrH+rows.length*rowH);}c.moveTo(x+w,y+hdrH);c.lineTo(x+w,y+hdrH+rows.length*rowH);lineA(c,th[2],.4,1.5);}
 
+
+/* ---- kids and education helpers ---- */
+function tline(c,x1,x2,y,col,a,lw,dash){c.save();c.beginPath();c.setLineDash(dash||[]);c.moveTo(x1,y);c.lineTo(x2,y);c.globalAlpha=a;c.strokeStyle=col;c.lineWidth=lw;c.stroke();c.restore();}
+function gRow(c,x1,x2,yb,size,th){tline(c,x1,x2,yb-size*.78,th[2],.35,2);tline(c,x1,x2,yb-size*.39,th[2],.4,2,[10,10]);tline(c,x1,x2,yb,th[2],.85,3);}
+function gText(c,t,x,yb,size,fam,col,maxW,dash){c.save();c.textBaseline='alphabetic';c.textAlign='left';let sz=size;setF(c,t,sz,fam,'600');while(c.measureText(t).width>maxW&&sz>20){sz-=2;setF(c,t,sz,fam,'600');}
+ if(dash){c.setLineDash([7,9]);c.lineWidth=3;c.strokeStyle=col;c.strokeText(t,x,yb);}else{c.fillStyle=col;c.fillText(t,x,yb);}c.restore();}
+function starP(c,x,y,R){c.beginPath();for(let i=0;i<10;i++){const a=i*Math.PI/5-Math.PI/2,r=i%2?R*.45:R;c.lineTo(x+Math.cos(a)*r,y+Math.sin(a)*r);}c.closePath();}
+function circ(c,x,y,r,th){c.beginPath();c.arc(x,y,r,0,7);lineA(c,th[2],.6,3);}
+function smile(c,x,y,r,k){c.beginPath();c.arc(x,y,r,0,7);c.fillStyle='#fde047';c.fill();c.lineWidth=3;c.strokeStyle='#a16207';c.stroke();
+ c.fillStyle='#713f12';[-1,1].forEach(d=>{c.beginPath();c.arc(x+d*r*.35,y-r*.2,r*.09,0,7);c.fill();});c.lineWidth=4;c.lineCap='round';c.beginPath();
+ if(k==0)c.arc(x,y+r*.05,r*.5,.15*Math.PI,.85*Math.PI);else if(k==1){c.moveTo(x-r*.4,y+r*.4);c.lineTo(x+r*.4,y+r*.4);}else c.arc(x,y+r*.8,r*.45,1.15*Math.PI,1.85*Math.PI);c.stroke();}
+const RAIN=['#ef4444','#f59e0b','#10b981','#3b82f6','#8b5cf6','#ec4899'];
+const URDU=['ا','ب','پ','ت','ٹ','ث','ج','چ','ح','خ','د','ڈ','ذ','ر','ڑ','ز','ژ','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ک','گ','ل','م','ن','و','ہ','ھ','ء','ی','ے'];
+const ROUT=[['Wake up','Brush teeth','Wash face','Get dressed','Eat breakfast','Pack school bag'],['Change clothes','Eat lunch','Rest time','Do homework','Play time','Help at home'],['Eat dinner','Take a bath','Brush teeth','Put on pajamas','Read a story','Go to bed']];
+function rewardBox(c,s,th,y,h){c.beginPath();rr(c,60,y,880,h,22);fillA(c,th[1],.8);lineA(c,th[2],.6,3);starP(c,160,y+h/2,Math.min(70,h*.3));c.fillStyle=th[2];c.fill();txtL(c,'My reward',270,y+h*.32,36,'Poppins',th[2],620,'600');wrapL(c,s.f3,270,y+h*.62,640,44,38,'Poppins',th[3]);}
+function wrapL(c,t,x,y,maxW,lh,size,fam,col){c.textAlign='left';wrap(c,t,x,y,maxW,lh,size,fam,col);c.textAlign='center';}
+
 /* ---- templates ---- */
 const T=[
 {n:'Birthday poster',w:1000,h:1414,ph:1,L:['Name','Age line','Date'],D:['Ayesha','Turning 7!','14 November 2026'],
@@ -232,7 +249,71 @@ const T=[
   [300,400,500,600,700].forEach((x,i)=>star(c,x,1260,i==2?30:20,th[2]));}},
 {n:'Quote wall art',w:1000,h:1414,L:['Quote','Author','Small line'],D:['Make today count and the rest will follow','Mansoor Khan','Wall art'],
  draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);c.save();c.globalAlpha=.35;txt(c,'“',500,330,420,'Playfair Display',th[2],400,'800');c.restore();
-  wrap(c,s.f1,500,560,740,128,104,'Playfair Display',th[3],'800');flourish(c,500,1060,420,th[2]);txt(c,s.f2,500,1150,60,s.font,th[2],800);txt(c,s.f3,500,1240,38,'Poppins',th[3],800);}}
+  wrap(c,s.f1,500,560,740,128,104,'Playfair Display',th[3],'800');flourish(c,500,1060,420,th[2]);txt(c,s.f2,500,1150,60,s.font,th[2],800);txt(c,s.f3,500,1240,38,'Poppins',th[3],800);}},
+/* ====== Kids and education ====== */
+{n:'Name tracing sheet',cat:'Kids & education',w:1000,h:1414,L:['Child name','Subtitle','Footer line'],D:['Ayesha','Trace, then write it yourself','Great job!'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,'Trace my name',500,105,84,'Pacifico',th[2],860);txt(c,s.f2,500,195,38,'Poppins',th[3],860);
+  for(let r=0;r<7;r++){const yb=340+r*150;gRow(c,60,940,yb,100,th);if(r==0)gText(c,s.f1,90,yb,100,'Poppins',th[3],820,0);else if(r<=3)gText(c,s.f1,90,yb,100,'Poppins',th[2],820,1);}
+  txt(c,s.f3,500,1340,44,'Poppins',th[3],860,'600');}},
+{n:'Handwriting practice',cat:'Kids & education',w:1000,h:1414,L:['Child name','Practice text','Class or date'],D:['Ayesha','Practice makes perfect','Class 1'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,'Handwriting practice',500,95,76,'Playfair Display',th[2],860,'800');txtL(c,'Name: '+s.f1,70,185,40,'Poppins',th[3],560,'600');txtR(c,s.f3,930,185,36,'Poppins',th[3],320);
+  for(let r=0;r<8;r++){const yb=330+r*130;gRow(c,60,940,yb,86,th);if(r==0)gText(c,s.f2,80,yb,86,'Poppins',th[3],840,0);else if(r<=2)gText(c,s.f2,80,yb,86,'Poppins',th[2],840,1);}}},
+{n:'ABC alphabet poster',cat:'Kids & education',w:1000,h:1414,L:['Child name','Poster title','Footer line'],D:['Ayesha','My Alphabet','Learn A to Z'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,125,100,s.font,th[3],820);txt(c,s.f2,500,225,56,'Playfair Display',th[2],820,'800');
+  for(let i=0;i<30;i++){const x=80+(i%5)*168,y=y0(i);
+   if(i<26){c.beginPath();rr(c,x,y,150,148,22);c.save();c.globalAlpha=.88;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=4;c.strokeStyle=RAIN[i%6];c.stroke();txt(c,String.fromCharCode(65+i)+String.fromCharCode(97+i),x+75,y+76,78,'Poppins',RAIN[i%6],136,'700');}
+   else{starP(c,x+75,y+74,34);c.fillStyle=RAIN[i%6];c.fill();}}
+  function y0(i){return 290+Math.floor(i/5)*168;}
+  txt(c,s.f3,500,1330,40,'Poppins',th[3],820,'600');}},
+{n:'Urdu alphabet poster',cat:'Kids & education',w:1000,h:1414,L:['Child name','Poster title','Footer line'],D:['Ayesha','اردو حروف تہجی','Learn the Urdu letters'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,125,100,s.font,th[3],820);txt(c,s.f2,500,235,64,'Amiri',th[2],820,'700');
+  for(let i=0;i<URDU.length;i++){const col=5-(i%6),x=86+col*140,y=300+Math.floor(i/6)*142;c.beginPath();rr(c,x,y,128,128,20);c.save();c.globalAlpha=.88;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=4;c.strokeStyle=RAIN[i%6];c.stroke();
+   txt(c,URDU[i],x+64,y+68,76,'Amiri',RAIN[i%6],110,'700');}
+  txt(c,s.f3,500,1330,38,'Poppins',th[3],820,'600');}},
+{n:'Reward chart',cat:'Kids & education',w:1000,h:1414,opt:{l:'Chart layout',v:['Star chart (4 weeks)','Task chart (tasks x 7 days)']},L:['Child name','Goal','Reward at the end'],D:['Hamza','Brush teeth every day','A trip to the park'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,'Reward Chart',500,200,64,'Playfair Display',th[2],860,'800');
+  c.beginPath();rr(c,60,255,880,76,16);fillA(c,th[1],.8);txtL(c,'My goal: '+s.f2,90,294,36,'Poppins',th[3],820,'600');
+  const dn=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  if(s.opt==1){table(c,60,360,880,64,120,['Task'].concat(dn),['','','','','',''],th,250,26);for(let j=0;j<6;j++)for(let i=0;i<7;i++)circ(c,60+250+(i+.5)*90,360+64+j*120+60,28,th);rewardBox(c,s,th,1190,170);}
+  else{dn.forEach((d,i)=>txt(c,d,60+120+(i+.5)*100,395,28,'Poppins',th[2],90,'600'));for(let r=0;r<4;r++){txt(c,'Week '+(r+1),60+60,480+r*170,28,'Poppins',th[3],110,'600');for(let i=0;i<7;i++){starP(c,60+120+(i+.5)*100,480+r*170,40);c.fillStyle=th[1];c.fill();lineA(c,th[2],.9,4);}}
+   rewardBox(c,s,th,1090,240);}}},
+{n:'Behavior chart',cat:'Kids & education',w:1000,h:1414,L:['Child name','Week of','This week\'s goal'],D:['Hamza','16 - 20 November 2026','Use kind words'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,'Behavior Chart',500,200,64,'Playfair Display',th[2],860,'800');txt(c,s.f2,500,270,38,'Poppins',th[3],860,'600');
+  const R=['Listened well','Shared and was kind','Used kind words','Tidied up','Did my best'];table(c,60,315,880,64,118,['Behavior','Mon','Tue','Wed','Thu','Fri'],R,th,340,28);
+  for(let j=0;j<5;j++)for(let i=0;i<5;i++)circ(c,60+340+(i+.5)*108,315+64+j*118+59,30,th);
+  [['Great day',0],['Okay day',1],['Try again tomorrow',2]].forEach((a,i)=>{const x=190+i*310;smile(c,x,1080,48,a[1]);txt(c,a[0],x,1170,30,'Poppins',th[3],280,'600');});
+  c.beginPath();rr(c,60,1240,880,110,16);lineA(c,th[2],.6,3);txtL(c,'Goal: '+s.f3,90,1296,40,'Poppins',th[3],820,'600');}},
+{n:'Daily routine chart',cat:'Kids & education',w:1000,h:1414,opt:{l:'Routine',v:['Morning routine','After school','Bedtime routine']},L:['Child name','Chart title','Footer message'],D:['Hamza','My Daily Routine','You can do it!'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,140,100,s.font,th[3],820);txt(c,s.f2,500,235,62,'Playfair Display',th[2],820,'800');
+  c.beginPath();rr(c,300,290,400,62,31);c.fillStyle=th[2];c.fill();txt(c,['Morning routine','After school','Bedtime routine'][s.opt||0],500,322,32,'Poppins',th[0],370,'600');
+  const it=ROUT[s.opt||0];it.forEach((t,i)=>{const y=400+i*146;c.beginPath();rr(c,90,y,820,124,24);fillA(c,th[1],i%2?.5:.8);lineA(c,th[2],.4,2);
+   c.beginPath();c.arc(170,y+62,40,0,7);c.fillStyle=th[2];c.fill();txt(c,String(i+1),170,y+64,44,'Poppins',th[0],60,'700');txtL(c,t,245,y+64,54,'Poppins',th[3],470,'600');
+   c.beginPath();rr(c,780,y+30,64,64,14);c.fillStyle='#fff';c.save();c.globalAlpha=.9;c.fill();c.restore();lineA(c,th[2],.9,4);});
+  txt(c,s.f3,500,1330,44,'Poppins',th[2],820,'600');}},
+{n:'Chore chart',cat:'Kids & education',w:1000,h:1414,L:['Child name','Week of','Note'],D:['Hamza','16 - 22 November 2026','Great helpers get a reward'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,'Chore Chart',500,200,64,'Playfair Display',th[2],860,'800');txt(c,s.f2,500,268,38,'Poppins',th[3],860,'600');
+  const R=['Make my bed','Brush teeth','Tidy my room','Do homework','Set the table','Help at home','Read a book','']; const dn=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  table(c,60,315,880,64,112,['Chore'].concat(dn),R,th,270,26);for(let j=0;j<8;j++)for(let i=0;i<7;i++)circ(c,60+270+(i+.5)*87,315+64+j*112+56,26,th);
+  txt(c,s.f3,500,1335,40,'Poppins',th[2],860,'600');}},
+{n:'School name labels',cat:'Kids & education',w:1000,h:1414,L:['Child name','Class','School name'],D:['Ayesha Khan','Class 6 - A','Bright Academy'],
+ draw(c,w,h,s,th){bg(c,w,h,th);for(let r=0;r<9;r++)for(let k=0;k<2;k++){const x=40+k*480,y=62+r*145;c.beginPath();rr(c,x,y,440,128,22);c.save();c.globalAlpha=.9;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=3;c.strokeStyle=th[2];c.stroke();
+   c.beginPath();rr(c,x,y,18,128,9);c.fillStyle=th[2];c.fill();txtL(c,s.f1,x+40,y+46,50,s.font,'#1f2937',380,'600');txtL(c,s.f2,x+40,y+90,32,'Poppins',th[2],200,'600');txtR(c,s.f3,x+420,y+90,26,'Poppins','#4b5563',190);}}},
+{n:'Notebook labels',cat:'Kids & education',w:1000,h:1414,L:['Student name','Class','School name'],D:['Ayesha Khan','Class 6 - A','Bright Academy'],
+ draw(c,w,h,s,th){bg(c,w,h,th);const sub=['Urdu','English','Mathematics','Science','Islamiyat','Social Studies','Computer','Drawing','General Knowledge','Homework','Rough Work','Diary'];
+  sub.forEach((t,i)=>{const x=40+(i%2)*480,y=50+Math.floor(i/2)*220;c.beginPath();rr(c,x,y,440,200,22);c.save();c.globalAlpha=.92;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=3;c.strokeStyle=th[2];c.stroke();
+   c.save();rr(c,x,y,440,64,22);c.clip();c.fillStyle=th[2];c.fillRect(x,y,440,64);c.restore();txt(c,t,x+220,y+33,38,'Poppins',th[0],400,'700');
+   txtL(c,'Name: '+s.f1,x+24,y+102,34,s.font,'#1f2937',400,'600');txtL(c,s.f2,x+24,y+142,30,'Poppins','#1f2937',400);txtL(c,s.f3,x+24,y+178,26,'Poppins','#4b5563',400);});}},
+{n:'Book cover page',cat:'Kids & education',w:1000,h:1414,L:['Student name','Subject','Class and school'],D:['Ayesha Khan','Mathematics','Class 6, Bright Academy'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);c.beginPath();rr(c,100,100,800,110,24);c.fillStyle=th[2];c.fill();txt(c,s.f3,500,157,44,'Poppins',th[0],740,'600');
+  [[200,330,26],[500,300,34],[800,330,26]].forEach(a=>star(c,a[0],a[1],a[2],th[2]));flourish(c,500,420,520,th[2]);wrap(c,s.f2,500,640,780,190,160,'Playfair Display',th[3],'800');flourish(c,500,880,520,th[2]);
+  c.beginPath();rr(c,140,1000,720,240,28);c.save();c.globalAlpha=.85;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=4;c.strokeStyle=th[2];c.stroke();txt(c,'Name',500,1060,34,'Poppins',th[2],400,'600');txt(c,s.f1,500,1150,84,s.font,'#1f2937',660);}},
+{n:'Numbers 1 to 100 chart',cat:'Kids & education',w:1000,h:1414,L:['Child name','Chart title','Footer line'],D:['Ayesha','Numbers 1 to 100','Count with me!'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,s.f2,500,205,62,'Playfair Display',th[2],860,'800');
+  for(let n=1;n<=100;n++){const r=Math.floor((n-1)/10),k=(n-1)%10,x=60+k*88,y=290+r*88;c.beginPath();rr(c,x+3,y+3,82,82,12);c.save();c.globalAlpha=.9;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=3;c.strokeStyle=RAIN[r%6];c.stroke();txt(c,String(n),x+44,y+45,n<100?38:30,'Poppins',RAIN[r%6],74,'700');}
+  txt(c,s.f3,500,1260,44,'Poppins',th[3],860,'600');}},
+{n:'Star student award',cat:'Kids & education',w:1414,h:1000,L:['Student name','Award title','Date and teacher'],D:['Ayesha Khan','Star Student of the Week','16 November 2026'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);starP(c,707,205,95);c.fillStyle=th[2];c.fill();txt(c,s.f2,707,405,82,'Playfair Display',th[2],1100,'800');txt(c,'This award is proudly given to',707,495,38,'Poppins',th[3],1000);
+  txt(c,s.f1,707,625,150,s.font,th[3],1100);flourish(c,707,735,520,th[2]);txt(c,'for working hard and being a great classmate',707,815,38,'Poppins',th[3],1000);txt(c,s.f3,707,910,34,'Poppins',th[2],1000,'600');}}
 ];
 
 /* ---- rendering ---- */
@@ -240,7 +321,7 @@ function render(cv,i,k,wm){try{const t=T[i];cv.width=Math.round(t.w*k);cv.height
 let raf,tmr;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>render($('view'),cur,.6,!unlocked));clearTimeout(tmr);tmr=setTimeout(()=>document.querySelectorAll('.tpl canvas').forEach((cv,i)=>render(cv,i,.12,false)),250);}
 
 /* ---- UI ---- */
-const CATS=['All','Calendars & planners','Cards & posters'];
+const CATS=['All','Calendars & planners','Kids & education','Cards & posters'];
 function showCat(cat,keep){document.querySelectorAll('#cats .cat').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c==cat));let first=-1;document.querySelectorAll('.tpl').forEach((b,i)=>{const ok=cat=='All'||(T[i].cat||'Cards & posters')==cat;b.hidden=!ok;if(ok&&first<0)first=i;});if(!keep&&first>=0)pick(first);else draw();}
 function build(){const box=$('tpls');T.forEach((t,i)=>{const b=document.createElement('button');b.className='tpl';b.innerHTML='<canvas></canvas><span>'+t.n+'</span>';b.onclick=()=>pick(i);box.appendChild(b);});
  CATS.forEach(k=>{const b=document.createElement('button');b.className='cat';b.dataset.c=k;b.textContent=k;b.onclick=()=>showCat(k);$('cats').appendChild(b);});
