@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Personalized Printables Maker: Custom Posters, Certificates & Cards</title>
-<meta name="description" content="Make personalized printables online: custom birthday posters, name meaning posters, certificates, wedding signs, baby announcements and chore charts. Print-ready PDF and PNG.">
+<title>Personalized Printables: Calendars, Planners, Cards and Certificates | Mansoor Khan Academy</title>
+<meta name="description" content="Make personalized printables online: monthly and yearly calendars, weekly planners, habit and prayer trackers, birthday posters, wedding invitations, certificates and more. Add your name and photo, then download a print-ready PNG or PDF.">
 <link rel="canonical" href="https://mansoorkhanacademy.github.io/personalized-printables/">
-<meta property="og:type" content="website"><meta property="og:title" content="Personalized Printables Maker: Custom Posters, Certificates & Cards"><meta property="og:description" content="Make personalized printables online: custom birthday posters, name meaning posters, certificates, wedding signs, baby announcements and chore charts. Print-ready PDF and PNG."><meta property="og:url" content="https://mansoorkhanacademy.github.io/personalized-printables/">
-<meta property="og:image" content="https://mansoorkhanacademy.github.io/personalized-printables/og-image.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://mansoorkhanacademy.github.io/personalized-printables/og-image.png">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Product", "name": "Personalized Printables Maker - License Key", "image": ["https://mansoorkhanacademy.github.io/personalized-printables/og-image.png"], "description": "Create custom birthday posters, name meaning posters, certificates, wedding signs, baby announcements, chore charts and cards online. Download print-ready PNG and PDF files.", "brand": {"@type": "Brand", "name": "MansoorKhanAcademy"}, "offers": {"@type": "Offer", "price": "7.00", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "url": "https://mansoorkhan416.gumroad.com/l/atqiui"}}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I personalize a printable?", "acceptedAnswer": {"@type": "Answer", "text": "Choose a design, type the name and text, add a photo if the design has one, and pick colors and a name style. The preview updates as you type."}}, {"@type": "Question", "name": "What file formats do I get?", "acceptedAnswer": {"@type": "Answer", "text": "You can download a high-resolution PNG or a print-ready PDF in A4 or US Letter size."}}, {"@type": "Question", "name": "Are my photos uploaded to a server?", "acceptedAnswer": {"@type": "Answer", "text": "No. Photos stay in your browser and are never uploaded or stored."}}, {"@type": "Question", "name": "How many downloads does a license key include?", "acceptedAnswer": {"@type": "Answer", "text": "One license key includes up to 20 downloads (PNG or PDF) of any design on this page."}}, {"@type": "Question", "name": "Can I use the printables for parties, classrooms and gifts?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The files are for personal use such as parties, classrooms, gifts and home. Please do not resell the designs."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Personalized Printables Studio","url":"https://mansoorkhanacademy.github.io/personalized-printables/","applicationCategory":"DesignApplication","operatingSystem":"Any","description":"Online studio for personalized printable calendars, planners, trackers, cards and certificates with name, photo, colors and Urdu support.","publisher":{"@type":"Organization","name":"Mansoor Khan Academy","url":"https://mansoorkhanacademy.github.io/"}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@600;800&family=Poppins:wght@400;600&family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#eef2f7;--panel:#fff;--ink:#16213a;--mute:#5b6784;--line:#d9e0ec;--acc:#0f766e;--hot:#d6246e}
@@ -38,15 +35,16 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 .dl{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 #msg{font-size:14px;margin-top:10px;min-height:20px}#msg.bad{color:#b42318}#msg.ok{color:var(--acc)}
 .note{font-size:13px;color:var(--mute);margin-top:12px}
-.info{max-width:1120px;margin:0 auto;padding:8px 20px 56px}.info h2{font-size:22px;margin:32px 0 8px}.info p,.info li{color:var(--mute);max-width:70ch}.info a{color:var(--acc)}.info details{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:8px 0;max-width:70ch}.info summary{font-weight:600;cursor:pointer}
+.cats{display:flex;gap:8px;flex-wrap:wrap;padding:6px 2px 0}.cat{font:600 14px Poppins,sans-serif;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}.cat[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}.tpl[hidden]{display:none}
 @media(max-width:820px){.grid{grid-template-columns:1fr}}
 </style></head>
 <body>
 <header>
-<h1>Personalized printables maker: custom posters, certificates and cards</h1>
-<p>Pick a design, type a name, add a photo and watch it update. Then download a print-ready PDF or PNG for birthdays, weddings, baby showers, classrooms and gifts.</p>
+<h1>Personalized printables studio</h1>
+<p>Calendars, planners, trackers, cards and certificates. Pick a design, type your name, add a photo and watch it update. Unlock your license key to download a clean, print-ready PNG or PDF.</p>
 </header>
 <main>
+<div class="cats" id="cats" role="group" aria-label="Categories"></div>
 <div class="tpls" id="tpls" role="group" aria-label="Printable designs"></div>
 <div class="grid">
 <section class="card" aria-label="Personalize">
@@ -54,12 +52,12 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 <label for="f2" id="l2"></label><input type="text" id="f2">
 <label for="f3" id="l3"></label><input type="text" id="f3">
 <div id="phbox"><label for="photo">Photo (stays in your browser)</label><input type="file" id="photo" accept="image/*"></div>
+<div id="optbox" style="display:none"><label for="opt" id="lo"></label><select id="opt"></select></div>
 <div class="row">
 <div><label for="theme">Colors</label><select id="theme"></select></div>
 <div><label for="font">Name style</label><select id="font"></select></div>
 </div>
-<label for="paper">PDF paper size</label><select id="paper"><option value="a4">A4</option><option value="letter">US Letter</option></select>
-<p class="note">Arabic and Urdu names switch to a matching font automatically.</p>
+<p class="note">Urdu and Arabic names switch to a Nastaliq font automatically.</p>
 </section>
 <section class="stage">
 <canvas id="view" aria-label="Live preview"></canvas>
@@ -75,14 +73,6 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 </section>
 </div>
 </main>
-<section class="info">
-<h2>Custom printables you can make online</h2>
-<p>Create personalized printables in your browser with no design skills. Each design updates live while you type, so you can see the finished poster, card or chart before you download.</p>
-<ul><li><a href="#birthday-poster">Personalized birthday poster printable</a>: Add a name, age, date and photo to a custom birthday poster.</li><li><a href="#name-meaning">Name meaning poster</a>: A custom name meaning print with the name, meaning and origin.</li><li><a href="#welcome-sign">Welcome sign printable</a>: Welcome guests to a party, reunion or event by name.</li><li><a href="#certificate">Custom certificate template</a>: Award certificates with the recipient name, title and date.</li><li><a href="#eid-card">Eid and Ramadan card</a>: A printable Eid card with a family name and a personal message.</li><li><a href="#photo-frame">Photo frame print</a>: A framed photo with a name, caption and date.</li><li><a href="#baby-announcement">Baby announcement printable</a>: Share a baby name, details, birth date and photo.</li><li><a href="#wedding-sign">Wedding welcome sign</a>: A wedding sign with the couple, a line of text, date and venue.</li><li><a href="#chore-chart">Kids chore chart printable</a>: A weekly chart with the child name, ready to print and fill in.</li><li><a href="#holiday-card">Holiday card printable</a>: A holiday greeting card with a family name and message.</li></ul>
-<h2>How it works</h2>
-<ol><li>Choose a design and type the name and text.</li><li>Add a photo, pick colors and a name style.</li><li>Buy a license key, paste it above and download a print-ready PDF or PNG.</li></ol>
-<h2>Frequently asked questions</h2><details><summary>How do I personalize a printable?</summary><p>Choose a design, type the name and text, add a photo if the design has one, and pick colors and a name style. The preview updates as you type.</p></details><details><summary>What file formats do I get?</summary><p>You can download a high-resolution PNG or a print-ready PDF in A4 or US Letter size.</p></details><details><summary>Are my photos uploaded to a server?</summary><p>No. Photos stay in your browser and are never uploaded or stored.</p></details><details><summary>How many downloads does a license key include?</summary><p>One license key includes up to 20 downloads (PNG or PDF) of any design on this page.</p></details><details><summary>Can I use the printables for parties, classrooms and gifts?</summary><p>Yes. The files are for personal use such as parties, classrooms, gifts and home. Please do not resell the designs.</p></details>
-</section>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 /* ===== SET THESE ===== */
@@ -95,9 +85,9 @@ const CONFIG={
 };
 /* ===================== */
 const $=id=>document.getElementById(id);
-const THEMES={Rose:['#fff1f2','#fecdd3','#e11d48','#4c0519'],Ocean:['#ecfeff','#bae6fd','#0284c7','#0c2a4a'],Emerald:['#ecfdf5','#a7f3d0','#047857','#052e1b'],Lavender:['#f5f3ff','#ddd6fe','#7c3aed','#2e1065'],'Gold on black':['#1c1917','#292524','#f5c451','#fef3c7']};
+const THEMES={Rose:['#fff1f2','#fecdd3','#e11d48','#4c0519'],Ocean:['#ecfeff','#bae6fd','#0284c7','#0c2a4a'],Emerald:['#ecfdf5','#a7f3d0','#047857','#052e1b'],Lavender:['#f5f3ff','#ddd6fe','#7c3aed','#2e1065'],'Gold on black':['#1c1917','#292524','#f5c451','#fef3c7'],Sunset:['#fff7ed','#fed7aa','#ea580c','#431407'],Mint:['#f0fdfa','#99f6e4','#0d9488','#134e4a'],'Black and white':['#ffffff','#f3f4f6','#111827','#111827']};
 const FONTS=['Pacifico','Playfair Display','Poppins','Amiri','Noto Nastaliq Urdu'];
-const S={f1:'',f2:'',f3:'',img:null,font:'Pacifico'};
+const S={f1:'',f2:'',f3:'',img:null,font:'Pacifico',opt:0};
 let cur=0,theme='Rose',unlocked=false;
 
 /* ---- drawing helpers (design units, scaled by render) ---- */
@@ -115,52 +105,134 @@ function photo(c,img,x,y,r,th){c.save();c.beginPath();c.arc(x,y,r,0,7);c.clip();
 function moon(c,x,y,r,col){const k=c.getTransform().a,o=document.createElement('canvas');o.width=o.height=Math.ceil(2.4*r*k);const g=o.getContext('2d');g.scale(k,k);g.fillStyle=col;g.beginPath();g.arc(1.2*r,1.2*r,r,0,7);g.fill();g.globalCompositeOperation='destination-out';g.beginPath();g.arc(1.2*r+r*.4,1.2*r-r*.15,r*.85,0,7);g.fill();c.drawImage(o,x-1.2*r,y-1.2*r,2.4*r,2.4*r);}
 function wmark(c,w,h){c.save();c.globalAlpha=.18;c.fillStyle='#000';c.textAlign='center';c.direction='ltr';c.font='600 46px Poppins,sans-serif';const m='PREVIEW - '+CONFIG.brand,tw=c.measureText(m).width+200;c.translate(w/2,h/2);c.rotate(-.5);for(let y=-1400,r=0;y<1400;y+=260,r++)for(let x=-1800+(r%2?tw/2:0);x<1800;x+=tw)c.fillText(m,x,y);c.restore();}
 
+/* ---- calendar and layout helpers ---- */
+const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYF=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+function MY(str){const t=(str||'').toLowerCase();let m=-1;MN.forEach((n,i)=>{if(m<0&&t.indexOf(n.slice(0,3).toLowerCase())>-1)m=i;});const y=(t.match(/\b(19|20)\d{2}\b/)||[])[0],now=new Date();return{m:m<0?now.getMonth():m,y:y?+y:now.getFullYear()};}
+function dim(y,m){return new Date(y,m+1,0).getDate();}
+function offs(y,m){const f=new Date(y,m,1).getDay();return S.opt==1?f:(f+6)%7;}
+function dnames(f){const a=f?DAYF.slice():['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];if(S.opt==1){a.unshift(a.pop());}return a;}
+function sunCol(){return S.opt==1?0:6;}
+function txtL(c,t,x,y,size,fam,col,maxW,wt){c.textAlign='left';txt(c,t,x,y,size,fam,col,maxW,wt);c.textAlign='center';}
+function txtR(c,t,x,y,size,fam,col,maxW,wt){c.textAlign='right';txt(c,t,x,y,size,fam,col,maxW,wt);c.textAlign='center';}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function fillA(c,col,a){c.save();c.globalAlpha=a;c.fillStyle=col;c.fill();c.restore();}
+function lineA(c,col,a,lw){c.save();c.globalAlpha=a;c.strokeStyle=col;c.lineWidth=lw||2;c.stroke();c.restore();}
+function flourish(c,x,y,w,col){c.save();c.strokeStyle=col;c.lineWidth=3;c.beginPath();c.moveTo(x-w/2,y);c.lineTo(x-16,y);c.moveTo(x+16,y);c.lineTo(x+w/2,y);c.stroke();c.fillStyle=col;c.translate(x,y);c.rotate(Math.PI/4);c.fillRect(-7,-7,14,14);c.restore();}
+function miniMonth(c,x,y,cw,yr,m,th){
+ txt(c,MN[m],x+cw/2,y+16,30,'Poppins',th[2],cw,'600');const col=cw/7,dn=dnames(0);
+ dn.forEach((d,i)=>txt(c,d[0],x+col*i+col/2,y+56,17,'Poppins',th[3],col,'600'));
+ const o=offs(yr,m),n=dim(yr,m);
+ for(let d=1;d<=n;d++){const p=o+d-1,r=Math.floor(p/7),k=p%7;txt(c,String(d),x+col*k+col/2,y+86+r*26,19,'Poppins',k==sunCol()?th[2]:th[3],col,k==sunCol()?'600':'');}}
+/* generic tracker grid: rows (array of labels), days (count), landscape page */
+function tracker(c,w,h,s,th,rows,days,lab){
+ bg(c,w,h,th);
+ txtL(c,s.f1,60,95,74,s.font,th[3],760);txtR(c,s.f2,w-60,95,54,'Playfair Display',th[2],560,'800');
+ txt(c,s.f3,w/2,175,36,'Poppins',th[3],1100);
+ const LW=270,gx=50,gy=235,hh=52,R=rows.length,rh=(h-60-gy-hh)/R,dw=(w-2*gx-LW)/days,tw=LW+days*dw;
+ c.beginPath();rr(c,gx,gy,tw,hh,10);c.fillStyle=th[2];c.fill();
+ txtL(c,lab||'',gx+16,gy+hh/2+1,26,'Poppins',th[0],LW-24,'600');for(let d=1;d<=days;d++)txt(c,String(d),gx+LW+(d-.5)*dw,gy+hh/2+1,Math.min(24,dw*.55),'Poppins',th[0],dw,'600');
+ for(let r=0;r<R;r++){const y=gy+hh+r*rh;c.beginPath();c.rect(gx,y,tw,rh);fillA(c,th[1],r%2?.35:.7);
+  if(rows[r])txtL(c,rows[r],gx+16,y+rh/2+1,Math.min(36,rh*.42),'Poppins',th[3],LW-26,'600');
+  else{c.beginPath();c.moveTo(gx+16,y+rh*.72);c.lineTo(gx+LW-16,y+rh*.72);lineA(c,th[2],.45,2);}}
+ c.beginPath();for(let r=0;r<=R;r++){const y=gy+hh+r*rh;c.moveTo(gx,y);c.lineTo(gx+tw,y);}
+ for(let d=0;d<=days;d++){const x=gx+LW+d*dw;c.moveTo(x,gy+hh);c.lineTo(x,gy+hh+R*rh);}c.moveTo(gx,gy+hh);c.lineTo(gx,gy+hh+R*rh);lineA(c,th[2],.4,1.5);}
+/* generic table grid for portrait/landscape planners */
+function table(c,x,y,w,hdrH,rowH,cols,rows,th,firstW,hdrSize){
+ const n=cols.length,cw=(w-firstW)/(n-1);
+ c.beginPath();rr(c,x,y,w,hdrH,10);c.fillStyle=th[2];c.fill();
+ cols.forEach((t,i)=>{if(t)txt(c,t,i==0?x+firstW/2:x+firstW+(i-.5)*cw,y+hdrH/2+1,hdrSize||28,'Poppins',th[0],(i==0?firstW:cw)-10,'600');});
+ rows.forEach((r,j)=>{const yy=y+hdrH+j*rowH;c.beginPath();c.rect(x,yy,w,rowH);fillA(c,th[1],j%2?.35:.7);
+  c.beginPath();c.rect(x,yy,firstW,rowH);fillA(c,th[2],.14);txt(c,r,x+firstW/2,yy+rowH/2+1,Math.min(30,rowH*.3),'Poppins',th[3],firstW-14,'600');});
+ c.beginPath();for(let j=0;j<=rows.length;j++){const yy=y+hdrH+j*rowH;c.moveTo(x,yy);c.lineTo(x+w,yy);}
+ for(let i=0;i<=n;i++){const xx=i==0?x:(i==1?x+firstW:x+firstW+(i-1)*cw);c.moveTo(xx,y+hdrH);c.lineTo(xx,y+hdrH+rows.length*rowH);}c.moveTo(x+w,y+hdrH);c.lineTo(x+w,y+hdrH+rows.length*rowH);lineA(c,th[2],.4,1.5);}
+
 /* ---- templates ---- */
 const T=[
-{n:'Birthday poster',w:1000,h:1414,ph:1,L:['Name','Age line','Date'],D:['Emma','Turning 7!','June 14, 2027'],
+{n:'Birthday poster',w:1000,h:1414,ph:1,L:['Name','Age line','Date'],D:['Ayesha','Turning 7!','14 November 2026'],
  draw(c,w,h,s,th){bg(c,w,h,th);confetti(c,w,h,th,90);frame(c,w,h,th);
   txt(c,'HAPPY BIRTHDAY',500,170,76,'Poppins',th[2],840,'600');photo(c,s.img,500,520,230,th);
   txt(c,s.f1,500,860,170,s.font,th[3],820);txt(c,s.f2,500,1030,80,'Poppins',th[2],820,'600');txt(c,s.f3,500,1180,48,'Poppins',th[3],820);}},
-{n:'Name meaning',w:1000,h:1414,L:['Name','Meaning','Origin'],D:['Emma','Whole, universal','Germanic'],
+{n:'Name meaning',w:1000,h:1414,L:['Name','Meaning','Origin'],D:['Ayesha','Alive, full of life, prosperous','Arabic'],
  draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,'A name with a beautiful meaning',500,150,40,'Poppins',th[2],800,'600');
   c.beginPath();c.moveTo(170,1250);c.lineTo(170,520);c.arc(500,520,330,Math.PI,0);c.lineTo(830,1250);c.closePath();
   c.save();c.globalAlpha=.6;c.fillStyle=th[1];c.fill();c.restore();c.strokeStyle=th[2];c.lineWidth=8;c.stroke();
   txt(c,s.f1,500,520,190,s.font,th[3],560);c.fillStyle=th[2];c.fillRect(380,650,240,5);
   txt(c,'Meaning',500,720,34,'Poppins',th[2],400,'600');wrap(c,s.f2,500,820,560,84,58,'Poppins',th[3]);
   txt(c,s.f3?'Origin: '+s.f3:'',500,1160,42,'Poppins',th[2],560,'600');}},
-{n:'Welcome sign',w:1000,h:1414,L:['Name or family','Event','Date and place'],D:['The Johnson Family','Birthday Party','Saturday, June 14 - Rosewood Hall'],
+{n:'Welcome sign',w:1000,h:1414,L:['Guest name','Event','Date and venue'],D:['Dr. Ahmed Khan','Annual Gathering 2026','20 Nov, Peshawar Hall'],
  draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,'Welcome',500,300,190,'Pacifico',th[2],800);c.fillStyle=th[2];c.fillRect(300,430,400,5);
   txt(c,s.f1,500,640,140,s.font,th[3],800);c.fillRect(300,790,400,5);txt(c,s.f2,500,900,70,'Poppins',th[3],800,'600');
   txt(c,s.f3,500,1020,48,'Poppins',th[3],800);[380,500,620].forEach((x,i)=>star(c,x,1200,i==1?34:24,th[2]));}},
-{n:'Certificate',w:1414,h:1000,L:['Recipient','Certificate title','Date'],D:['Alex Morgan','Certificate of Achievement','June 14, 2027'],
+{n:'Certificate',w:1414,h:1000,L:['Recipient','Certificate title','Date'],D:['Ayesha Khan','Certificate of Achievement','14 November 2026'],
  draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f2,707,220,82,'Playfair Display',th[2],1100,'800');
   txt(c,'This certificate is proudly presented to',707,345,38,'Poppins',th[3],1000);txt(c,s.f1,707,510,150,s.font,th[3],1100);
   c.fillStyle=th[2];c.fillRect(350,610,714,4);txt(c,'in recognition of outstanding effort and dedication',707,700,36,'Poppins',th[3],1000);
   c.fillRect(190,860,360,3);c.fillRect(864,860,360,3);txt(c,s.f3,370,825,38,'Poppins',th[3],340);
   txt(c,'Date',370,900,28,'Poppins',th[2],340,'600');txt(c,'Signature',1044,900,28,'Poppins',th[2],340,'600');}},
-{n:'Eid card',w:1000,h:1414,L:['From','Greeting','Message'],D:['The Johnson Family','Eid Mubarak','Wishing you joy, peace and blessings'],
+{n:'Eid card',w:1000,h:1414,L:['From','Greeting','Message'],D:['The Khan Family','Eid Mubarak','Wishing you joy, peace and blessings'],
  draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);moon(c,500,380,170,th[2]);[[760,250,30],[300,200,22],[800,470,18],[220,420,26]].forEach(a=>star(c,a[0],a[1],a[2],th[2]));
   txt(c,s.f2,500,700,150,s.font,th[2],800);txt(c,'With love,',500,880,44,'Poppins',th[3],700);txt(c,s.f1,500,990,100,s.font,th[3],800);
   wrap(c,s.f3,500,1140,720,64,44,'Poppins',th[3]);}},
-{n:'Photo frame',w:1000,h:1414,ph:1,L:['Name','Caption','Date'],D:['Emma','Our special day','June 14, 2027'],
+{n:'Photo frame',w:1000,h:1414,ph:1,L:['Name','Caption','Date'],D:['Ayesha','Our special day','14 November 2026'],
  draw(c,w,h,s,th){c.fillStyle=th[2];c.fillRect(0,0,w,h);c.save();c.shadowColor='#0004';c.shadowBlur=30;c.fillStyle=th[0];c.fillRect(110,110,780,1050);c.restore();
   if(s.img)cover(c,s.img,150,150,700,700);else{c.fillStyle=th[1];c.fillRect(150,150,700,700);txt(c,'Add photo',500,500,60,'Poppins',th[2],600);}
   txt(c,s.f1,500,940,110,s.font,th[3],700);txt(c,s.f2,500,1040,48,'Poppins',th[2],700,'600');txt(c,s.f3,500,1100,38,'Poppins',th[3],700);}},
-{n:'Baby announcement',w:1000,h:1414,ph:1,L:['Baby name','Details','Birth date'],D:['Oliver','6 lbs 8 oz, 20 in','Born March 3, 2027'],
- draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,'Welcome little one',500,190,90,'Pacifico',th[2],820);photo(c,s.img,500,540,230,th);
-  txt(c,s.f1,500,880,160,s.font,th[3],820);txt(c,s.f2,500,1030,54,'Poppins',th[2],820,'600');txt(c,s.f3,500,1130,48,'Poppins',th[3],820);[400,500,600].forEach((x,i)=>star(c,x,1250,i==1?30:20,th[2]));}},
-{n:'Wedding sign',w:1000,h:1414,L:['Couple','Line under names','Date and venue'],D:['Sarah & James','are getting married','Saturday, June 14, 2027 - Rosewood Hall'],
- draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,'Celebrate with us',500,260,100,'Pacifico',th[2],820);txt(c,s.f1,500,540,150,s.font,th[3],800);c.fillStyle=th[2];c.fillRect(300,680,400,5);
-  txt(c,s.f2,500,800,60,'Playfair Display',th[3],800,'600');wrap(c,s.f3,500,960,720,64,46,'Poppins',th[3]);star(c,500,1200,30,th[2]);}},
-{n:'Chore chart',w:1000,h:1414,L:['Child name','Chart title','Week of'],D:['Emma','Weekly Chore Chart','June 14'],
- draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f2,500,140,68,'Poppins',th[2],840,'600');txt(c,s.f1,500,240,100,s.font,th[3],840);txt(c,s.f3?'Week of '+s.f3:'',500,330,36,'Poppins',th[3],840);
-  c.globalAlpha=.25;c.fillStyle=th[2];c.fillRect(100,380,800,70);c.globalAlpha=1;c.strokeStyle=th[2];c.lineWidth=3;
-  'Task,M,T,W,T,F,S,S'.split(',').forEach((d,i)=>txt(c,d,i?340+(i-1)*80+40:220,415,30,'Poppins',th[3],i?70:200,'600'));
-  for(let r=0;r<10;r++){const y=r?450+(r-1)*90:380;c.beginPath();c.moveTo(100,y);c.lineTo(900,y);c.stroke();}
-  for(let k=0;k<9;k++){const x=k?340+(k-1)*80:100;c.beginPath();c.moveTo(x,380);c.lineTo(x,1170);c.stroke();}}},
-{n:'Holiday card',w:1000,h:1414,L:['From','Greeting','Message'],D:['The Johnson Family','Happy Holidays','Warm wishes for a joyful season'],
- draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);const r=rnd(3);c.fillStyle=th[2];for(let i=0;i<60;i++){c.globalAlpha=.35;c.beginPath();c.arc(r()*w,r()*h,3+r()*7,0,7);c.fill();}c.globalAlpha=1;
-  star(c,500,360,170,th[2]);txt(c,s.f2,500,700,140,s.font,th[2],800);txt(c,'With love,',500,880,44,'Poppins',th[3],700);txt(c,s.f1,500,990,100,s.font,th[3],800);wrap(c,s.f3,500,1140,720,64,44,'Poppins',th[3]);}}
+/* ====== Calendars and planners ====== */
+{n:'Monthly calendar',cat:'Calendars & planners',w:1000,h:1414,ph:1,opt:{l:'Week starts on',v:['Monday','Sunday']},L:['Title or family name','Month and year','Note at the bottom'],D:['The Khan Family','January 2027','Family first, always'],
+ draw(c,w,h,s,th){bg(c,w,h,th);const x0=60,W=880;c.save();rr(c,x0,60,W,470,28);c.clip();
+  if(s.img)cover(c,s.img,x0,60,W,470);else{c.fillStyle=th[1];c.fillRect(x0,60,W,470);txt(c,'Add photo',500,295,60,'Poppins',th[2],600);}c.restore();
+  const mo=MY(s.f2),o=offs(mo.y,mo.m),n=dim(mo.y,mo.m),rows=Math.ceil((o+n)/7);
+  txt(c,s.f1,500,595,78,s.font,th[3],860);txt(c,MN[mo.m]+' '+mo.y,500,690,88,'Playfair Display',th[2],860,'800');
+  const gy=755,cw=W/7;c.beginPath();rr(c,x0,gy,W,52,14);c.fillStyle=th[2];c.fill();
+  dnames(0).forEach((d,i)=>txt(c,d,x0+cw*i+cw/2,gy+27,26,'Poppins',th[0],cw-8,'600'));
+  const top=gy+62,rh=(1290-top)/rows;
+  for(let r=0;r<rows;r++)for(let k=0;k<7;k++){const d=r*7+k-o+1;c.beginPath();rr(c,x0+cw*k+3,top+rh*r+3,cw-6,rh-6,10);fillA(c,th[1],d>=1&&d<=n?.6:.2);if(d>=1&&d<=n){lineA(c,th[2],.35,1.5);txtL(c,String(d),x0+cw*k+14,top+rh*r+28,28,'Poppins',k==sunCol()?th[2]:th[3],cw-20,k==sunCol()?'600':'');}}
+  txt(c,s.f3,500,1350,40,'Poppins',th[3],860);}},
+{n:'Yearly wall calendar',cat:'Calendars & planners',w:1000,h:1414,opt:{l:'Week starts on',v:['Monday','Sunday']},L:['Title or family name','Year','Tagline'],D:['The Khan Family','2027','Make every day count'],
+ draw(c,w,h,s,th){bg(c,w,h,th);const yr=+((s.f2||'').match(/\d{4}/)||[new Date().getFullYear()])[0];
+  txt(c,s.f1,500,100,76,s.font,th[3],860);txt(c,String(yr),500,205,120,'Playfair Display',th[2],860,'800');txt(c,s.f3,500,285,36,'Poppins',th[3],860);
+  const cw=(880-60)/3;for(let m=0;m<12;m++)miniMonth(c,60+(m%3)*(cw+30),335+Math.floor(m/3)*242,cw,yr,m,th);}},
+{n:'Weekly planner',cat:'Calendars & planners',w:1000,h:1414,opt:{l:'Week starts on',v:['Monday','Sunday']},L:['Planner title or name','Week of','This week\'s focus'],D:['My Week','16 - 22 November 2026','Stay consistent'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,115,92,s.font,th[3],860);txt(c,s.f2,500,208,44,'Poppins',th[2],860,'600');
+  c.beginPath();rr(c,60,255,880,80,16);fillA(c,th[1],.8);txtL(c,'Focus: '+s.f3,90,296,36,'Poppins',th[3],820,'600');
+  const dn=dnames(1),y0=365,rh=124;dn.forEach((d,i)=>{const y=y0+i*rh;c.beginPath();rr(c,60,y+4,880,rh-8,14);fillA(c,th[1],i%2?.35:.65);lineA(c,th[2],.4,1.5);
+   c.beginPath();rr(c,60,y+4,190,rh-8,14);c.fillStyle=th[2];c.fill();txt(c,d,155,y+rh/2+1,34,'Poppins',th[0],170,'600');
+   c.beginPath();c.moveTo(280,y+52);c.lineTo(915,y+52);c.moveTo(280,y+92);c.lineTo(915,y+92);lineA(c,th[2],.35,1.5);});
+  c.beginPath();rr(c,60,y0+7*rh+8,880,1340-(y0+7*rh+8),14);lineA(c,th[2],.5,2);txtL(c,'Notes',84,y0+7*rh+40,30,'Poppins',th[2],300,'600');}},
+{n:'Weekly meal planner',cat:'Calendars & planners',w:1000,h:1414,opt:{l:'Week starts on',v:['Monday','Sunday']},L:['Family or planner name','Week of','Shopping note'],D:['Our Meal Plan','16 - 22 November 2026','Buy: milk, eggs, fruit, rice'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,105,84,s.font,th[3],860);txt(c,s.f2,500,190,42,'Poppins',th[2],860,'600');
+  table(c,60,245,880,62,126,['Day','Breakfast','Lunch','Dinner'],dnames(1),th,190,30);
+  const y=245+62+7*126+28;c.beginPath();rr(c,60,y,880,1356-y,14);lineA(c,th[2],.5,2);txtL(c,'Shopping list',84,y+34,30,'Poppins',th[2],300,'600');txtL(c,s.f3,84,y+86,38,'Poppins',th[3],820);}},
+{n:'Habit tracker',cat:'Calendars & planners',w:1414,h:1000,L:['Your name','Month and year','Motto'],D:['Ayesha','January 2027','Small steps every day'],
+ draw(c,w,h,s,th){const mo=MY(s.f2);const sub={f1:s.f1,f2:MN[mo.m]+' '+mo.y,f3:s.f3,font:s.font};tracker(c,w,h,sub,th,['','','','','','','','','',''],dim(mo.y,mo.m),'My habits');}},
+{n:'Prayer tracker',cat:'Calendars & planners',w:1414,h:1000,L:['Your name','Month and year','Message'],D:['Ayesha','January 2027','Consistency in prayer'],
+ draw(c,w,h,s,th){const mo=MY(s.f2);const sub={f1:s.f1,f2:MN[mo.m]+' '+mo.y,f3:s.f3,font:s.font};tracker(c,w,h,sub,th,['Fajr','Dhuhr','Asr','Maghrib','Isha','Quran'],dim(mo.y,mo.m),'Prayer');}},
+{n:'Ramadan tracker',cat:'Calendars & planners',w:1414,h:1000,L:['Your name','Ramadan year','Message'],D:['Ayesha','Ramadan 1448','Ramadan Mubarak'],
+ draw(c,w,h,s,th){tracker(c,w,h,s,th,['Fasting','Fajr','Dhuhr','Asr','Maghrib','Isha','Taraweeh','Quran pages'],30,'Daily goals');}},
+{n:'Study timetable',cat:'Calendars & planners',w:1414,h:1000,L:['Student or school name','Class and term','Motto'],D:['Ayesha Khan','Class 6, Term 1','Learn something new every day'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txtL(c,s.f1,60,95,74,s.font,th[3],760);txtR(c,s.f2,w-60,95,50,'Playfair Display',th[2],560,'800');
+  table(c,50,170,w-100,70,104,['Day','1','2','3','4','5','6','7','8'],['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],th,190,30);
+  txt(c,s.f3,w/2,950,38,'Poppins',th[3],1100);}},
+/* ====== Cards and posters ====== */
+{n:'Wedding invitation',w:1000,h:1414,L:['Couple names','Date and time','Venue'],D:['Sara & Ali','Sunday, 14 February 2027, 7:00 pm','Rose Garden Hall, Peshawar'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,'Together with their families',500,260,42,'Poppins',th[3],760);txt(c,'invite you to celebrate the wedding of',500,325,42,'Poppins',th[3],760);
+  flourish(c,500,410,420,th[2]);txt(c,s.f1,500,560,150,s.font,th[2],800);flourish(c,500,700,420,th[2]);
+  wrap(c,s.f2,500,820,740,78,56,'Playfair Display',th[3],'600');wrap(c,s.f3,500,1000,740,66,46,'Poppins',th[3]);
+  txt(c,'Your presence will make our day special',500,1190,36,'Poppins',th[2],760,'600');[420,500,580].forEach((x,i)=>star(c,x,1270,i==1?26:18,th[2]));}},
+{n:'Baby announcement',w:1000,h:1414,ph:1,L:['Baby name','Born on','Details'],D:['Zayan','Born 3 November 2026','3.2 kg, 50 cm'],
+ draw(c,w,h,s,th){bg(c,w,h,th);confetti(c,w,h,th,22);frame(c,w,h,th);txt(c,'Welcome little one',500,170,84,'Pacifico',th[2],820);photo(c,s.img,500,520,230,th);
+  txt(c,s.f1,500,860,170,s.font,th[3],820);txt(c,s.f2,500,1010,56,'Poppins',th[2],820,'600');txt(c,s.f3,500,1100,44,'Poppins',th[3],820);[400,500,600].forEach((x,i)=>star(c,x,1250,i==1?32:22,th[2]));}},
+{n:'Thank you card',w:1414,h:1000,L:['From','Headline','Message'],D:['The Khan Family','Thank You','Thank you for celebrating with us. Your love made our day special.'],
+ draw(c,w,h,s,th){bg(c,w,h,th);confetti(c,w,h,th,14);frame(c,w,h,th);txt(c,s.f2,707,260,190,'Pacifico',th[2],1100);flourish(c,707,385,520,th[2]);
+  wrap(c,s.f3,707,520,1000,76,52,'Poppins',th[3]);txt(c,'With love,',707,740,40,'Poppins',th[3],700);txt(c,s.f1,707,840,96,s.font,th[3],1000);}},
+{n:'Kids room sign',w:1000,h:1414,L:['Name','Tagline','Extra line'],D:['Hamza','Adventures begin here','Hamza\'s Room'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);moon(c,500,270,130,th[2]);[[250,200,30],[760,170,26],[820,330,20],[180,360,22],[650,380,18]].forEach(a=>star(c,a[0],a[1],a[2],th[2]));
+  txt(c,s.f1,500,700,230,s.font,th[3],840);wrap(c,s.f2,500,920,800,80,62,'Poppins',th[2],'600');txt(c,s.f3,500,1110,48,'Poppins',th[3],800);
+  [300,400,500,600,700].forEach((x,i)=>star(c,x,1260,i==2?30:20,th[2]));}},
+{n:'Quote wall art',w:1000,h:1414,L:['Quote','Author','Small line'],D:['Make today count and the rest will follow','Mansoor Khan','Wall art'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);c.save();c.globalAlpha=.35;txt(c,'“',500,330,420,'Playfair Display',th[2],400,'800');c.restore();
+  wrap(c,s.f1,500,560,740,128,104,'Playfair Display',th[3],'800');flourish(c,500,1060,420,th[2]);txt(c,s.f2,500,1150,60,s.font,th[2],800);txt(c,s.f3,500,1240,38,'Poppins',th[3],800);}}
 ];
 
 /* ---- rendering ---- */
@@ -168,14 +240,17 @@ function render(cv,i,k,wm){try{const t=T[i];cv.width=Math.round(t.w*k);cv.height
 let raf,tmr;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>render($('view'),cur,.6,!unlocked));clearTimeout(tmr);tmr=setTimeout(()=>document.querySelectorAll('.tpl canvas').forEach((cv,i)=>render(cv,i,.12,false)),250);}
 
 /* ---- UI ---- */
+const CATS=['All','Calendars & planners','Cards & posters'];
+function showCat(cat,keep){document.querySelectorAll('#cats .cat').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c==cat));let first=-1;document.querySelectorAll('.tpl').forEach((b,i)=>{const ok=cat=='All'||(T[i].cat||'Cards & posters')==cat;b.hidden=!ok;if(ok&&first<0)first=i;});if(!keep&&first>=0)pick(first);else draw();}
 function build(){const box=$('tpls');T.forEach((t,i)=>{const b=document.createElement('button');b.className='tpl';b.innerHTML='<canvas></canvas><span>'+t.n+'</span>';b.onclick=()=>pick(i);box.appendChild(b);});
+ CATS.forEach(k=>{const b=document.createElement('button');b.className='cat';b.dataset.c=k;b.textContent=k;b.onclick=()=>showCat(k);$('cats').appendChild(b);});
  $('theme').innerHTML=Object.keys(THEMES).map(k=>`<option>${k}</option>`).join('');$('font').innerHTML=FONTS.map(f=>`<option>${f}</option>`).join('');
- $('buy').href=CONFIG.gumroadUrl;$('buy').textContent='Buy license ('+CONFIG.price+')';pick(Math.max(0,T.findIndex(t=>slug(t)==location.hash.slice(1))));}
-const slug=t=>t.n.toLowerCase().replace(/ /g,'-');
-function pick(i){cur=i;const t=T[i];try{history.replaceState(null,'','#'+slug(t));}catch(e){}['f1','f2','f3'].forEach((f,j)=>{$('l'+(j+1)).textContent=t.L[j];$(f).value=S[f]=t.D[j];});
- $('phbox').style.display=t.ph?'block':'none';document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));draw();}
+ $('buy').href=CONFIG.gumroadUrl;$('buy').textContent='Buy license ('+CONFIG.price+')';showCat('All',1);pick(0);}
+function pick(i){cur=i;const t=T[i];['f1','f2','f3'].forEach((f,j)=>{$('l'+(j+1)).textContent=t.L[j];$(f).value=S[f]=t.D[j];});
+ $('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));draw();}
 ['f1','f2','f3'].forEach(f=>$(f).addEventListener('input',e=>{S[f]=e.target.value;draw();}));
 $('theme').onchange=e=>{theme=e.target.value;draw();};
+$('opt').onchange=e=>{S.opt=+e.target.value;draw();};
 $('font').onchange=e=>{S.font=e.target.value;draw();document.fonts.load('40px "'+S.font+'"','Aa \u0627').then(draw);};
 $('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),o=document.createElement('canvas');o.width=Math.round(im.width*k);o.height=Math.round(im.height*k);o.getContext('2d').drawImage(im,0,0,o.width,o.height);S.img=o;draw();URL.revokeObjectURL(im.src);};im.onerror=()=>msg('Could not read this photo. Try a JPG or PNG.',1);im.src=URL.createObjectURL(f);};
 function msg(t,bad){const m=$('msg');m.textContent=t;m.className=bad?'bad':'ok';}
@@ -194,11 +269,10 @@ async function check(use){const key=$('key').value.trim();if(!key){msg('Paste yo
 $('unlock').onclick=()=>check(false);
 async function dl(type){if(!await check(true))return;const t=T[cur],cv=document.createElement('canvas');render(cv,cur,2.4,false);const nm=(S.f1||'printable').replace(/[^\w\u0600-\u06FF]+/g,'-');
  if(type=='png')cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm+'.png';a.click();});
- else{const ls=t.w>t.h,lt=$('paper').value=='letter',a=lt?215.9:210,b=lt?279.4:297,pw=ls?b:a,ph=ls?a:b,r=Math.min(pw/t.w,ph/t.h),p=new window.jspdf.jsPDF({orientation:ls?'l':'p',unit:'mm',format:lt?'letter':'a4'});p.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',(pw-t.w*r)/2,(ph-t.h*r)/2,t.w*r,t.h*r);p.save(nm+'.pdf');}}
+ else{const ls=t.w>t.h,p=new window.jspdf.jsPDF({orientation:ls?'l':'p',unit:'mm',format:'a4'});p.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,ls?297:210,ls?210:297);p.save(nm+'.pdf');}}
 $('png').onclick=()=>dl('png');$('pdf').onclick=()=>dl('pdf');
 
 build();
-addEventListener('hashchange',()=>{const i=T.findIndex(t=>slug(t)==location.hash.slice(1));if(i>=0){pick(i);scrollTo(0,0);}});
 if(document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',draw);
 Promise.all(FONTS.map(f=>document.fonts.load(`40px "${f}"`,'Aa \u0627'))).then(draw);
 try{const k=localStorage.getItem('lk');if(k){$('key').value=k;check(false);}}catch(e){}
