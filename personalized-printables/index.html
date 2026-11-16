@@ -22,6 +22,7 @@ main{max-width:1120px;margin:0 auto;padding:12px 20px 48px}
 .grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
 label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink);resize:vertical}
 input[type=text],select,input[type=file]{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .stage{display:flex;flex-direction:column;align-items:center;gap:16px}
@@ -35,7 +36,7 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 .dl{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
 #msg{font-size:14px;margin-top:10px;min-height:20px}#msg.bad{color:#b42318}#msg.ok{color:var(--acc)}
 .note{font-size:13px;color:var(--mute);margin-top:12px}
-.cats{display:flex;gap:8px;flex-wrap:wrap;padding:6px 2px 0}.cat{font:600 14px Poppins,sans-serif;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}.cat[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}.tpl[hidden]{display:none}
+.cats{display:flex;gap:8px;flex-wrap:nowrap;overflow-x:auto;padding:6px 2px 8px;-webkit-overflow-scrolling:touch}.cat{flex:none;white-space:nowrap;font:600 14px Poppins,sans-serif;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}.cat[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:#fff}.tpl[hidden]{display:none}
 @media(max-width:820px){.grid{grid-template-columns:1fr}}
 </style></head>
 <body>
@@ -51,6 +52,7 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 <label for="f1" id="l1"></label><input type="text" id="f1">
 <label for="f2" id="l2"></label><input type="text" id="f2">
 <label for="f3" id="l3"></label><input type="text" id="f3">
+<div id="f4box" style="display:none"><label for="f4" id="l4"></label><textarea id="f4" rows="7"></textarea></div>
 <div id="phbox"><label for="photo">Photo (stays in your browser)</label><input type="file" id="photo" accept="image/*"></div>
 <div id="optbox" style="display:none"><label for="opt" id="lo"></label><select id="opt"></select></div>
 <div class="row">
@@ -87,7 +89,7 @@ const CONFIG={
 const $=id=>document.getElementById(id);
 const THEMES={Rose:['#fff1f2','#fecdd3','#e11d48','#4c0519'],Ocean:['#ecfeff','#bae6fd','#0284c7','#0c2a4a'],Emerald:['#ecfdf5','#a7f3d0','#047857','#052e1b'],Lavender:['#f5f3ff','#ddd6fe','#7c3aed','#2e1065'],'Gold on black':['#1c1917','#292524','#f5c451','#fef3c7'],Sunset:['#fff7ed','#fed7aa','#ea580c','#431407'],Mint:['#f0fdfa','#99f6e4','#0d9488','#134e4a'],'Black and white':['#ffffff','#f3f4f6','#111827','#111827']};
 const FONTS=['Pacifico','Playfair Display','Poppins','Amiri','Noto Nastaliq Urdu'];
-const S={f1:'',f2:'',f3:'',img:null,font:'Pacifico',opt:0};
+const S={f1:'',f2:'',f3:'',img:null,font:'Pacifico',opt:0,f4:''};
 let cur=0,theme='Rose',unlocked=false;
 
 /* ---- drawing helpers (design units, scaled by render) ---- */
@@ -163,6 +165,36 @@ const URDU=['ا','ب','پ','ت','ٹ','ث','ج','چ','ح','خ','د','ڈ','ذ','ر
 const ROUT=[['Wake up','Brush teeth','Wash face','Get dressed','Eat breakfast','Pack school bag'],['Change clothes','Eat lunch','Rest time','Do homework','Play time','Help at home'],['Eat dinner','Take a bath','Brush teeth','Put on pajamas','Read a story','Go to bed']];
 function rewardBox(c,s,th,y,h){c.beginPath();rr(c,60,y,880,h,22);fillA(c,th[1],.8);lineA(c,th[2],.6,3);starP(c,160,y+h/2,Math.min(70,h*.3));c.fillStyle=th[2];c.fill();txtL(c,'My reward',270,y+h*.32,36,'Poppins',th[2],620,'600');wrapL(c,s.f3,270,y+h*.62,640,44,38,'Poppins',th[3]);}
 function wrapL(c,t,x,y,maxW,lh,size,fam,col){c.textAlign='left';wrap(c,t,x,y,maxW,lh,size,fam,col);c.textAlign='center';}
+
+
+/* ---- more helpers: money, lists, boxes ---- */
+function fmt(n){return Number(n).toLocaleString('en-US',{maximumFractionDigits:2});}
+function lines(t){return (t||'').split('\n').map(x=>x.trim()).filter(Boolean);}
+function mw(c,t,size,fam,wt){c.save();setF(c,t,size,fam,wt);const m=c.measureText(t).width;c.restore();return m;}
+function secBox(c,x,y,w,title,rows,rowH,th,cur){c.beginPath();rr(c,x,y,w,46,12);c.fillStyle=th[2];c.fill();txtL(c,title,x+16,y+24,28,'Poppins',th[0],w-110,'600');if(cur)txtR(c,cur,x+w-14,y+24,24,'Poppins',th[0],80,'600');
+ rows.forEach((r,i)=>{const yy=y+46+i*rowH;c.beginPath();c.rect(x,yy,w,rowH);fillA(c,th[1],i%2?.3:.6);if(r)txtL(c,r,x+14,yy+rowH/2+1,26,'Poppins',th[3],w-230,'');tline(c,x+w-200,x+w-14,yy+rowH-12,th[2],.6,2);});
+ c.beginPath();c.rect(x,y,w,46+rows.length*rowH);lineA(c,th[2],.5,2);}
+function pennant(c,x,y,fw,fh,col,ch){c.beginPath();c.moveTo(x,y);c.lineTo(x+fw,y);c.lineTo(x+fw/2,y+fh);c.closePath();c.fillStyle=col;c.fill();if(ch)txt(c,ch,x+fw/2,y+fh*.33,fw*.52,'Poppins','#fff',fw*.8,'700');}
+function bunting(c,text,y0,w,th){const ch=(text||'').toUpperCase().split(''),u=ch.reduce((a,k)=>a+(k==' '?.5:1),0),fw=Math.min(125,(w-160)/Math.max(u,1)),tot=u*fw,x0=(w-tot)/2,sag=36;
+ const yy=x=>y0+sag*Math.sin(Math.PI*(x-x0)/Math.max(tot,1));c.beginPath();for(let x=x0-30;x<=x0+tot+30;x+=10){const t=Math.min(Math.max(x,x0),x0+tot);c.lineTo(x,yy(t));}lineA(c,th[3],.8,4);
+ let x=x0,i=0;ch.forEach(k=>{if(k==' '){x+=fw*.5;return;}const cy=yy(x+fw/2);pennant(c,x+4,cy,fw-8,fw*1.2,RAIN[i%6],k);x+=fw;i++;});}
+function tag(c,x,y,w,h,th){c.beginPath();c.moveTo(x+44,y);c.lineTo(x+w-44,y);c.lineTo(x+w,y+44);c.lineTo(x+w,y+h);c.lineTo(x,y+h);c.lineTo(x,y+44);c.closePath();c.save();c.globalAlpha=.92;c.fillStyle='#fff';c.fill();c.restore();c.setLineDash([8,6]);c.lineWidth=2.5;c.strokeStyle=th[2];c.stroke();c.setLineDash([]);c.beginPath();c.arc(x+w/2,y+40,13,0,7);c.fillStyle=th[1];c.fill();c.strokeStyle=th[2];c.lineWidth=2.5;c.stroke();}
+function money(t){return parseFloat(String(t||'').replace(/[^\d.]/g,''))||0;}
+function curOf(t){return ((String(t||'').match(/^[^\d]*/)||[''])[0]||'').trim();}
+
+
+/* ---- text-block helpers: sections, paragraphs, checklists ---- */
+function secs(t){const out=[];let cur=null;(t||'').split('\n').forEach(l=>{const x=l.trim();if(!x)return;if(x[0]=='#'){cur={h:x.replace(/^#+\s*/,''),it:[]};out.push(cur);}else{if(!cur){cur={h:'',it:[]};out.push(cur);}cur.it.push(x);}});return out;}
+function paraL(c,t,x,y,maxW,lh,size,fam,col,wt){c.save();c.textAlign='left';c.fillStyle=col;const ws=String(t).split(' ');let ln='';setF(c,t,size,fam,wt);
+ for(const w of ws){const test=ln?ln+' '+w:w;if(c.measureText(test).width>maxW&&ln){c.fillText(ln,x,y);y+=lh;ln=w;}else ln=test;}if(ln){c.fillText(ln,x,y);y+=lh;}c.restore();return y;}
+function checkList(c,t,x,y,w,h,cols,th,size){const rh=size*1.95,per=Math.max(1,Math.floor(h/rh)),cw=(w-(cols-1)*30)/cols,rows=[];
+ secs(t).forEach(s0=>{if(s0.h)rows.push({h:s0.h});s0.it.forEach(i=>rows.push({i}));});
+ let col=0,r=0;rows.forEach((o,k)=>{if(o.h&&r>=per-1){col++;r=0;}if(r>=per){col++;r=0;}if(col>=cols)return;const cx=x+col*(cw+30),cy=y+r*rh+rh/2;
+  if(o.h){txtL(c,o.h.toUpperCase(),cx,cy,size*.95,'Poppins',th[2],cw,'700');tline(c,cx,cx+cw,cy+size*.7,th[2],.6,2);}
+  else{c.beginPath();rr(c,cx,cy-size*.45,size*.9,size*.9,6);c.save();c.globalAlpha=.9;c.fillStyle='#fff';c.fill();c.restore();lineA(c,th[2],.9,2.5);txtL(c,o.i,cx+size*1.35,cy+1,size,'Poppins',th[3],cw-size*1.5,'');}r++;});}
+function resumeBody(c,t,x,y,w,maxY,th){secs(t).forEach(s0=>{if(y>maxY)return;if(s0.h){y+=10;txtL(c,s0.h.toUpperCase(),x,y,28,'Poppins',th[2],w,'700');tline(c,x,x+w,y+20,th[2],.6,2);y+=52;}
+ s0.it.forEach(l=>{if(y>maxY)return;if(l[0]=='-'){c.fillStyle=th[2];c.beginPath();c.arc(x+8,y-4,4,0,7);c.fill();y=paraL(c,l.replace(/^-+\s*/,''),x+28,y,w-28,36,26,'Poppins',th[3],'');}else y=paraL(c,l,x,y,w,38,27,'Poppins',th[3],'600');});});}
+function stars5(c,x,y,R,th){for(let i=0;i<5;i++){starP(c,x+i*R*2.3,y,R);lineA(c,th[2],.8,2);}}
 
 /* ---- templates ---- */
 const T=[
@@ -313,7 +345,173 @@ const T=[
   txt(c,s.f3,500,1260,44,'Poppins',th[3],860,'600');}},
 {n:'Star student award',cat:'Kids & education',w:1414,h:1000,L:['Student name','Award title','Date and teacher'],D:['Ayesha Khan','Star Student of the Week','16 November 2026'],
  draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);starP(c,707,205,95);c.fillStyle=th[2];c.fill();txt(c,s.f2,707,405,82,'Playfair Display',th[2],1100,'800');txt(c,'This award is proudly given to',707,495,38,'Poppins',th[3],1000);
-  txt(c,s.f1,707,625,150,s.font,th[3],1100);flourish(c,707,735,520,th[2]);txt(c,'for working hard and being a great classmate',707,815,38,'Poppins',th[3],1000);txt(c,s.f3,707,910,34,'Poppins',th[2],1000,'600');}}
+  txt(c,s.f1,707,625,150,s.font,th[3],1100);flourish(c,707,735,520,th[2]);txt(c,'for working hard and being a great classmate',707,815,38,'Poppins',th[3],1000);txt(c,s.f3,707,910,34,'Poppins',th[2],1000,'600');}},
+/* ====== Budget and finance ====== */
+{n:'Monthly budget planner',cat:'Budget & finance',w:1000,h:1414,L:['Title or name','Month and year','Currency'],D:['My Budget','January 2027','Rs'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,95,86,s.font,th[3],860);txt(c,s.f2,500,180,50,'Playfair Display',th[2],860,'800');
+  ['Income','Expenses','Savings'].forEach((t,i)=>{const x=60+i*300;c.beginPath();rr(c,x,225,280,120,18);fillA(c,th[1],.85);lineA(c,th[2],.7,3);txt(c,t,x+140,262,30,'Poppins',th[2],240,'700');tline(c,x+30,x+250,322,th[2],.7,2);txt(c,s.f3,x+50,318,24,'Poppins',th[3],70,'600');});
+  secBox(c,60,380,430,'Income',['Salary','Business','Other',''],52,th,s.f3);secBox(c,510,380,430,'Savings goals',['','','',''],52,th,s.f3);
+  secBox(c,60,665,430,'Fixed expenses',['Rent','Electricity','Gas / Water','Internet','Phone','School fees','Loans','Other'],52,th,s.f3);
+  secBox(c,510,665,430,'Variable expenses',['Groceries','Transport / Fuel','Medical','Eating out','Shopping','Gifts','Bills','Other'],52,th,s.f3);
+  c.beginPath();rr(c,60,1160,880,190,16);lineA(c,th[2],.6,3);txtL(c,'Notes',84,1195,30,'Poppins',th[2],300,'600');}},
+{n:'Expense tracker',cat:'Budget & finance',w:1000,h:1414,L:['Title or name','Month and year','Currency'],D:['Expense Tracker','January 2027','Rs'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,95,86,s.font,th[3],860);txt(c,s.f2,500,180,48,'Playfair Display',th[2],860,'800');
+  table(c,60,235,880,58,44,['Date','Item','Category','Amount ('+s.f3+')'],new Array(22).fill(''),th,150,28);
+  c.beginPath();rr(c,560,1300,380,70,14);fillA(c,th[1],.9);lineA(c,th[2],.7,3);txtL(c,'Total',580,1336,32,'Poppins',th[2],120,'700');tline(c,690,920,1352,th[2],.7,2);}},
+{n:'Savings challenge (52 weeks)',cat:'Budget & finance',w:1000,h:1414,L:['Title or name','Weekly step amount (number)','Currency'],D:['My Savings Goal','100','Rs'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,88,s.font,th[3],860);const st=money(s.f2)||100,cur=(s.f3||'').trim();txt(c,'52-Week Savings Challenge',500,195,50,'Playfair Display',th[2],860,'800');
+  txt(c,'Save '+cur+' '+fmt(st)+' in week 1, '+cur+' '+fmt(st*2)+' in week 2, and keep going',500,255,28,'Poppins',th[3],860);
+  for(let i=1;i<=52;i++){const col=(i-1)%8,row=Math.floor((i-1)/8),x=60+col*110,y=300+row*118;c.beginPath();rr(c,x,y,100,106,14);c.save();c.globalAlpha=.9;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=3;c.strokeStyle=RAIN[row%6];c.stroke();
+   txtL(c,'Week '+i,x+10,y+20,18,'Poppins','#6b7280',80,'600');txt(c,cur+' '+fmt(st*i),x+50,y+64,i>=40?22:25,'Poppins',RAIN[row%6],92,'700');}
+  c.beginPath();rr(c,60,1195,880,150,22);fillA(c,th[1],.9);lineA(c,th[2],.8,3);txt(c,'Total saved in 52 weeks',500,1245,36,'Poppins',th[3],820,'600');txt(c,cur+' '+fmt(st*1378),500,1305,70,'Poppins',th[2],820,'700');}},
+{n:'Bill payment tracker',cat:'Budget & finance',w:1000,h:1414,L:['Title or name','Month and year','Note'],D:['Monthly Bills','January 2027','Pay on time, avoid late fees'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,95,86,s.font,th[3],860);txt(c,s.f2,500,180,48,'Playfair Display',th[2],860,'800');
+  table(c,60,235,880,60,72,['Bill','Due date','Amount','Paid'],new Array(14).fill(''),th,310,30);txt(c,s.f3,500,1345,38,'Poppins',th[3],860,'600');}},
+{n:'Debt payoff tracker',cat:'Budget & finance',w:1000,h:1414,L:['Title or name','Start date','Motto'],D:['Debt Payoff Tracker','January 2027','One payment at a time'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,95,80,s.font,th[3],860);txt(c,s.f2,500,180,46,'Playfair Display',th[2],860,'800');
+  table(c,60,235,880,60,84,['Debt','Total','Paid','Remaining','Due date'],new Array(10).fill(''),th,260,28);
+  txtL(c,'My progress',70,1190,34,'Poppins',th[2],400,'700');for(let i=0;i<4;i++){c.beginPath();rr(c,60+i*222,1215,214,64,14);fillA(c,th[1],.9);lineA(c,th[2],.8,3);txt(c,(i+1)*25+'%',60+i*222+107,1248,30,'Poppins',th[3],180,'700');}
+  txt(c,s.f3,500,1340,40,'Poppins',th[3],860,'600');}},
+/* ====== Teachers and classroom ====== */
+{n:'Attendance register',cat:'Teachers & classroom',w:1414,h:1000,L:['Class','Month and year','Teacher name'],D:['Class 6 - A','January 2027','Teacher: Ms. Sara'],
+ draw(c,w,h,s,th){const mo=MY(s.f2);const rows=[];for(let i=1;i<=24;i++)rows.push(String(i)+'.');tracker(c,w,h,{f1:s.f1,f2:MN[mo.m]+' '+mo.y,f3:s.f3,font:s.font},th,rows,dim(mo.y,mo.m),'Student name');}},
+{n:'Weekly lesson plan',cat:'Teachers & classroom',w:1414,h:1000,L:['Teacher or class','Week of','Note'],D:['Class 6 - A','16 - 20 November 2026','Plan, teach, reflect'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txtL(c,s.f1,60,90,70,s.font,th[3],760);txtR(c,s.f2,w-60,90,46,'Playfair Display',th[2],560,'800');
+  table(c,50,165,w-100,64,108,['Subject','Monday','Tuesday','Wednesday','Thursday','Friday'],['','','','','',''],th,230,28);txt(c,s.f3,w/2,950,38,'Poppins',th[3],1100,'600');}},
+{n:'Classroom seating chart',cat:'Teachers & classroom',w:1414,h:1000,L:['Class','Term or date','Note'],D:['Class 6 - A','Term 1, 2027','Front row for students who need help'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txtL(c,s.f1,60,90,70,s.font,th[3],760);txtR(c,s.f2,w-60,90,46,'Playfair Display',th[2],560,'800');
+  c.beginPath();rr(c,307,160,800,56,14);c.fillStyle=th[2];c.fill();txt(c,'Board',707,189,30,'Poppins',th[0],300,'700');c.beginPath();rr(c,557,232,300,62,14);fillA(c,th[1],.95);lineA(c,th[2],.9,3);txt(c,'Teacher\'s desk',707,264,28,'Poppins',th[3],260,'600');
+  for(let r=0;r<5;r++)for(let k=0;k<6;k++){const x=62+k*220,y=325+r*120;c.beginPath();rr(c,x,y,190,92,16);c.save();c.globalAlpha=.9;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=3;c.strokeStyle=th[2];c.stroke();tline(c,x+20,x+170,y+66,th[2],.5,2);}
+  txt(c,s.f3,707,955,34,'Poppins',th[3],1100,'600');}},
+{n:'Classroom rules poster',cat:'Teachers & classroom',w:1000,h:1414,L:['Class name','Poster title','Footer line'],D:['Class 6 - A','Our Class Rules','Together we learn and grow'],L4:'Rules (one per line)',D4:'Be kind and respectful\nListen when others speak\nRaise your hand to talk\nKeep our class clean\nDo your best every day\nBe on time',
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,140,90,s.font,th[3],820);txt(c,s.f2,500,245,68,'Playfair Display',th[2],820,'800');flourish(c,500,315,520,th[2]);
+  const R=lines(s.f4).slice(0,8),rh=Math.min(130,900/Math.max(R.length,1));R.forEach((t,i)=>{const y=370+i*rh;c.beginPath();rr(c,100,y,800,rh-16,20);fillA(c,th[1],i%2?.5:.85);lineA(c,th[2],.4,2);c.beginPath();c.arc(170,y+(rh-16)/2,32,0,7);c.fillStyle=RAIN[i%6];c.fill();txt(c,String(i+1),170,y+(rh-16)/2+2,36,'Poppins','#fff',50,'700');txtL(c,t,230,y+(rh-16)/2+1,Math.min(44,rh*.36),'Poppins',th[3],650,'600');});
+  txt(c,s.f3,500,1330,42,'Poppins',th[2],820,'600');}},
+{n:'Homework tracker',cat:'Teachers & classroom',w:1000,h:1414,L:['Student name','Week of','Goal'],D:['Hamza','16 - 20 November 2026','Finish homework before play'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,'Homework Tracker',500,200,62,'Playfair Display',th[2],860,'800');txt(c,s.f2,500,268,38,'Poppins',th[3],860,'600');
+  const R=['Urdu','English','Mathematics','Science','Islamiyat','Social Studies','Computer','Other'];table(c,60,315,880,64,112,['Subject','Mon','Tue','Wed','Thu','Fri'],R,th,310,28);
+  for(let j=0;j<8;j++)for(let i=0;i<5;i++)circ(c,60+310+(i+.5)*114,315+64+j*112+56,28,th);txt(c,s.f3,500,1335,40,'Poppins',th[2],860,'600');}},
+/* ====== Party and invitations ====== */
+{n:'Birthday party invitation',cat:'Party & invitations',w:1000,h:1414,ph:1,L:['Birthday child','Date and time','Venue'],D:['Ayesha','Saturday, 20 February 2027, 4:00 pm','Garden Hall, Peshawar'],
+ draw(c,w,h,s,th){bg(c,w,h,th);confetti(c,w,h,th,22);frame(c,w,h,th);txt(c,'You\'re invited!',500,170,100,'Pacifico',th[2],820);txt(c,'to celebrate the birthday of',500,265,42,'Poppins',th[3],780);photo(c,s.img,500,520,185,th);
+  txt(c,s.f1,500,800,150,s.font,th[3],820);wrap(c,s.f2,500,940,780,70,52,'Poppins',th[2],'600');wrap(c,s.f3,500,1080,780,66,44,'Poppins',th[3]);txt(c,'Please RSVP on WhatsApp',500,1250,38,'Poppins',th[2],780,'600');}},
+{n:'Baby shower invitation',cat:'Party & invitations',w:1000,h:1414,L:['Honoring','Date and time','Venue'],D:['Sara Ahmed','Friday, 5 March 2027, 3:00 pm','Rose Garden, Peshawar'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);moon(c,500,260,110,th[2]);[[300,200,24],[700,190,28],[760,330,18],[240,330,20]].forEach(a=>star(c,a[0],a[1],a[2],th[2]));txt(c,'Baby Shower',500,500,130,'Pacifico',th[2],820);flourish(c,500,610,420,th[2]);
+  txt(c,'Join us to celebrate',500,700,44,'Poppins',th[3],780);txt(c,s.f1,500,830,120,s.font,th[3],820);wrap(c,s.f2,500,980,780,70,50,'Poppins',th[2],'600');wrap(c,s.f3,500,1110,780,66,44,'Poppins',th[3]);[420,500,580].forEach((x,i)=>star(c,x,1280,i==1?26:18,th[2]));}},
+{n:'Wedding event invitation',cat:'Party & invitations',w:1000,h:1414,opt:{l:'Event',v:['Nikah ceremony','Mehndi','Barat','Walima','Engagement']},L:['Couple names','Date and time','Venue'],D:['Sara & Ali','Sunday, 14 February 2027, 7:00 pm','Rose Garden Hall, Peshawar'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);const ev=['Nikah ceremony','Mehndi','Barat','Walima','Engagement'][s.opt||0];txt(c,'Together with their families',500,250,42,'Poppins',th[3],760);txt(c,'invite you to the',500,315,42,'Poppins',th[3],760);
+  txt(c,ev,500,420,100,'Pacifico',th[2],820);flourish(c,500,510,420,th[2]);txt(c,'of',500,575,38,'Poppins',th[3],300);txt(c,s.f1,500,700,140,s.font,th[3],820);flourish(c,500,810,420,th[2]);
+  wrap(c,s.f2,500,920,740,78,54,'Playfair Display',th[3],'600');wrap(c,s.f3,500,1080,740,66,46,'Poppins',th[3]);txt(c,'Your presence will make our day special',500,1240,34,'Poppins',th[2],760,'600');[420,500,580].forEach((x,i)=>star(c,x,1310,i==1?24:16,th[2]));}},
+{n:'Birthday name banner',cat:'Party & invitations',w:1414,h:1000,L:['Name','Top line','Footer'],D:['AYESHA','HAPPY BIRTHDAY','Turning 7!'],
+ draw(c,w,h,s,th){bg(c,w,h,th);bunting(c,s.f2,170,w,th);bunting(c,s.f1,560,w,th);txt(c,s.f3,707,930,56,'Pacifico',th[2],1100);}},
+{n:'Gift tags sheet',cat:'Party & invitations',w:1000,h:1414,L:['Tag message','From','Small note'],D:['Happy Birthday','Ayesha','Made with love'],
+ draw(c,w,h,s,th){bg(c,w,h,th);for(let r=0;r<4;r++)for(let k=0;k<3;k++){const x=60+k*300,y=62+r*326;tag(c,x,y,280,300,th);wrap(c,s.f1,x+140,y+110,230,44,40,'Pacifico',th[2]);txtL(c,'To:',x+24,y+196,28,'Poppins','#6b7280',60,'600');tline(c,x+80,x+256,y+204,th[2],.6,2);txtL(c,'From: '+s.f2,x+24,y+246,28,'Poppins','#1f2937',240,'600');txt(c,s.f3,x+140,y+282,20,'Poppins','#6b7280',240);}}},
+/* ====== Business and labels ====== */
+{n:'Invoice',cat:'Business & labels',w:1000,h:1414,L:['Business name','Invoice number and date','Payment details'],D:['Mansoor Khan Academy','Invoice 001 - 16 Nov 2026','Bank: ______  Account: ______'],L4:'Items (description | qty | price)',D4:'Website design | 1 | Rs 15000\nLogo design | 1 | Rs 3000\nHosting setup | 1 | Rs 2000',
+ draw(c,w,h,s,th){bg(c,w,h,th);txtL(c,s.f1,60,100,62,s.font,th[3],560);txtR(c,'INVOICE',940,95,66,'Playfair Display',th[2],380,'800');txtR(c,s.f2,940,160,30,'Poppins',th[3],520,'600');
+  c.beginPath();rr(c,60,205,420,130,16);fillA(c,th[1],.85);lineA(c,th[2],.6,2);txtL(c,'Bill to',80,235,28,'Poppins',th[2],200,'700');tline(c,80,455,282,th[2],.6,2);tline(c,80,455,320,th[2],.6,2);
+  table(c,60,370,880,56,60,['Description','Qty','Price','Total'],new Array(12).fill(''),th,400,28);
+  const it=lines(s.f4).slice(0,12).map(l=>l.split('|').map(x=>x.trim()));let sub=0;const cur=curOf((it[0]||[])[2]);const cw=160;
+  it.forEach((a,i)=>{const y=370+56+i*60+30,q=money(a[1])||1,pr=money(a[2]),tt=q*pr;sub+=tt;txtL(c,a[0]||'',76,y,28,'Poppins',th[3],360,'');txt(c,String(a[1]||''),60+400+cw/2,y,28,'Poppins',th[3],140);txt(c,pr?cur+' '+fmt(pr):'',60+400+cw*1.5,y,26,'Poppins',th[3],150);txt(c,pr?cur+' '+fmt(tt):'',60+400+cw*2.5,y,26,'Poppins',th[3],150,'600');});
+  c.beginPath();rr(c,560,1170,380,150,16);fillA(c,th[1],.9);lineA(c,th[2],.7,3);txtL(c,'Subtotal',580,1208,28,'Poppins',th[3],160);txtR(c,cur+' '+fmt(sub),920,1208,28,'Poppins',th[3],180);tline(c,580,920,1240,th[2],.5,2);txtL(c,'Total',580,1282,38,'Poppins',th[2],140,'700');txtR(c,cur+' '+fmt(sub),920,1282,40,'Poppins',th[2],220,'700');
+  txtL(c,'Payment details',60,1195,28,'Poppins',th[2],400,'700');wrapL(c,s.f3,60,1245,460,40,28,'Poppins',th[3]);txt(c,'Thank you for your business',500,1380,30,'Poppins',th[2],860,'600');}},
+{n:'Price list',cat:'Business & labels',w:1000,h:1414,L:['Shop or business name','Subtitle','Contact line'],D:['Glow Studio','Price List 2027','WhatsApp: +92 300 0000000'],L4:'Items (name | price)',D4:'Haircut | Rs 500\nBeard trim | Rs 300\nHair color | Rs 1,500\nFacial | Rs 1,200\nHair treatment | Rs 2,500\nBridal makeup | Rs 15,000',
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,150,110,s.font,th[3],820);txt(c,s.f2,500,255,56,'Playfair Display',th[2],820,'800');flourish(c,500,325,520,th[2]);
+  const R=lines(s.f4).slice(0,14),st=Math.min(80,900/Math.max(R.length,1));R.forEach((l,i)=>{const a=l.split('|').map(x=>x.trim()),y=410+i*st;const nm=a[0]||'',pr=a[1]||'',sz=Math.min(42,st*.5);const nw=mw(c,nm,sz,'Poppins','600'),pw=mw(c,pr,sz,'Poppins','700');
+   txtL(c,nm,100,y,sz,'Poppins',th[3],560,'600');txtR(c,pr,900,y,sz,'Poppins',th[2],300,'700');tline(c,100+Math.min(nw,560)+16,900-Math.min(pw,300)-16,y+sz*.3,th[2],.6,3,[2,10]);});
+  txt(c,s.f3,500,1320,38,'Poppins',th[3],820,'600');}},
+{n:'Business cards sheet',cat:'Business & labels',w:1000,h:1414,L:['Name','Job title','Phone and email'],D:['Mansoor Khan','Website Developer','+92 347 2096833 | info@example.com'],
+ draw(c,w,h,s,th){bg(c,w,h,th);for(let r=0;r<5;r++)for(let k=0;k<2;k++){const x=40+k*480,y=40+r*272;c.beginPath();rr(c,x,y,440,252,16);c.save();c.globalAlpha=.95;c.fillStyle='#fff';c.fill();c.restore();c.setLineDash([6,6]);c.lineWidth=2;c.strokeStyle=th[2];c.stroke();c.setLineDash([]);
+   c.beginPath();c.rect(x,y+30,12,192);c.fillStyle=th[2];c.fill();txtL(c,s.f1,x+36,y+90,46,s.font,'#1f2937',380,'600');txtL(c,s.f2,x+36,y+140,28,'Poppins',th[2],380,'600');tline(c,x+36,x+404,y+170,th[2],.4,2);txtL(c,s.f3,x+36,y+205,22,'Poppins','#4b5563',390);}}},
+{n:'Product label sheet',cat:'Business & labels',w:1000,h:1414,L:['Brand name','Product name','Small line'],D:['Sweet Home','Honey Soap','Handmade with love'],
+ draw(c,w,h,s,th){bg(c,w,h,th);for(let r=0;r<4;r++)for(let k=0;k<3;k++){const cx=170+k*330,cy=190+r*330;c.beginPath();c.arc(cx,cy,145,0,7);c.save();c.globalAlpha=.95;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=5;c.strokeStyle=th[2];c.stroke();c.beginPath();c.arc(cx,cy,126,0,7);c.lineWidth=2;c.setLineDash([4,6]);c.stroke();c.setLineDash([]);
+   txt(c,s.f1,cx,cy-60,36,s.font,th[2],220);star(c,cx,cy-8,14,th[2]);txt(c,s.f2,cx,cy+42,32,'Poppins','#1f2937',220,'700');txt(c,s.f3,cx,cy+90,22,'Poppins','#4b5563',220);}}},
+/* ====== Health and fitness ====== */
+{n:'Water intake tracker',cat:'Health & fitness',w:1414,h:1000,L:['Your name','Month and year','Goal'],D:['Ayesha','January 2027','Drink 8 glasses a day'],
+ draw(c,w,h,s,th){const mo=MY(s.f2);tracker(c,w,h,{f1:s.f1,f2:MN[mo.m]+' '+mo.y,f3:s.f3,font:s.font},th,['Glass 1','Glass 2','Glass 3','Glass 4','Glass 5','Glass 6','Glass 7','Glass 8'],dim(mo.y,mo.m),'Daily water');}},
+{n:'Mood tracker',cat:'Health & fitness',w:1414,h:1000,L:['Your name','Month and year','Message'],D:['Ayesha','January 2027','Notice how you feel'],
+ draw(c,w,h,s,th){const mo=MY(s.f2);tracker(c,w,h,{f1:s.f1,f2:MN[mo.m]+' '+mo.y,f3:s.f3,font:s.font},th,['Happy','Calm','Tired','Anxious','Sad','Angry'],dim(mo.y,mo.m),'Mood');}},
+{n:'Weekly workout planner',cat:'Health & fitness',w:1000,h:1414,opt:{l:'Week starts on',v:['Monday','Sunday']},L:['Name or title','Week of','Goal'],D:['My Workout Plan','16 - 22 November 2026','Get stronger every week'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,88,s.font,th[3],860);txt(c,s.f2,500,190,44,'Playfair Display',th[2],860,'800');
+  table(c,60,245,880,62,128,['Day','Exercise','Sets x Reps','Notes'],dnames(1),th,190,30);c.beginPath();rr(c,60,1245,880,100,16);lineA(c,th[2],.6,3);txtL(c,'Goal: '+s.f3,84,1297,38,'Poppins',th[3],820,'600');}},
+{n:'Weight and measurements tracker',cat:'Health & fitness',w:1000,h:1414,L:['Name or title','Start date','Goal'],D:['My Progress','1 January 2027','Healthy and strong'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,88,s.font,th[3],860);txt(c,s.f2,500,190,44,'Playfair Display',th[2],860,'800');
+  table(c,60,240,880,62,84,['Week','Weight','Waist','Chest','Hips','Notes'],['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6','Week 7','Week 8','Week 9','Week 10','Week 11','Week 12'],th,150,28);txt(c,'Goal: '+s.f3,500,1355,38,'Poppins',th[2],860,'600');}},
+/* ====== Islamic and wall art ====== */
+{n:'Arabic calligraphy wall art',cat:'Islamic & wall art',w:1000,h:1414,L:['Arabic text','Translation','Reference or small line'],D:['بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ','In the name of Allah, the Most Gracious, the Most Merciful','Bismillah'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);[[500,170,30],[300,220,20],[700,220,20]].forEach(a=>star(c,a[0],a[1],a[2],th[2]));flourish(c,500,300,520,th[2]);
+  wrap(c,s.f1,500,520,780,210,150,'Amiri',th[3],'700');flourish(c,500,990,520,th[2]);wrap(c,s.f2,500,1090,760,64,46,'Playfair Display',th[2],'600');txt(c,s.f3,500,1290,36,'Poppins',th[3],760);}},
+{n:'Quran Juz tracker',cat:'Islamic & wall art',w:1000,h:1414,L:['Your name','Title','Message'],D:['Ayesha','Quran Juz Tracker','Read a little every day'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,92,s.font,th[3],860);txt(c,s.f2,500,200,60,'Playfair Display',th[2],860,'800');
+  for(let i=0;i<30;i++){const x=60+(i%5)*180,y=275+Math.floor(i/5)*158;c.beginPath();rr(c,x,y,160,140,18);c.save();c.globalAlpha=.9;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=3;c.strokeStyle=RAIN[Math.floor(i/5)%6];c.stroke();txt(c,'Juz '+(i+1),x+80,y+48,34,'Poppins',RAIN[Math.floor(i/5)%6],140,'700');circ(c,x+80,y+97,22,th);}
+  txt(c,s.f3,500,1280,42,'Poppins',th[2],860,'600');}},
+{n:'Ramadan good deeds calendar',cat:'Islamic & wall art',w:1000,h:1414,L:['Your name','Ramadan year','Message'],D:['Ayesha','Ramadan 1448','One good deed every day'],
+ draw(c,w,h,s,th){bg(c,w,h,th);moon(c,160,130,60,th[2]);txt(c,s.f1,500,105,88,s.font,th[3],620);txt(c,s.f2,500,200,58,'Playfair Display',th[2],820,'800');
+  for(let i=0;i<30;i++){const x=60+(i%5)*180,y=275+Math.floor(i/5)*158;c.beginPath();rr(c,x,y,160,140,18);c.save();c.globalAlpha=.9;c.fillStyle='#fff';c.fill();c.restore();c.lineWidth=3;c.strokeStyle=th[2];c.stroke();c.beginPath();c.arc(x+30,y+30,22,0,7);c.fillStyle=th[2];c.fill();txt(c,String(i+1),x+30,y+32,24,'Poppins',th[0],36,'700');tline(c,x+16,x+144,y+84,th[2],.5,2);tline(c,x+16,x+144,y+116,th[2],.5,2);}
+  txt(c,s.f3,500,1280,42,'Poppins',th[2],860,'600');}},
+/* ====== Resume and career ====== */
+{n:'Resume / CV',cat:'Resume & career',w:1000,h:1414,ph:1,opt:{l:'Layout',v:['Modern (color header)','Classic (simple)']},L:['Full name','Job title','Contact line'],D:['Ayesha Khan','Graphic Designer','Peshawar, Pakistan | +92 300 0000000 | name@email.com'],L4:'Sections (# heading, - bullet, plain line)',D4:'# Profile\nCreative designer with three years of experience in social media and print design.\n# Experience\nGraphic Designer | Bright Studio | 2024 - Present\n- Designed posts and posters for 20+ local brands\n- Prepared print-ready files and brand kits\n# Education\nBS Design | University of Peshawar | 2020 - 2024\n# Skills\n- Photoshop, Illustrator, Canva\n- Typography and layout\n- Clear communication in English and Urdu',
+ draw(c,w,h,s,th){bg(c,w,h,th);if((s.opt||0)==0){c.beginPath();c.rect(0,0,w,270);c.fillStyle=th[2];c.fill();txtL(c,s.f1,70,105,78,s.font,th[0],s.img?650:860);txtL(c,s.f2,70,175,38,'Poppins',th[0],s.img?650:860,'600');txtL(c,s.f3,70,228,24,'Poppins',th[0],s.img?680:860);if(s.img)photo(c,s.img,850,135,90,th);resumeBody(c,s.f4,70,345,860,1370,th);}
+  else{txt(c,s.f1,500,105,84,s.font,th[3],860);txt(c,s.f2,500,180,40,'Poppins',th[2],860,'600');tline(c,70,930,215,th[2],.7,3);txt(c,s.f3,500,252,24,'Poppins',th[3],860);if(s.img)photo(c,s.img,860,110,70,th);resumeBody(c,s.f4,70,325,860,1370,th);}}},
+{n:'Cover letter',cat:'Resume & career',w:1000,h:1414,L:['Your name','Contact details','Position and company'],D:['Ayesha Khan','Peshawar | +92 300 0000000 | name@email.com','Application for Graphic Designer, Bright Studio'],L4:'Letter text (blank line = new paragraph)',D4:'Dear Hiring Manager,\n\nI am writing to apply for the Graphic Designer position. I have three years of experience creating social media posts, posters and brand kits for local businesses.\n\nI work carefully, meet deadlines and enjoy learning new tools. I would be glad to discuss how I can help your team.\n\nThank you for your time and consideration.\n\nSincerely,\nAyesha Khan',
+ draw(c,w,h,s,th){bg(c,w,h,th);c.beginPath();c.rect(0,0,24,h);c.fillStyle=th[2];c.fill();txtL(c,s.f1,80,110,76,s.font,th[3],840);txtL(c,s.f2,80,175,26,'Poppins',th[2],840,'600');tline(c,80,930,215,th[2],.7,3);txtL(c,s.f3,80,265,30,'Poppins',th[3],840,'700');
+  let y=335;(s.f4||'').split('\n').forEach(l=>{if(y>1360)return;if(!l.trim()){y+=26;return;}y=paraL(c,l.trim(),80,y,840,44,30,'Poppins',th[3],'');});}},
+{n:'Job application tracker',cat:'Resume & career',w:1000,h:1414,L:['Title or name','Month and year','Motto'],D:['Job Search Tracker','January 2027','Keep applying, keep learning'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,95,84,s.font,th[3],860);txt(c,s.f2,500,180,46,'Playfair Display',th[2],860,'800');table(c,60,235,880,60,76,['Company','Position','Date','Status'],new Array(14).fill(''),th,230,28);txt(c,s.f3,500,1350,38,'Poppins',th[3],860,'600');}},
+/* ====== Home and family ====== */
+{n:'Home cleaning schedule',cat:'Home & family',w:1000,h:1414,L:['Family or title','Week of','Note'],D:['Home Cleaning Schedule','16 - 22 November 2026','A little every day keeps the home fresh'],L4:'Tasks (one per line)',D4:'Make beds\nWash dishes\nSweep and mop floors\nClean the bathroom\nDo laundry\nDust surfaces\nTake out the trash\nWipe the kitchen',
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,76,s.font,th[3],860);txt(c,s.f2,500,190,44,'Playfair Display',th[2],860,'800');
+  const R=lines(s.f4).slice(0,12),n=R.length,dn=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],rh=Math.min(104,1000/Math.max(n,1));table(c,60,250,880,62,rh,['Task'].concat(dn),R,th,290,26);
+  for(let j=0;j<n;j++)for(let i=0;i<7;i++)circ(c,60+290+(i+.5)*84.3,250+62+j*rh+rh/2,Math.min(26,rh*.26),th);txt(c,s.f3,500,1350,38,'Poppins',th[2],860,'600');}},
+{n:'Grocery list',cat:'Home & family',w:1000,h:1414,L:['Title','Date or store','Budget note'],D:['Grocery List','Weekly shopping','Budget: Rs ______'],L4:'Items (# heading, then one item per line)',D4:'# Vegetables\nOnions\nTomatoes\nPotatoes\nGreen chilies\n# Fruit\nApples\nBananas\n# Dairy\nMilk\nYogurt\nEggs\n# Pantry\nRice\nFlour\nCooking oil\nTea\nSugar\n# Household\nDish soap\nTissues',
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,130,96,s.font,th[3],820);txt(c,s.f2,500,225,42,'Playfair Display',th[2],820,'800');flourish(c,500,285,520,th[2]);checkList(c,s.f4,90,320,820,960,2,th,32);txt(c,s.f3,500,1325,36,'Poppins',th[2],820,'600');}},
+{n:'Recipe card',cat:'Home & family',w:1414,h:1000,L:['Recipe name','Serves and time','Source or note'],D:['Vegetable Pulao','Serves 4 | 40 minutes','From our family kitchen'],L4:'Recipe (# Ingredients, # Method, one line each)',D4:'# Ingredients\n2 cups basmati rice\n1 onion, sliced\n2 carrots and 1 cup peas\n3 tablespoons oil\n1 teaspoon cumin seeds\nSalt to taste\n# Method\nWash and soak the rice for 20 minutes.\nFry the onion in oil until golden.\nAdd the vegetables, cumin and salt.\nAdd rice and 3 cups of water.\nCook on low heat for 15 minutes.\nRest 5 minutes, then serve hot.',
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txtL(c,s.f1,80,125,84,s.font,th[3],900);txtR(c,s.f2,w-80,125,36,'Poppins',th[2],420,'600');tline(c,80,w-80,180,th[2],.7,3);
+  const S=secs(s.f4);if(S[0]){txtL(c,S[0].h.toUpperCase(),80,245,30,'Poppins',th[2],440,'700');let y=305;S[0].it.forEach(l=>{c.fillStyle=th[2];c.beginPath();c.arc(92,y-4,5,0,7);c.fill();y=paraL(c,l,116,y,470,46,32,'Poppins',th[3],'');});}
+  if(S[1]){c.beginPath();c.rect(660,215,3,640);fillA(c,th[2],.4);txtL(c,S[1].h.toUpperCase(),700,245,30,'Poppins',th[2],440,'700');let y=305,n=1;S[1].it.forEach(l=>{c.beginPath();c.arc(722,y-4,19,0,7);c.fillStyle=th[2];c.fill();txt(c,String(n++),722,y-2,22,'Poppins',th[0],30,'700');y=paraL(c,l,758,y,560,44,30,'Poppins',th[3],'')+8;});}
+  txt(c,s.f3,w/2,935,32,'Poppins',th[3],1100,'600');}},
+/* ====== Student and study ====== */
+{n:'Reading log',cat:'Student & study',w:1000,h:1414,L:['Reader name','Reading goal','Motto'],D:['Ayesha','Goal: 24 books this year','A reader today, a leader tomorrow'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,'Reading Log',500,200,62,'Playfair Display',th[2],860,'800');txt(c,s.f2,500,268,36,'Poppins',th[3],860,'600');
+  table(c,60,310,880,60,76,['Book title','Author','Finished','Rating'],new Array(12).fill(''),th,300,28);for(let j=0;j<12;j++)stars5(c,60+300+(880-300)/3*2.5+0,310+60+j*76+38,0,th);
+  for(let j=0;j<12;j++){const cx=60+300+(580/3)*2+14,cy=310+60+j*76+38;for(let i=0;i<5;i++){starP(c,cx+i*34+14,cy,13);lineA(c,th[2],.85,2);}}txt(c,s.f3,500,1345,38,'Poppins',th[2],860,'600');}},
+{n:'Assignment tracker',cat:'Student & study',w:1000,h:1414,L:['Student name','Term or month','Motto'],D:['Hamza','Term 1, 2027','Do it now, relax later'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,'Assignment Tracker',500,200,58,'Playfair Display',th[2],860,'800');txt(c,s.f2,500,266,36,'Poppins',th[3],860,'600');
+  table(c,60,310,880,60,76,['Subject','Assignment','Due date','Done'],new Array(12).fill(''),th,200,28);for(let j=0;j<12;j++)circ(c,60+200+(680/3)*2.5,310+60+j*76+38,22,th);txt(c,s.f3,500,1345,38,'Poppins',th[2],860,'600');}},
+{n:'Exam revision planner',cat:'Student & study',w:1000,h:1414,L:['Student name','Exam period','Motto'],D:['Hamza','Final Exams 2027','Prepare today, shine tomorrow'],L4:'Subjects (one per line)',D4:'Urdu\nEnglish\nMathematics\nScience\nIslamiyat\nSocial Studies\nComputer',
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,96,s.font,th[3],860);txt(c,'Exam Revision Planner',500,200,54,'Playfair Display',th[2],860,'800');txt(c,s.f2,500,266,36,'Poppins',th[3],860,'600');
+  const R=lines(s.f4).slice(0,10),n=R.length,rh=Math.min(112,1000/Math.max(n,1));table(c,60,310,880,62,rh,['Subject','Exam date','Revise 1','Revise 2','Revise 3'],R,th,250,28);
+  for(let j=0;j<n;j++)for(let i=0;i<3;i++)circ(c,60+250+(630/5)*(2+i)+(630/5)/2,310+62+j*rh+rh/2,Math.min(26,rh*.25),th);txt(c,s.f3,500,1350,38,'Poppins',th[2],860,'600');}},
+/* ====== Journals and planning ====== */
+{n:'Gratitude journal page',cat:'Journals & planning',w:1000,h:1414,L:['Name or title','Date','Quote'],D:['Gratitude Journal','Date: ____ / ____ / ______','Be thankful for what you have'],
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,130,84,s.font,th[3],820);txt(c,s.f2,500,215,34,'Poppins',th[2],820,'600');flourish(c,500,270,520,th[2]);
+  const blocks=[['Today I am grateful for',3],['One good thing that happened today',2],['Someone I want to thank',1],['Tomorrow I will',2]];let y=330;blocks.forEach(b=>{txtL(c,b[0],90,y,34,'Poppins',th[2],820,'700');for(let i=0;i<b[1];i++){y+=70;tline(c,90,910,y+14,th[2],.5,2);}y+=84;});
+  txt(c,s.f3,500,1335,36,'Poppins',th[3],820,'600');}},
+{n:'Daily planner',cat:'Journals & planning',w:1000,h:1414,L:['Title or name','Date','Motto'],D:['My Day','Date: ____ / ____ / ______','Small steps, big results'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txtL(c,s.f1,60,95,82,s.font,th[3],560);txtR(c,s.f2,940,95,32,'Poppins',th[2],380,'600');
+  secBox(c,60,160,420,'Schedule',['6 am','7 am','8 am','9 am','10 am','11 am','12 pm','1 pm','2 pm','3 pm','4 pm','5 pm','6 pm','7 pm','8 pm','9 pm'],62,th,'');
+  secBox(c,510,160,430,'Top 3 priorities',['1.','2.','3.'],62,th,'');secBox(c,510,430,430,'To-do list',['','','','','','',''],62,th,'');
+  c.beginPath();rr(c,510,980,430,250,14);lineA(c,th[2],.5,2);txtL(c,'Notes',526,1010,28,'Poppins',th[2],300,'700');txt(c,s.f3,500,1345,38,'Poppins',th[2],860,'600');}},
+{n:'Goal planner',cat:'Journals & planning',w:1000,h:1414,L:['Your name','My goal','Deadline'],D:['Ayesha','Read 24 books this year','31 December 2027'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,95,76,s.font,th[3],860);txt(c,'Goal Planner',500,180,56,'Playfair Display',th[2],860,'800');
+  c.beginPath();rr(c,60,230,880,170,22);fillA(c,th[1],.9);lineA(c,th[2],.8,3);txt(c,'My goal',500,268,28,'Poppins',th[2],300,'700');wrap(c,s.f2,500,330,800,56,44,'Poppins',th[3],'700');txt(c,'Deadline: '+s.f3,500,430,32,'Poppins',th[2],860,'600');
+  secBox(c,60,470,430,'Why this goal matters',['','','',''],56,th,'');secBox(c,510,470,430,'Resources I need',['','','',''],56,th,'');
+  secBox(c,60,800,880,'Action steps',['','','','','',''],56,th,'');txtL(c,'Progress',70,1250,30,'Poppins',th[2],300,'700');for(let i=0;i<4;i++){c.beginPath();rr(c,60+i*222,1275,214,60,14);fillA(c,th[1],.9);lineA(c,th[2],.8,3);txt(c,(i+1)*25+'%',60+i*222+107,1306,28,'Poppins',th[3],180,'700');}}},
+/* ====== Party extras ====== */
+{n:'Table number cards',cat:'Party & invitations',w:1000,h:1414,L:['Event or couple','Starting table number','Small line'],D:['Sara & Ali','1','Thank you for celebrating with us'],
+ draw(c,w,h,s,th){bg(c,w,h,th);const n0=Math.max(1,parseInt(s.f2)||1);for(let i=0;i<4;i++){const x=40+(i%2)*480,y=50+Math.floor(i/2)*660;c.beginPath();rr(c,x,y,440,620,20);c.save();c.globalAlpha=.95;c.fillStyle='#fff';c.fill();c.restore();c.setLineDash([8,6]);c.lineWidth=2.5;c.strokeStyle=th[2];c.stroke();c.setLineDash([]);
+   c.beginPath();rr(c,x+18,y+18,404,584,14);lineA(c,th[2],.6,2);txt(c,'Table',x+220,y+110,56,'Pacifico',th[2],380);txt(c,String(n0+i),x+220,y+300,260,'Playfair Display',th[3],380,'800');flourish(c,x+220,y+450,260,th[2]);txt(c,s.f1,x+220,y+510,40,s.font,th[3],380);txt(c,s.f3,x+220,y+570,20,'Poppins','#6b7280',380);tline(c,x+30,x+410,y+310,th[2],0,1);}}},
+{n:'Menu card',cat:'Party & invitations',w:1000,h:1414,L:['Event or restaurant name','Subtitle','Footer line'],D:['Sara & Ali','Wedding Dinner Menu','Thank you for celebrating with us'],L4:'Menu (# course, then one dish per line)',D4:'# Starters\nChicken soup\nSeekh kebab\n# Main course\nChicken karahi\nMutton pulao\nNaan and raita\n# Dessert\nKheer\nGulab jamun\n# Drinks\nMint lemonade\nTea',
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,140,100,s.font,th[3],820);txt(c,s.f2,500,235,54,'Playfair Display',th[2],820,'800');flourish(c,500,305,520,th[2]);
+  const S=secs(s.f4);let n=0;S.forEach(x=>n+=2+x.it.length);const lh=Math.min(54,900/Math.max(n,1));let y=380;S.forEach(x=>{if(x.h){txt(c,x.h.toUpperCase(),500,y,Math.min(34,lh*.7),'Poppins',th[2],700,'700');y+=lh*1.1;}x.it.forEach(l=>{txt(c,l,500,y,Math.min(38,lh*.72),'Poppins',th[3],760,'');y+=lh;});y+=lh*.5;});
+  txt(c,s.f3,500,1330,36,'Poppins',th[2],820,'600');}},
+/* ====== Travel and Umrah ====== */
+{n:'Packing list',cat:'Travel & Umrah',w:1000,h:1414,L:['Trip name','Dates','Note'],D:['Family Trip','March 2027','Check weather before you pack'],L4:'Items (# heading, then one item per line)',D4:'# Documents\nIDs and tickets\nHotel bookings\nCash and cards\n# Clothes\nShirts and trousers\nUnderwear and socks\nJacket\nSleepwear\n# Toiletries\nToothbrush and paste\nSoap and shampoo\nMedicines\n# Electronics\nPhone and charger\nPower bank\nHeadphones',
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);txt(c,s.f1,500,130,96,s.font,th[3],820);txt(c,s.f2,500,225,44,'Playfair Display',th[2],820,'800');flourish(c,500,285,520,th[2]);checkList(c,s.f4,90,320,820,960,2,th,31);txt(c,s.f3,500,1325,36,'Poppins',th[2],820,'600');}},
+{n:'Umrah checklist',cat:'Travel & Umrah',w:1000,h:1414,L:['Name or group','Travel dates','Reminder'],D:['My Umrah Journey','Dates: ____ to ____','Check current visa and health requirements before you travel'],L4:'Items (# heading, then one item per line)',D4:'# Documents\nPassport and visa\nFlight tickets\nHotel bookings\nCopies of IDs\nVaccination papers if required\n# Clothing\nIhram (men)\nModest clothing (women)\nComfortable sandals\nBelt bag\n# Worship\nDua book\nPrayer mat\nTasbeeh\n# Health and comfort\nPersonal medicines\nUnscented soap\nWater bottle\n# Electronics\nPhone and charger\nPower bank\nTravel adapter',
+ draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);moon(c,500,175,75,th[2]);[[390,150,18],[610,150,18],[340,230,14],[660,230,14]].forEach(a=>star(c,a[0],a[1],a[2],th[2]));txt(c,s.f1,500,300,82,s.font,th[3],820);txt(c,s.f2,500,380,36,'Poppins',th[2],820,'600');flourish(c,500,425,520,th[2]);checkList(c,s.f4,90,455,820,790,2,th,28);wrap(c,s.f3,500,1300,780,44,30,'Poppins',th[3],'600');}},
+{n:'Trip itinerary',cat:'Travel & Umrah',w:1000,h:1414,L:['Destination','Dates','Note'],D:['Northern Areas Trip','10 - 16 June 2027','Book hotels early'],
+ draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,84,s.font,th[3],860);txt(c,s.f2,500,190,46,'Playfair Display',th[2],860,'800');table(c,60,245,880,62,130,['Day','Morning','Afternoon','Evening'],['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7'],th,150,30);txt(c,s.f3,500,1340,38,'Poppins',th[2],860,'600');}}
 ];
 
 /* ---- rendering ---- */
@@ -321,15 +519,16 @@ function render(cv,i,k,wm){try{const t=T[i];cv.width=Math.round(t.w*k);cv.height
 let raf,tmr;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>render($('view'),cur,.6,!unlocked));clearTimeout(tmr);tmr=setTimeout(()=>document.querySelectorAll('.tpl canvas').forEach((cv,i)=>render(cv,i,.12,false)),250);}
 
 /* ---- UI ---- */
-const CATS=['All','Calendars & planners','Kids & education','Cards & posters'];
+const CATS=['All','Calendars & planners','Kids & education','Budget & finance','Teachers & classroom','Party & invitations','Business & labels','Health & fitness','Islamic & wall art','Resume & career','Home & family','Student & study','Journals & planning','Travel & Umrah','Cards & posters'];
 function showCat(cat,keep){document.querySelectorAll('#cats .cat').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c==cat));let first=-1;document.querySelectorAll('.tpl').forEach((b,i)=>{const ok=cat=='All'||(T[i].cat||'Cards & posters')==cat;b.hidden=!ok;if(ok&&first<0)first=i;});if(!keep&&first>=0)pick(first);else draw();}
 function build(){const box=$('tpls');T.forEach((t,i)=>{const b=document.createElement('button');b.className='tpl';b.innerHTML='<canvas></canvas><span>'+t.n+'</span>';b.onclick=()=>pick(i);box.appendChild(b);});
  CATS.forEach(k=>{const b=document.createElement('button');b.className='cat';b.dataset.c=k;b.textContent=k;b.onclick=()=>showCat(k);$('cats').appendChild(b);});
  $('theme').innerHTML=Object.keys(THEMES).map(k=>`<option>${k}</option>`).join('');$('font').innerHTML=FONTS.map(f=>`<option>${f}</option>`).join('');
  $('buy').href=CONFIG.gumroadUrl;$('buy').textContent='Buy license ('+CONFIG.price+')';showCat('All',1);pick(0);}
 function pick(i){cur=i;const t=T[i];['f1','f2','f3'].forEach((f,j)=>{$('l'+(j+1)).textContent=t.L[j];$(f).value=S[f]=t.D[j];});
- $('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));draw();}
+ $('f4box').style.display=t.L4?'block':'none';if(t.L4){$('l4').textContent=t.L4;$('f4').value=S.f4=t.D4;}else S.f4='';$('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));draw();}
 ['f1','f2','f3'].forEach(f=>$(f).addEventListener('input',e=>{S[f]=e.target.value;draw();}));
+$('f4').addEventListener('input',e=>{S.f4=e.target.value;draw();});
 $('theme').onchange=e=>{theme=e.target.value;draw();};
 $('opt').onchange=e=>{S.opt=+e.target.value;draw();};
 $('font').onchange=e=>{S.font=e.target.value;draw();document.fonts.load('40px "'+S.font+'"','Aa \u0627').then(draw);};
