@@ -23,6 +23,7 @@ main{max-width:1120px;margin:0 auto;padding:12px 20px 48px}
 .grid{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
 label{display:block;font-size:14px;font-weight:600;margin:12px 0 4px}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}.plan{display:flex;flex-direction:column;gap:2px;border:2px solid var(--line);border-radius:10px;padding:10px;text-decoration:none;color:var(--ink);background:#fff}.plan b{font-size:22px;color:var(--hot)}.plan span{font-weight:600;font-size:14px}.plan small{color:var(--mute);font-size:12px;line-height:1.3}
 textarea{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink);resize:vertical}
 input[type=text],select,input[type=file]{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:#fff;color:var(--ink)}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -66,10 +67,10 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 <canvas id="view" aria-label="Live preview"></canvas>
 <div class="card lock">
 <h2>Download clean file</h2>
-<p id="lockp">The preview is watermarked. Buy a license key, paste it here, then download as PNG or PDF.</p>
+<p id="lockp">The preview is watermarked. Choose a plan on Gumroad, paste the license key you receive here, then download a clean PNG and PDF.</p>
+<div class="plans" id="plans"></div>
 <div class="keyrow"><input type="text" id="key" placeholder="License key" aria-label="License key" autocomplete="off">
-<button class="go" id="unlock">Unlock</button>
-<a class="buy" id="buy" target="_blank" rel="noopener">Buy license</a></div>
+<button class="go" id="unlock">Unlock</button></div>
 <div class="dl"><button class="alt" id="png">Download PNG</button><button class="alt" id="pdf">Download PDF</button></div>
 <div id="msg" role="status"></div>
 </div>
@@ -81,17 +82,21 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 /* ===== SET THESE ===== */
 const CONFIG={
   brand:'MansoorKhanAcademy',
-  gumroadUrl:'https://mansoorkhan416.gumroad.com/l/atqiui', // your Gumroad product link
-  productId:'UiZIzDj-5NiruQMDxTXuQA==',                       // Gumroad product ID (used only if verifyUrl is empty)
-  verifyUrl:'https://autumn-hall-5c05.mansoorkhan8185.workers.dev', // your Cloudflare Worker URL
-  price:'$7'
+  verifyUrl:'https://autumn-hall-5c05.mansoorkhan8185.workers.dev', // Cloudflare Worker (see printables-license-worker.js)
+  // Paste the three Gumroad product links in "url". A plan with an empty url is hidden.
+  plans:{
+    single:  {name:'Single download',        price:'$6',  url:'https://mansoorkhan416.gumroad.com/l/mexhe', note:'One design, PNG and PDF together'},
+    category:{name:'One category, 1 month',  price:'$15', url:'https://mansoorkhan416.gumroad.com/l/xgmhem', note:'All designs in one category for a month'},
+    all:     {name:'All categories, 1 month',price:'$35', url:'https://mansoorkhan416.gumroad.com/l/kcznar', note:'Every design for a month'}
+  },
+  legacyUrl:'https://mansoorkhan416.gumroad.com/l/atqiui', legacyPrice:'$7' // old product, shown only until the new plan links are set
 };
 /* ===================== */
 const $=id=>document.getElementById(id);
 const THEMES={Rose:['#fff1f2','#fecdd3','#e11d48','#4c0519'],Ocean:['#ecfeff','#bae6fd','#0284c7','#0c2a4a'],Emerald:['#ecfdf5','#a7f3d0','#047857','#052e1b'],Lavender:['#f5f3ff','#ddd6fe','#7c3aed','#2e1065'],'Gold on black':['#1c1917','#292524','#f5c451','#fef3c7'],Sunset:['#fff7ed','#fed7aa','#ea580c','#431407'],Mint:['#f0fdfa','#99f6e4','#0d9488','#134e4a'],'Black and white':['#ffffff','#f3f4f6','#111827','#111827']};
 const FONTS=['Pacifico','Playfair Display','Poppins','Amiri','Noto Nastaliq Urdu'];
 const S={f1:'',f2:'',f3:'',img:null,font:'Pacifico',opt:0,f4:''};
-let cur=0,theme='Rose',unlocked=false;
+let cur=0,theme='Rose',LIC=null;
 
 /* ---- drawing helpers (design units, scaled by render) ---- */
 const AR=/[\u0600-\u06FF]/;
@@ -517,7 +522,7 @@ const T=[
 
 /* ---- rendering ---- */
 function render(cv,i,k,wm){try{const t=T[i];cv.width=Math.round(t.w*k);cv.height=Math.round(t.h*k);const c=cv.getContext('2d');c.scale(k,k);c.textAlign='center';c.textBaseline='middle';t.draw(c,t.w,t.h,S,THEMES[theme]);if(wm)wmark(c,t.w,t.h);}catch(e){msg('Preview error: '+e.message,1);}}
-let raf,tmr;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>render($('view'),cur,.6,!unlocked));clearTimeout(tmr);tmr=setTimeout(()=>document.querySelectorAll('.tpl canvas').forEach((cv,i)=>render(cv,i,.12,false)),250);}
+let raf,tmr;function draw(){cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>render($('view'),cur,.6,!allowed(cur)));clearTimeout(tmr);tmr=setTimeout(()=>document.querySelectorAll('.tpl canvas').forEach((cv,i)=>render(cv,i,.12,false)),250);}
 
 /* ---- UI ---- */
 const CATS=['All','Calendars & planners','Kids & education','Budget & finance','Teachers & classroom','Party & invitations','Business & labels','Health & fitness','Islamic & wall art','Resume & career','Home & family','Student & study','Journals & planning','Travel & Umrah','Cards & posters'];
@@ -525,9 +530,9 @@ function showCat(cat,keep){document.querySelectorAll('#cats .cat').forEach(b=>b.
 function build(){const box=$('tpls');T.forEach((t,i)=>{const b=document.createElement('button');b.className='tpl';b.innerHTML='<canvas></canvas><span>'+t.n+'</span>';b.onclick=()=>pick(i);box.appendChild(b);});
  CATS.forEach(k=>{const b=document.createElement('button');b.className='cat';b.dataset.c=k;b.textContent=k;b.onclick=()=>showCat(k);$('cats').appendChild(b);});
  $('theme').innerHTML=Object.keys(THEMES).map(k=>`<option>${k}</option>`).join('');$('font').innerHTML=FONTS.map(f=>`<option>${f}</option>`).join('');
- $('buy').href=CONFIG.gumroadUrl;$('buy').textContent='Buy license ('+CONFIG.price+')';showCat('All',1);pick(0);}
+ renderPlans();showCat('All',1);pick(0);}
 function pick(i){cur=i;const t=T[i];['f1','f2','f3'].forEach((f,j)=>{$('l'+(j+1)).textContent=t.L[j];$(f).value=S[f]=t.D[j];});
- $('f4box').style.display=t.L4?'block':'none';if(t.L4){$('l4').textContent=t.L4;$('f4').value=S.f4=t.D4;}else S.f4='';$('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));draw();}
+ $('f4box').style.display=t.L4?'block':'none';if(t.L4){$('l4').textContent=t.L4;$('f4').value=S.f4=t.D4;}else S.f4='';$('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));if(LIC&&LIC.tier=='category')msg(allowed(i)?describe():'Not covered by your key: this design is in "'+catOf(i)+'".',!allowed(i));draw();}
 ['f1','f2','f3'].forEach(f=>$(f).addEventListener('input',e=>{S[f]=e.target.value;draw();}));
 $('f4').addEventListener('input',e=>{S.f4=e.target.value;draw();});
 $('theme').onchange=e=>{theme=e.target.value;draw();};
@@ -536,21 +541,32 @@ $('font').onchange=e=>{S.font=e.target.value;draw();document.fonts.load('40px "'
 $('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),o=document.createElement('canvas');o.width=Math.round(im.width*k);o.height=Math.round(im.height*k);o.getContext('2d').drawImage(im,0,0,o.width,o.height);S.img=o;draw();URL.revokeObjectURL(im.src);};im.onerror=()=>msg('Could not read this photo. Try a JPG or PNG.',1);im.src=URL.createObjectURL(f);};
 function msg(t,bad){const m=$('msg');m.textContent=t;m.className=bad?'bad':'ok';}
 
-/* ---- Gumroad license check ---- */
-async function verify(key,use){
- if(CONFIG.verifyUrl){const r=await fetch(CONFIG.verifyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({license_key:key,use})});return r.json();}
- const b=new URLSearchParams({product_id:CONFIG.productId,license_key:key,increment_uses_count:use?'true':'false'});
- const j=await(await fetch('https://api.gumroad.com/v2/licenses/verify',{method:'POST',body:b})).json();
- return{ok:!!(j.success&&!j.purchase.refunded&&!j.purchase.chargebacked),uses:j.uses,max:0};}
+/* ---- Gumroad license check (3 plans) ---- */
+function renderPlans(){const box=$('plans'),list=Object.values(CONFIG.plans).filter(p=>p.url);
+ if(!list.length){box.innerHTML='<a class="plan" href="'+CONFIG.legacyUrl+'" target="_blank" rel="noopener"><b>'+CONFIG.legacyPrice+'</b><span>License key</span><small>All designs, PNG and PDF</small></a>';return;}
+ box.innerHTML=list.map(p=>'<a class="plan" href="'+p.url+'" target="_blank" rel="noopener"><b>'+p.price+'</b><span>'+p.name+'</span><small>'+p.note+'</small></a>').join('');}
+const catOf=i=>T[i].cat||'Cards & posters';
+function allowed(i){return !!LIC&&(LIC.tier!='category'||LIC.cats.indexOf(catOf(i))>=0);}
+function describe(){if(!LIC)return '';if(LIC.tier=='single')return 'Single-download key: 1 download left. One download gives you PNG and PDF of one design, so finish your design first.';
+ if(LIC.tier=='category')return 'Unlocked: '+LIC.cats.join(', ')+'. Designs in other categories stay watermarked.';return 'Unlocked: all categories.';}
+async function verify(key,use){const r=await fetch(CONFIG.verifyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({license_key:key,use:!!use})});return r.json();}
 async function check(use){const key=$('key').value.trim();if(!key){msg('Paste your license key first.',1);return false;}
  msg('Checking key...');try{const r=await verify(key,use);
-  if(r.ok){unlocked=true;try{localStorage.setItem('lk',key);}catch(e){}msg('Unlocked.'+(r.max?' Downloads left: '+Math.max(r.max-r.uses,0)+'.':''));draw();return true;}
-  msg('This key is invalid, refunded or has no downloads left.',1);}catch(e){msg('Could not reach the license server. Try again.',1);}
- unlocked=false;draw();return false;}
+  if(r.ok){LIC={tier:r.tier||'all',cats:r.cats||[],uses:r.uses||0,max:r.max||0};try{localStorage.setItem('lk',key);}catch(e){}msg(describe());draw();return true;}
+  msg(r.message||'This key is invalid, refunded, expired or already used.',1);}catch(e){msg('Could not reach the license server. Try again.',1);}
+ LIC=null;draw();return false;}
 $('unlock').onclick=()=>check(false);
-async function dl(type){if(!await check(true))return;const t=T[cur],cv=document.createElement('canvas');render(cv,cur,2.4,false);const nm=(S.f1||'printable').replace(/[^\w\u0600-\u06FF]+/g,'-');
- if(type=='png')cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm+'.png';a.click();});
- else{const ls=t.w>t.h,p=new window.jspdf.jsPDF({orientation:ls?'l':'p',unit:'mm',format:'a4'});p.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,ls?297:210,ls?210:297);p.save(nm+'.pdf');}}
+function savePng(cv,nm){return new Promise(res=>cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm+'.png';a.click();setTimeout(res,700);}));}
+function savePdf(cv,t,nm){const ls=t.w>t.h,p=new window.jspdf.jsPDF({orientation:ls?'l':'p',unit:'mm',format:'a4'});p.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,ls?297:210,ls?210:297);p.save(nm+'.pdf');}
+async function dl(type){
+ if(!LIC&&!await check(false))return;
+ if(!allowed(cur)){msg('Your key covers: '+LIC.cats.join(', ')+'. This design is in "'+catOf(cur)+'". Pick a design from your category or buy another plan.',1);return;}
+ const single=LIC.tier=='single';
+ if(single&&!confirm('This uses your one download and gives you both PNG and PDF of this design. Continue?'))return;
+ if(!await check(single))return;
+ const t=T[cur],cv=document.createElement('canvas');render(cv,cur,2.4,false);const nm=(S.f1||'printable').replace(/[^\w\u0600-\u06FF]+/g,'-');
+ if(single){await savePng(cv,nm);savePdf(cv,t,nm);msg('Done. Your single-download key is now used. Buy another for the next design.');LIC=null;draw();return;}
+ if(type=='png')await savePng(cv,nm);else savePdf(cv,t,nm);}
 $('png').onclick=()=>dl('png');$('pdf').onclick=()=>dl('pdf');
 
 build();
