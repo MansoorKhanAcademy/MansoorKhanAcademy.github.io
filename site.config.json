@@ -26,7 +26,8 @@
   "Tools/index.html"
  ],
  "hideChildren": [
-  "Websites/"
+  "Websites/",
+  "personalized-printables/"
  ],
  "gtmId": "GTM-WG3F7K9D"
 }
