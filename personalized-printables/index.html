@@ -71,6 +71,7 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 <div class="plans" id="plans"></div>
 <div class="keyrow"><input type="text" id="key" placeholder="License key" aria-label="License key" autocomplete="off">
 <button class="go" id="unlock">Unlock</button></div>
+<div id="choose" style="display:none;margin-top:10px"><p style="margin:0 0 6px"><b>Choose your category.</b> It is locked to your key, so pick carefully.</p><div class="keyrow"><select id="catsel" aria-label="Category"></select><button class="go" id="lock">Lock category</button></div></div>
 <div class="dl"><button class="alt" id="png">Download PNG</button><button class="alt" id="pdf">Download PDF</button></div>
 <div id="msg" role="status"></div>
 </div>
@@ -86,7 +87,7 @@ const CONFIG={
   // Paste the three Gumroad product links in "url". A plan with an empty url is hidden.
   plans:{
     single:  {name:'Single download',        price:'$6',  url:'https://mansoorkhan416.gumroad.com/l/mexhe', note:'One design, PNG and PDF together'},
-    category:{name:'One category, 1 month',  price:'$15', url:'https://mansoorkhan416.gumroad.com/l/xgmhem', note:'All designs in one category for a month'},
+    category:{name:'One category, 1 month',  price:'$15', url:'https://mansoorkhan416.gumroad.com/l/xgmhem', note:'Choose your category after you buy, for a month'},
     all:     {name:'All categories, 1 month',price:'$35', url:'https://mansoorkhan416.gumroad.com/l/kcznar', note:'Every design for a month'}
   },
   legacyUrl:'https://mansoorkhan416.gumroad.com/l/atqiui', legacyPrice:'$7' // old product, shown only until the new plan links are set
@@ -532,7 +533,7 @@ function build(){const box=$('tpls');T.forEach((t,i)=>{const b=document.createEl
  $('theme').innerHTML=Object.keys(THEMES).map(k=>`<option>${k}</option>`).join('');$('font').innerHTML=FONTS.map(f=>`<option>${f}</option>`).join('');
  renderPlans();showCat('All',1);pick(0);}
 function pick(i){cur=i;const t=T[i];['f1','f2','f3'].forEach((f,j)=>{$('l'+(j+1)).textContent=t.L[j];$(f).value=S[f]=t.D[j];});
- $('f4box').style.display=t.L4?'block':'none';if(t.L4){$('l4').textContent=t.L4;$('f4').value=S.f4=t.D4;}else S.f4='';$('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));if(LIC&&LIC.tier=='category')msg(allowed(i)?describe():'Not covered by your key: this design is in "'+catOf(i)+'".',!allowed(i));draw();}
+ $('f4box').style.display=t.L4?'block':'none';if(t.L4){$('l4').textContent=t.L4;$('f4').value=S.f4=t.D4;}else S.f4='';$('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));if(LIC&&LIC.tier=='category'&&LIC.cats.length)msg(allowed(i)?describe():'Not covered by your key: this design is in "'+catOf(i)+'".',!allowed(i));draw();}
 ['f1','f2','f3'].forEach(f=>$(f).addEventListener('input',e=>{S[f]=e.target.value;draw();}));
 $('f4').addEventListener('input',e=>{S.f4=e.target.value;draw();});
 $('theme').onchange=e=>{theme=e.target.value;draw();};
@@ -542,24 +543,27 @@ $('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Imag
 function msg(t,bad){const m=$('msg');m.textContent=t;m.className=bad?'bad':'ok';}
 
 /* ---- Gumroad license check (3 plans) ---- */
-function renderPlans(){const box=$('plans'),list=Object.values(CONFIG.plans).filter(p=>p.url);
+function renderPlans(){$('catsel').innerHTML=CATS.filter(c=>c!='All').map(c=>'<option>'+c+'</option>').join('');const box=$('plans'),list=Object.values(CONFIG.plans).filter(p=>p.url);
  if(!list.length){box.innerHTML='<a class="plan" href="'+CONFIG.legacyUrl+'" target="_blank" rel="noopener"><b>'+CONFIG.legacyPrice+'</b><span>License key</span><small>All designs, PNG and PDF</small></a>';return;}
  box.innerHTML=list.map(p=>'<a class="plan" href="'+p.url+'" target="_blank" rel="noopener"><b>'+p.price+'</b><span>'+p.name+'</span><small>'+p.note+'</small></a>').join('');}
 const catOf=i=>T[i].cat||'Cards & posters';
 function allowed(i){return !!LIC&&(LIC.tier!='category'||LIC.cats.indexOf(catOf(i))>=0);}
-function describe(){if(!LIC)return '';if(LIC.tier=='single')return 'Single-download key: 1 download left. One download gives you PNG and PDF of one design, so finish your design first.';
+function showChoose(){$('choose').style.display=(LIC&&LIC.needs)?'block':'none';}
+function describe(){if(!LIC)return '';if(LIC.tier=='category'&&LIC.needs)return 'Key accepted. Choose your category below and lock it.';if(LIC.tier=='single')return 'Single-download key: 1 download left. One download gives you PNG and PDF of one design, so finish your design first.';
  if(LIC.tier=='category')return 'Unlocked: '+LIC.cats.join(', ')+'. Designs in other categories stay watermarked.';return 'Unlocked: all categories.';}
-async function verify(key,use){const r=await fetch(CONFIG.verifyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({license_key:key,use:!!use})});return r.json();}
-async function check(use){const key=$('key').value.trim();if(!key){msg('Paste your license key first.',1);return false;}
- msg('Checking key...');try{const r=await verify(key,use);
-  if(r.ok){LIC={tier:r.tier||'all',cats:r.cats||[],uses:r.uses||0,max:r.max||0};try{localStorage.setItem('lk',key);}catch(e){}msg(describe());draw();return true;}
+async function verify(key,use,cat){const r=await fetch(CONFIG.verifyUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({license_key:key,use:!!use,cat:cat||''})});return r.json();}
+async function check(use,cat){const key=$('key').value.trim();if(!key){msg('Paste your license key first.',1);return false;}
+ msg('Checking key...');try{const r=await verify(key,use,cat);
+  if(r.ok){LIC={tier:r.tier||'all',cats:r.cats||[],uses:r.uses||0,max:r.max||0,needs:!!r.needs_choice};try{localStorage.setItem('lk',key);}catch(e){}msg(describe());showChoose();draw();return true;}
   msg(r.message||'This key is invalid, refunded, expired or already used.',1);}catch(e){msg('Could not reach the license server. Try again.',1);}
- LIC=null;draw();return false;}
+ LIC=null;showChoose();draw();return false;}
 $('unlock').onclick=()=>check(false);
+$('lock').onclick=async()=>{const c=$('catsel').value;if(!confirm('Lock "'+c+'" to your key? You cannot change it later.'))return;if(await check(false,c)&&LIC.cats.length)showCat(LIC.cats[0]);};
 function savePng(cv,nm){return new Promise(res=>cv.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm+'.png';a.click();setTimeout(res,700);}));}
 function savePdf(cv,t,nm){const ls=t.w>t.h,p=new window.jspdf.jsPDF({orientation:ls?'l':'p',unit:'mm',format:'a4'});p.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,ls?297:210,ls?210:297);p.save(nm+'.pdf');}
 async function dl(type){
  if(!LIC&&!await check(false))return;
+ if(LIC.needs){msg('Choose and lock your category first.',1);return;}
  if(!allowed(cur)){msg('Your key covers: '+LIC.cats.join(', ')+'. This design is in "'+catOf(cur)+'". Pick a design from your category or buy another plan.',1);return;}
  const single=LIC.tier=='single';
  if(single&&!confirm('This uses your one download and gives you both PNG and PDF of this design. Continue?'))return;
