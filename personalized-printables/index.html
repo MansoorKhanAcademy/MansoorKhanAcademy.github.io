@@ -56,6 +56,7 @@ button:focus-visible,.buy:focus-visible,.tpl:focus-visible,input:focus-visible,s
 <label for="f3" id="l3"></label><input type="text" id="f3">
 <div id="f4box" style="display:none"><label for="f4" id="l4"></label><textarea id="f4" rows="7"></textarea></div>
 <div id="phbox"><label for="photo">Photo (stays in your browser)</label><input type="file" id="photo" accept="image/*"></div>
+<div id="ph2box" style="display:none"><label for="photos">Add photos (optional)</label><input type="file" id="photos" accept="image/*" multiple><p class="note" style="margin:6px 0">Photos fill the tiles in order. Tiles without a photo keep the cartoon face.</p><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><button type="button" class="alt" id="clearphotos">Clear photos</button><span id="photocount" style="font-size:13px;color:var(--mute)">0 photos added</span></div></div>
 <div id="optbox" style="display:none"><label for="opt" id="lo"></label><select id="opt"></select></div>
 <div class="row">
 <div><label for="theme">Colors</label><select id="theme"></select></div>
@@ -96,7 +97,7 @@ const CONFIG={
 const $=id=>document.getElementById(id);
 const THEMES={Rose:['#fff1f2','#fecdd3','#e11d48','#4c0519'],Ocean:['#ecfeff','#bae6fd','#0284c7','#0c2a4a'],Emerald:['#ecfdf5','#a7f3d0','#047857','#052e1b'],Lavender:['#f5f3ff','#ddd6fe','#7c3aed','#2e1065'],'Gold on black':['#1c1917','#292524','#f5c451','#fef3c7'],Sunset:['#fff7ed','#fed7aa','#ea580c','#431407'],Mint:['#f0fdfa','#99f6e4','#0d9488','#134e4a'],'Black and white':['#ffffff','#f3f4f6','#111827','#111827']};
 const FONTS=['Pacifico','Playfair Display','Poppins','Amiri','Noto Nastaliq Urdu'];
-const S={f1:'',f2:'',f3:'',img:null,font:'Pacifico',opt:0,f4:''};
+const S={f1:'',f2:'',f3:'',img:null,imgs:[],font:'Pacifico',opt:0,f4:''};
 let cur=0,theme='Rose',LIC=null;
 
 /* ---- drawing helpers (design units, scaled by render) ---- */
@@ -222,6 +223,7 @@ function face(c,x,y,r,seed){const R=rnd(seed*97+13),pk=a=>a[Math.floor(R()*a.len
  if(gl){c.strokeStyle='#111';c.lineWidth=r*.045;[-1,1].forEach(d=>{c.beginPath();c.arc(x+d*r*.25,y-r*.05,r*.17,0,7);c.stroke();});c.beginPath();c.moveTo(x-r*.08,y-r*.05);c.lineTo(x+r*.08,y-r*.05);c.stroke();}
  if(hat){c.fillStyle=pk(SHIRT);c.beginPath();c.ellipse(x,y-r*.55,r*.7,r*.45,0,Math.PI,0);c.fill();c.fillRect(x-r*.85,y-r*.58,r*1.7,r*.12);}
  c.restore();}
+function faceOrPhoto(c,img,x,y,r,seed,th){if(img){c.save();c.beginPath();c.arc(x,y,r,0,7);c.clip();cover(c,img,x-r,y-r,2*r,2*r);c.restore();c.beginPath();c.arc(x,y,r,0,7);c.lineWidth=Math.max(3,r*.12);c.strokeStyle=th[2];c.stroke();}else face(c,x,y,r,seed);}
 function cardBox(c,x,y,w,h,th,dash){c.beginPath();rr(c,x,y,w,h,18);c.save();c.globalAlpha=.96;c.fillStyle='#fff';c.fill();c.restore();c.setLineDash(dash?[8,6]:[]);c.lineWidth=3;c.strokeStyle=th[2];c.stroke();c.setLineDash([]);}
 function head(c,w,s,th,y1,y2){txt(c,s.f1,w/2,y1,80,s.font,th[3],860);if(y2)txt(c,s.f2,w/2,y2,40,'Playfair Display',th[2],860,'800');}
 const GQ={'Family & friends':['Is your person a man?','Is your person a woman?','Is your person older than 40?','Is your person a child?','Does your person live in our city?','Does your person wear glasses?','Does your person have a beard?','Is your person in this room?','Does your person like cricket?','Does your person love cooking?','Is your person a cousin?','Did your person come by car?'],
@@ -548,12 +550,12 @@ const T=[
 {n:'Trip itinerary',cat:'Travel & Umrah',w:1000,h:1414,L:['Destination','Dates','Note'],D:['Northern Areas Trip','10 - 16 June 2027','Book hotels early'],
  draw(c,w,h,s,th){bg(c,w,h,th);txt(c,s.f1,500,100,84,s.font,th[3],860);txt(c,s.f2,500,190,46,'Playfair Display',th[2],860,'800');table(c,60,245,880,62,130,['Day','Morning','Afternoon','Evening'],['Day 1','Day 2','Day 3','Day 4','Day 5','Day 6','Day 7'],th,150,30);txt(c,s.f3,500,1340,38,'Poppins',th[2],860,'600');}},
 /* ====== Party games ====== */
-{n:'Guess Who board',cat:'Party games',w:1000,h:1414,L:['Game title','Subtitle','Footer line'],D:['Guess Who?','Family Edition','Flip a tile down when you rule out a person'],L4:'24 names (one per line)',D4:'Ayesha\nAli\nSara\nHamza\nZainab\nBilal\nFatima\nOmar\nMaryam\nUsman\nHira\nTalha\nNoor\nAhmed\nKhadija\nIbrahim\nAmna\nYousuf\nLaiba\nDanish\nSana\nFahad\nRabia\nHassan',
+{n:'Guess Who board',cat:'Party games',w:1000,h:1414,ph2:1,L:['Game title','Subtitle','Footer line'],D:['Guess Who?','Family Edition','Flip a tile down when you rule out a person'],L4:'24 names (one per line)',D4:'Ayesha\nAli\nSara\nHamza\nZainab\nBilal\nFatima\nOmar\nMaryam\nUsman\nHira\nTalha\nNoor\nAhmed\nKhadija\nIbrahim\nAmna\nYousuf\nLaiba\nDanish\nSana\nFahad\nRabia\nHassan',
  draw(c,w,h,s,th){bg(c,w,h,th);frame(c,w,h,th);head(c,w,s,th,125,205);const N=lines(s.f4);const cw=190,ch=165,gx=(w-4*cw)/5-0;const cols=5,rows=4,tw=(w-120-(cols-1)*14)/cols;let y0=270;
-  const th2=(h-y0-185-(6-1)*14)/6;for(let i=0;i<24;i++){const col=i%4,row=Math.floor(i/4),tW=(w-140-3*18)/4,x=70+col*(tW+18),y=y0+row*(th2+14);cardBox(c,x,y,tW,th2,th,0);face(c,x+tW/2,y+th2*.4,th2*.27,i+1);c.save();c.beginPath();rr(c,x+8,y+th2-46,tW-16,38,10);c.fillStyle=th[2];c.fill();c.restore();txt(c,N[i]||'',x+tW/2,y+th2-26,26,'Poppins',th[0],tW-30,'600');}
+  const th2=(h-y0-185-(6-1)*14)/6;for(let i=0;i<24;i++){const col=i%4,row=Math.floor(i/4),tW=(w-140-3*18)/4,x=70+col*(tW+18),y=y0+row*(th2+14);cardBox(c,x,y,tW,th2,th,0);faceOrPhoto(c,s.imgs[i],x+tW/2,y+th2*.4,th2*.27,i+1,th);c.save();c.beginPath();rr(c,x+8,y+th2-46,tW-16,38,10);c.fillStyle=th[2];c.fill();c.restore();txt(c,N[i]||'',x+tW/2,y+th2-26,26,'Poppins',th[0],tW-30,'600');}
   txt(c,s.f3,w/2,1318,30,'Poppins',th[2],800,'600');}},
-{n:'Guess Who character cards',cat:'Party games',w:1000,h:1414,L:['Page title','Small line','Footer line'],D:['Pick Your Mystery Person','Cut out. Each player draws one card in secret.','Do not show your card to anyone!'],L4:'8 names (one per line)',D4:'Ayesha\nAli\nSara\nHamza\nZainab\nBilal\nFatima\nOmar',
- draw(c,w,h,s,th){bg(c,w,h,th);head(c,w,s,th,95,0);txt(c,s.f2,w/2,170,28,'Poppins',th[2],860,'600');const N=lines(s.f4);for(let i=0;i<8;i++){const col=i%2,row=Math.floor(i/2),x=60+col*450,y=215+row*270,cwid=430,chh=250;cardBox(c,x,y,cwid,chh,th,1);face(c,x+110,y+105,70,i+31);txt(c,'MYSTERY PERSON',x+300,y+70,22,'Poppins',th[2],200,'700');txt(c,N[i]||'',x+300,y+130,48,s.font,th[3],200);tline(c,x+200,x+410,y+165,th[2],.5,2);txt(c,'Secret card',x+300,y+200,24,'Poppins','#6b7280',200);}
+{n:'Guess Who character cards',cat:'Party games',w:1000,h:1414,ph2:1,L:['Page title','Small line','Footer line'],D:['Pick Your Mystery Person','Cut out. Each player draws one card in secret.','Do not show your card to anyone!'],L4:'8 names (one per line)',D4:'Ayesha\nAli\nSara\nHamza\nZainab\nBilal\nFatima\nOmar',
+ draw(c,w,h,s,th){bg(c,w,h,th);head(c,w,s,th,95,0);txt(c,s.f2,w/2,170,28,'Poppins',th[2],860,'600');const N=lines(s.f4);for(let i=0;i<8;i++){const col=i%2,row=Math.floor(i/2),x=60+col*450,y=215+row*270,cwid=430,chh=250;cardBox(c,x,y,cwid,chh,th,1);faceOrPhoto(c,s.imgs[i],x+110,y+105,70,i+31,th);txt(c,'MYSTERY PERSON',x+300,y+70,22,'Poppins',th[2],200,'700');txt(c,N[i]||'',x+300,y+130,48,s.font,th[3],200);tline(c,x+200,x+410,y+165,th[2],.5,2);txt(c,'Secret card',x+300,y+200,24,'Poppins','#6b7280',200);}
   txt(c,s.f3,w/2,1330,32,'Poppins',th[2],860,'600');}},
 {n:'Yes or No question cards',cat:'Party games',w:1000,h:1414,opt:{l:'Question theme',v:Object.keys(GQ)},L:['Page title','Small line','Footer line'],D:['Ask Smart Questions','Only YES or NO answers allowed','Cut out and keep in a bowl'],L4:'Your own questions (optional, one per line, used first)',D4:'',
  draw(c,w,h,s,th){bg(c,w,h,th);head(c,w,s,th,95,0);txt(c,s.f2,w/2,170,28,'Poppins',th[2],860,'600');const own=lines(s.f4),base=GQ[Object.keys(GQ)[s.opt||0]],Q=own.concat(base).slice(0,12);for(let i=0;i<12;i++){const col=i%3,row=Math.floor(i/3),cw3=280,x=60+col*(cw3+20),y=210+row*270;cardBox(c,x,y,cw3,250,th,1);c.beginPath();c.arc(x+36,y+36,24,0,7);c.fillStyle=th[2];c.fill();txt(c,String(i+1),x+36,y+37,26,'Poppins',th[0],40,'700');wrap(c,Q[i]||'',x+cw3/2,y+95,cw3-36,36,28,'Poppins',th[3],'600');txt(c,'YES',x+75,y+222,24,'Poppins','#10b981',90,'700');txt(c,'NO',x+205,y+222,24,'Poppins','#ef4444',90,'700');}
@@ -582,13 +584,18 @@ function build(){const box=$('tpls');T.forEach((t,i)=>{const b=document.createEl
  $('theme').innerHTML=Object.keys(THEMES).map(k=>`<option>${k}</option>`).join('');$('font').innerHTML=FONTS.map(f=>`<option>${f}</option>`).join('');
  renderPlans();showCat('All',1);pick(0);}
 function pick(i){cur=i;const t=T[i];['f1','f2','f3'].forEach((f,j)=>{$('l'+(j+1)).textContent=t.L[j];$(f).value=S[f]=t.D[j];});
- $('f4box').style.display=t.L4?'block':'none';if(t.L4){$('l4').textContent=t.L4;$('f4').value=S.f4=t.D4;}else S.f4='';$('phbox').style.display=t.ph?'block':'none';$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));if(LIC&&LIC.tier=='category'&&LIC.cats.length)msg(allowed(i)?describe():'Not covered by your key: this design is in "'+catOf(i)+'".',!allowed(i));draw();}
+ $('f4box').style.display=t.L4?'block':'none';if(t.L4){$('l4').textContent=t.L4;$('f4').value=S.f4=t.D4;}else S.f4='';$('phbox').style.display=t.ph?'block':'none';$('ph2box').style.display=t.ph2?'block':'none';if(t.ph2)updatePhotoCount();$('optbox').style.display=t.opt?'block':'none';S.opt=0;if(t.opt){$('lo').textContent=t.opt.l;$('opt').innerHTML=t.opt.v.map((v,k)=>`<option value="${k}">${v}</option>`).join('');$('opt').value='0';}document.querySelectorAll('.tpl').forEach((b,j)=>b.setAttribute('aria-pressed',j==i));if(LIC&&LIC.tier=='category'&&LIC.cats.length)msg(allowed(i)?describe():'Not covered by your key: this design is in "'+catOf(i)+'".',!allowed(i));draw();}
 ['f1','f2','f3'].forEach(f=>$(f).addEventListener('input',e=>{S[f]=e.target.value;draw();}));
 $('f4').addEventListener('input',e=>{S.f4=e.target.value;draw();});
 $('theme').onchange=e=>{theme=e.target.value;draw();};
 $('opt').onchange=e=>{S.opt=+e.target.value;draw();};
 $('font').onchange=e=>{S.font=e.target.value;draw();document.fonts.load('40px "'+S.font+'"','Aa \u0627').then(draw);};
 $('photo').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,1400/Math.max(im.width,im.height)),o=document.createElement('canvas');o.width=Math.round(im.width*k);o.height=Math.round(im.height*k);o.getContext('2d').drawImage(im,0,0,o.width,o.height);S.img=o;draw();URL.revokeObjectURL(im.src);};im.onerror=()=>msg('Could not read this photo. Try a JPG or PNG.',1);im.src=URL.createObjectURL(f);};
+function updatePhotoCount(){const el=$('photocount');if(el)el.textContent=S.imgs.length+' photo'+(S.imgs.length==1?'':'s')+' added';}
+function loadPhoto(f){return new Promise((res,rej)=>{if(!f.type||f.type.indexOf('image/')!==0){rej(new Error('not an image'));return;}const im=new Image();im.onload=()=>{try{const k=Math.min(1,400/Math.max(im.width,im.height)),o=document.createElement('canvas');o.width=Math.max(1,Math.round(im.width*k));o.height=Math.max(1,Math.round(im.height*k));o.getContext('2d').drawImage(im,0,0,o.width,o.height);res(o);}catch(err){rej(err);}finally{URL.revokeObjectURL(im.src);}};im.onerror=()=>{URL.revokeObjectURL(im.src);rej(new Error('could not read image'));};im.src=URL.createObjectURL(f);});}
+$('photos').onchange=async e=>{const fs=Array.from(e.target.files||[]);if(!fs.length)return;let added=0,bad=0;for(const f of fs){if(S.imgs.length>=24){msg('You can add up to 24 photos.',1);break;}try{S.imgs.push(await loadPhoto(f));added++;}catch(err){bad++;}}
+ e.target.value='';updatePhotoCount();draw();if(bad)msg('Some files were not images and were skipped. Please choose JPG, PNG or another image file.',1);else if(added)msg(added+' photo'+(added==1?'':'s')+' added.');};
+$('clearphotos').onclick=()=>{S.imgs=[];$('photos').value='';updatePhotoCount();draw();msg('Photos cleared.');};
 function msg(t,bad){const m=$('msg');m.textContent=t;m.className=bad?'bad':'ok';}
 
 /* ---- Gumroad license check (3 plans) ---- */
