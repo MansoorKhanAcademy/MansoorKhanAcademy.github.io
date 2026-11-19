@@ -1,0 +1,19 @@
+name: IndexNow
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for GitHub Pages to deploy
+        run: sleep 200
+      - name: Send URLs to IndexNow
+        run: |
+          curl -fsS https://mansoorkhanacademy.github.io/sitemap.xml -o sitemap.xml || { echo "sitemap not reachable"; exit 0; }
+          grep -o '<loc>[^<]*</loc>' sitemap.xml | sed 's/<[^>]*>//g' | head -n 500 > urls.txt
+          echo "URLs: $(wc -l < urls.txt)"
+          jq -n --arg host "mansoorkhanacademy.github.io" --arg key "079e4cb50d93514077efa4057f270ff3" --arg loc "https://mansoorkhanacademy.github.io/079e4cb50d93514077efa4057f270ff3.txt" --rawfile urls urls.txt '{host:$host,key:$key,keyLocation:$loc,urlList:($urls|split("\n")|map(select(length>0)))}' > body.json
+          code=$(curl -s -o resp.txt -w '%{http_code}' -X POST https://api.indexnow.org/IndexNow -H 'Content-Type: application/json; charset=utf-8' --data @body.json)
+          echo "IndexNow response: $code"; cat resp.txt || true
