@@ -9,13 +9,10 @@
  "labels": {
   "Tools/video-editor/": "AI Video Editor",
   "personalized-printables/": "Printables",
-  "Websites/": "Websites"
+  "Websites/": "Websites",
+  "apps/": "Apps"
  },
  "extraLinks": [
-  [
-   "Prompt Book",
-   "https://promptbookapp.github.io/"
-  ],
   [
    "Contact",
    "mailto:mansoorkhan8185@gmail.com"
@@ -28,7 +25,8 @@
  "hideChildren": [
   "Websites/",
   "personalized-printables/",
-  "blog/"
+  "blog/",
+  "apps/"
  ],
  "gtmId": "GTM-WG3F7K9D"
 }

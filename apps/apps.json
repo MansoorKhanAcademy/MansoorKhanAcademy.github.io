@@ -1,0 +1,19 @@
+{
+ "publisher": "Mansoor Khan Academy",
+ "website": "https://mansoorkhanacademy.github.io/",
+ "updated": "2026-11-21",
+ "apps": [
+  {
+   "name": "Prompt Book: AI Video Prompts",
+   "package": "com.mkhanacademy.promptbookapp",
+   "platform": "Android",
+   "price": "Free",
+   "description": "A free Android app with a library of ready-to-use prompts for AI video and image generators, organised by niche. Search, save favourites, copy a prompt and open it in ChatGPT or Claude.",
+   "category": "Productivity",
+   "googlePlay": "https://play.google.com/store/apps/details?id=com.mkhanacademy.promptbookapp",
+   "github": "",
+   "privacyPolicy": "https://mansoorkhan8185.github.io/Prompt-BooK-Privacy-Policy/",
+   "icon": "https://mansoorkhanacademy.github.io/apps/prompt-book/icon.png"
+  }
+ ]
+}
