@@ -4,6 +4,18 @@
  "updated": "2026-11-21",
  "apps": [
   {
+   "name": "Tip Calculator",
+   "package": "com.mkhanacademy.tipcalculator",
+   "platform": "Android",
+   "price": "Free",
+   "description": "Calculate tips and split any bill with friends in seconds. Enter the amount, pick a tip percentage and number of people, and see exactly what each person pays. Works offline, with no sign-up.",
+   "category": "Tools",
+   "googlePlay": "",
+   "github": "https://github.com/MansoorKhanAcademy/app-releases/releases/tag/tip-calculator-v1.0.0",
+   "privacyPolicy": "https://mansoorkhanacademy.github.io/apps/tip-calculator/privacy-policy/",
+   "icon": "https://mansoorkhanacademy.github.io/apps/tip-calculator/icon.png"
+  },
+  {
    "name": "Prompt Book: AI Video Prompts",
    "package": "com.mkhanacademy.promptbookapp",
    "platform": "Android",
