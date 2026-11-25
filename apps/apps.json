@@ -1,8 +1,20 @@
 {
  "publisher": "Mansoor Khan Academy",
  "website": "https://mansoorkhanacademy.github.io/",
- "updated": "2026-11-24",
+ "updated": "2026-11-25",
  "apps": [
+  {
+   "name": "Invoice Stock Khata",
+   "package": "com.mkhanacademy.invoicestockkhata",
+   "platform": "Android",
+   "price": "Free",
+   "description": "Invoice, stock & khata manager for shops and distributors in Pakistan. Manage products, stock, customers, invoices, and salesman system offline.",
+   "category": "Tools",
+   "googlePlay": "",
+   "github": "https://github.com/MansoorKhanAcademy/app-releases/releases/tag/invoice-stock-khata-v1.1.0",
+   "privacyPolicy": "https://mansoorkhanacademy.github.io/apps/invoice-stock-khata/privacy-policy/",
+   "icon": "https://mansoorkhanacademy.github.io/apps/invoice-stock-khata/icon.png"
+  },
   {
    "name": "Tip Calculator",
    "package": "com.mkhanacademy.tipcalculator",
