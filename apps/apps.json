@@ -1,8 +1,34 @@
 {
  "publisher": "Mansoor Khan Academy",
  "website": "https://mansoorkhanacademy.github.io/",
- "updated": "2026-11-21",
+ "updated": "2026-11-25",
  "apps": [
+  {
+   "name": "Invoice Stock Khata",
+   "package": "com.mkhanacademy.invoicestockkhata",
+   "platform": "Android",
+   "price": "Free",
+   "description": "Invoice, stock & khata manager for shops and distributors in Pakistan. Manage products, stock, customers, invoices, and salesman system offline.",
+   "category": "Tools",
+   "version": "1.1.1",
+   "googlePlay": "",
+   "github": "https://github.com/MansoorKhanAcademy/app-releases/releases/tag/invoice-stock-khata-v1.1.0",
+   "privacyPolicy": "https://mansoorkhanacademy.github.io/apps/invoice-stock-khata/privacy-policy/",
+   "icon": "https://mansoorkhanacademy.github.io/apps/invoice-stock-khata/icon.png"
+  },
+  {
+   "name": "Tip Calculator",
+   "package": "com.mkhanacademy.tipcalculator",
+   "platform": "Android",
+   "price": "Free",
+   "description": "Calculate tips and split any bill with friends in seconds. Enter the amount, pick a tip percentage and number of people, and see exactly what each person pays. Works offline, with no sign-up.",
+   "category": "Tools",
+   "version": "1.0.1",
+   "googlePlay": "",
+   "github": "https://github.com/MansoorKhanAcademy/app-releases/releases/tag/tip-calculator-v1.0.1",
+   "privacyPolicy": "https://mansoorkhanacademy.github.io/apps/tip-calculator/privacy-policy/",
+   "icon": "https://mansoorkhanacademy.github.io/apps/tip-calculator/icon.png"
+  },
   {
    "name": "Prompt Book: AI Video Prompts",
    "package": "com.mkhanacademy.promptbookapp",
@@ -10,6 +36,7 @@
    "price": "Free",
    "description": "A free Android app with a library of ready-to-use prompts for AI video and image generators, organised by niche. Search, save favourites, copy a prompt and open it in ChatGPT or Claude.",
    "category": "Productivity",
+   "version": "",
    "googlePlay": "https://play.google.com/store/apps/details?id=com.mkhanacademy.promptbookapp",
    "github": "",
    "privacyPolicy": "https://mansoorkhan8185.github.io/Prompt-BooK-Privacy-Policy/",
